@@ -1,0 +1,31 @@
+ /* ==============================================================
+ * radarUsage.qa
+ * ==============================================================
+ */       
+System radarUsage   
+Dispatch polarMsg	: p( Distance, Angle  )  
+Event    polar      : p( Distance, Angle  )
+
+Context ctxRadarUsage  ip [ host="localhost"   port=8022 ] 
+Context ctxRadarBase   ip [ host="localhost"   port=8033 ]  -standalone 
+
+QActor radartest  context ctxRadarUsage {	   
+Rules{
+	p(80,0). 	p(80,30).	p(30,50).	p(80,60).	p(60,70).	
+	p(80,90).   p(80,160).	p(10,130).	p(80,150).	p(80,180).
+} 
+	Plan init normal [       
+		println("radartest STARTS ")     
+  	]
+  	switchTo dotest
+  	
+  	Plan dotest [		
+		delay  1000 ; 
+		[ !? p(X,Y) ] println( sending(p(X,Y)) );
+   		[ ?? p(X,Y) ] sendto radarguibase in ctxRadarBase -m polarMsg : p( X, Y  ) else endPlan "radartest ENDS";
+		delay  2000 ; 
+		[ !? p(X,Y) ] println( emitting(p(X,Y)) );
+ 	  	[ ?? p(X,Y) ] emit polar : p(X,Y) else endPlan "testDone"
+ 	]
+ 	finally repeatPlan
+}
