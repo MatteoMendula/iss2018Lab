@@ -27,9 +27,9 @@ Rules{
  	Plan dopublish  [		  
  		delay  700 ; 
   		//[ !? p(D,A)] publishMSg  "unibo/mqtt/radar" for "perceiver"    -m polarMsg : p( D, A  )  ;
-  		[ !? p(D,A)] publishMSg  "unibo/mqtt/radar" for "radarguimqtt" -m polarMsg : p( D, A  )  ;
+  		[ !? p(D,A)] publishMsg  "unibo/mqtt/radar" for "radarguimqtt" -m polarMsg : p( D, A  )  ;
  		delay 500;
- 		[ ?? p(D,A)] publishEvent "unibo/mqtt/radar" -m polar : p( D, A  ) else endPlan "qatestemitterends"
+ 		[ ?? p(D,A)] publishEvent "unibo/mqtt/radar" -e polar : p( D, A  ) else endPlan "qatestemitterends"
  	]
  	finally repeatPlan
 }

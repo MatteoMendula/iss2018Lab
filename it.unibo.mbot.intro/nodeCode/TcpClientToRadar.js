@@ -8,18 +8,18 @@ var host = "localhost";
 var port = 8033;	
 
 console.log('connecting to ' + host + ":" + port);
-var socket = net.connect({ port: port, host: host });
-socket.setEncoding('utf8');
+var conn = net.connect({ port: port, host: host });
+conn.setEncoding('utf8');
 
 // when receive data back, print to console
-socket.on('data',function(data) {
+conn.on('data',function(data) {
 	console.log(data);
 });
 // when server closed
-socket.on('close',function() {
+conn.on('close',function() {
 	console.log('connection is closed');
 });
-socket.on('end',function() {
+conn.on('end',function() {
 	console.log('connection is ended');
 });
 
@@ -28,27 +28,27 @@ socket.on('end',function() {
 Interaction
 ===============================================================
 */
-var msgNum=1;
-
 function sendMsg( msg ){
  	try{
  		console.log("SENDING " + msg  );
- 		socket.write(msg+"\n");	//Asynchronous!!!
+ 		conn.write(msg+"\n");	//Asynchronous!!!
 	}catch(e){ 
 		console.log("ERROR  "  + e ); 
  	}
 }
  
-function sendMsgAfterTime( msg, time ){
-	setTimeout(function(){ sendMsg( msg ); },  time);
-} 
+function sendMsgAfterTime( msg, delay ){
+	setTimeout( function(){ sendMsg( msg ); },  delay);
+}  
  
-sendMsgAfterTime("msg(polarMsg,dispatch,jsSource,radarguibase, p(50,30)," + msgNum++ +")",  1000);
-sendMsgAfterTime("msg(polarMsg,dispatch,jsSource,radarguibase, p(50,90)," + msgNum++ +")",  2000);
+var msgNum=1;
+ 
+sendMsgAfterTime("msg(polarMsg,dispatch,jsSource,radarguibase, p(50,30),"  + msgNum++ +")", 1000);
+sendMsgAfterTime("msg(polarMsg,dispatch,jsSource,radarguibase, p(50,90),"  + msgNum++ +")", 2000);
 sendMsgAfterTime("msg(polarMsg,dispatch,jsSource,radarguibase, p(50,150)," + msgNum++ +")", 3000);
 
-setTimeout(function(){ socket.end(); }, 4000);
-//Half-closes the socket, i.e., it sends a FIN packet. It is possible the server will still send some data. 
+setTimeout(function(){ conn.end(); }, 4000);
+//Half-closes the conn, i.e., it sends a FIN packet. It is possible the server will still send some data. 
 /*
 ----------------------------------------------
 USAGE	 

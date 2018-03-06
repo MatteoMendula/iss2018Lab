@@ -20,9 +20,9 @@ Rules{
   	switchTo dotest
   	
   	Plan dotest [		
-		delay  1000 ; 
+		delay  1000 ;  
 		[ !? p(X,Y) ] println( sending(p(X,Y)) );
-   		[ ?? p(X,Y) ] sendto radarguibase in ctxRadarBase -m polarMsg : p( X, Y  ) else endPlan "radartest ENDS";
+   		[ ?? p(X,Y) ] sendto radarguibase in ctxRadarBase -m polarMsg : p( X, Y  ) else endPlan "radartest ENDS"; 
 		delay  2000 ; 
 		[ !? p(X,Y) ] println( emitting(p(X,Y)) );
  	  	[ ?? p(X,Y) ] emit polar : p(X,Y) else endPlan "testDone"

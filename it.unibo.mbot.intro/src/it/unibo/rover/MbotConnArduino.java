@@ -6,7 +6,6 @@ import it.unibo.qactors.akka.QActor;
 
 
 public class MbotConnArduino {
- 
 private static SerialPortConnSupport conn = null;
 private static JSSCSerialComm serialConn;
 private static double dataSonar = 0;
