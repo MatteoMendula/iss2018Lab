@@ -3,7 +3,7 @@
  * mbotControl.qa
  * ==============================================================
  */  
-System mbotControl    
+System mbotControl        
 Event usercmd     : usercmd(CMD)  
 Event sonar  	  : sonar(SONAR, TARGET, DISTANCE)	//From (virtual) sonar
 Event sonarDetect : sonarDetect(X)					//From (virtual robot) sonar
