@@ -11,20 +11,18 @@ Event realSonar   : sonar( DISTANCE )				//From real sonar on real robot
 Event    polar    : p( Distance, Angle )
 Event unityAddr   : unityAddr( ADDR )				//From user interface
  
-Context ctxMbotControl   ip [ host="localhost"   port=8029 ]  -httpserver  //192.168.43.67 
+Context ctxMbotControl ip [ host="localhost"   port=8029 ]  -httpserver   
 
-QActor rover context ctxMbotControl { 
+QActor rover context ctxMbotControl {   
 	Plan init normal [    
 	    	println("rover START")    	
   	    ] 
 	    switchTo waitUserCmd     
 		
-   	Plan waitUserCmd[
-  	]  
+   	Plan waitUserCmd[  	]  
   	transition stopAfter 600000    
  		whenEvent usercmd   -> execMove
    	finally repeatPlan 
-
 	
   	Plan execMove resumeLastPlan[   
   		printCurrentEvent;
@@ -32,23 +30,22 @@ QActor rover context ctxMbotControl {
     	onEvent usercmd :  usercmd( robotgui(s(X)) ) -> switchTo moveBackward;  
   		onEvent usercmd :  usercmd( robotgui(a(X)) ) -> switchTo turnLeft;   
    		onEvent usercmd :  usercmd( robotgui(d(X)) ) -> switchTo turnRight ;   
-   		onEvent usercmd :  usercmd( robotgui(h(X)) ) -> switchTo stopTheRobot ;
-   		onEvent usercmd :  usercmd( robotgui(f(X)) ) -> javaOp "it.unibo.rover.MbotConnArduino.mbotLinefollow()" ;
+   		onEvent usercmd :  usercmd( robotgui(h(X)) ) -> switchTo stopTheRobot ; 
+   		onEvent usercmd :  usercmd( robotgui(f(X)) ) -> javaRun it.unibo.rover.mbotConnArduino.mbotLinefollow() ;    
     	onEvent usercmd :  usercmd( robotgui(unityAddr(X)) ) -> switchTo connectToUnity;    
    		onEvent usercmd :  usercmd( robotgui(x(X)) ) -> switchTo terminataAppl
    	]
- 
+  
  	Plan connectToUnity resumeLastPlan[ 
-		onEvent usercmd :  usercmd( robotgui(unityAddr(ADDR)) ) -> println( unityAddr( ADDR ) ) ;
-		onEvent usercmd :  usercmd( robotgui(unityAddr(ADDR)) ) -> connectUnity ADDR ;
- 		addRule unityOn ;
+ 		onEvent usercmd :  usercmd( robotgui(unityAddr(ADDR)) ) -> connectUnity ADDR ;
+ 		addRule unityOn ;  
 		createUnityObject "rover" ofclass "Prefabs/CustomActor" ;
   		backwards 70 time ( 800 ) ;    	  
    	    right 70 time ( 1000 )   //position
-	]
+	]   
   	
   	Plan moveForward resumeLastPlan[ 
-  		javaOp "it.unibo.rover.MbotConnArduino.mbotForward()"
+   		javaRun it.unibo.rover.mbotConnArduino.mbotForward()
   	]
   	reactive onward 40 time( 15000 )  
 		whenEnd               -> endOfMove
@@ -58,7 +55,7 @@ QActor rover context ctxMbotControl {
 		or whenEvent usercmd  -> execMove
   	
   	Plan moveBackward resumeLastPlan[ 
-  		javaOp "it.unibo.rover.MbotConnArduino.mbotBackward()"
+  		javaRun it.unibo.rover.mbotConnArduino.mbotBackward()
   	]  
   	reactive backwards 40 time ( 15000 )
 		whenEnd               -> endOfMove
@@ -67,42 +64,41 @@ QActor rover context ctxMbotControl {
 		whenEvent sonar       -> handleSonar
 		or whenEvent usercmd  -> execMove
 	Plan turnLeft resumeLastPlan [
-		javaOp "it.unibo.rover.MbotConnArduino.mbotLeft()";
+		javaRun it.unibo.rover.mbotConnArduino.mbotLeft();
 		[ !? unityOn ] left 40 time(750) else delay 900;
- 		javaOp "it.unibo.rover.MbotConnArduino.mbotStop()"		
+ 		javaRun it.unibo.rover.mbotConnArduino.mbotStop()		
 	]
 	Plan turnRight resumeLastPlan [
-		javaOp "it.unibo.rover.MbotConnArduino.mbotRight()";
+		javaRun it.unibo.rover.mbotConnArduino.mbotRight();
 		[ !? unityOn ] right 40 time(750) else  delay 900;
- 		javaOp "it.unibo.rover.MbotConnArduino.mbotStop()"
+ 		javaRun it.unibo.rover.mbotConnArduino.mbotStop()
 	]
 	Plan stopTheRobot resumeLastPlan[
 		stop 40 time ( 10 );
-		javaOp "it.unibo.rover.MbotConnArduino.mbotStop()"
+		javaRun it.unibo.rover.mbotConnArduino.mbotStop()
 	]
 	
 	Plan terminataAppl resumeLastPlan [
 		stop 40 time ( 10 );
-		javaOp "it.unibo.rover.MbotConnArduino.mbotStop()";
+		javaRun it.unibo.rover.mbotConnArduino.mbotStop();
 		actorOp terminateSystem
 	]
 	
 	Plan handleRobotSonarDetect  resumeLastPlan [
 		//printCurrentEvent;
- 		javaOp "it.unibo.rover.MbotConnArduino.mbotStop()";
+ 		javaRun it.unibo.rover.mbotConnArduino.mbotStop();
 		stop 40 time ( 100 )     //stop for a while ...
 	]
 	Plan handleSonar  resumeLastPlan [  
 		//printCurrentEvent;
-		javaOp "it.unibo.rover.MbotConnArduino.mbotStop()";
+		javaRun it.unibo.rover.mbotConnArduino.mbotStop();
 		onward 40 time ( 500 ) ; //out of sonar range 
 		stop 40 time ( 100 )     //stop for a while ...  
 	]
 	Plan endOfMove resumeLastPlan [ println("endOfMove") ]
 	
 	Plan handleEndOfMove resumeLastPlan [ println("handleEndOfMove") ]
-	Plan handleTout [ println("handleTout") ]
-  	    
+	Plan handleTout [ println("handleTout") ]	    
 }  
 
 QActor sonardetector context ctxMbotControl{
@@ -115,8 +111,8 @@ QActor sonardetector context ctxMbotControl{
   		whenEvent sonarDetect ->  sendToRadar,
  		whenEvent realSonar   ->  sendToRadar
   	finally repeatPlan 
-	
-	Plan sendToRadar resumeLastPlan [  
+	  
+	Plan sendToRadar resumeLastPlan [    
 		printCurrentEvent; 
 		onEvent realSonar   : sonar( DISTANCE )                -> emit polar : p(DISTANCE, 0) ;
 		onEvent sonar       : sonar(sonar1, TARGET, DISTANCE ) -> emit polar : p(DISTANCE,30) ;

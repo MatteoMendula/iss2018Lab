@@ -5,7 +5,7 @@ import it.unibo.qactors.QActorUtils;
 import it.unibo.qactors.akka.QActor;
 
 
-public class MbotConnArduino {
+public class mbotConnArduino {
 private static SerialPortConnSupport conn = null;
 private static JSSCSerialComm serialConn;
 private static double dataSonar = 0;
@@ -64,22 +64,22 @@ private static QActor curActor ;
 		}.start();
 	}
 	
-	public static void mbotForward() {
+	public static void mbotForward(QActor actor) {
  		try { if( conn != null ) conn.sendCmd("w"); } catch (Exception e) {e.printStackTrace();}
 	}
-	public static void mbotBackward() {
+	public static void mbotBackward(QActor actor) {
 		try { if( conn != null ) conn.sendCmd("s"); } catch (Exception e) {e.printStackTrace();}
 	}
-	public static void mbotLeft() {
+	public static void mbotLeft(QActor actor) {
 		try { if( conn != null ) conn.sendCmd("a"); } catch (Exception e) {e.printStackTrace();}
 	}
-	public static void mbotRight() {
+	public static void mbotRight( QActor actor ) {
 		try { if( conn != null ) conn.sendCmd("d"); } catch (Exception e) {e.printStackTrace();}
 	}
-	public static void mbotStop() {
+	public static void mbotStop(QActor actor) {
 		try { if( conn != null ) conn.sendCmd("h"); } catch (Exception e) {e.printStackTrace();}
 	}
-	public static void mbotLinefollow() {
+	public static void mbotLinefollow( QActor actor ) {
 		try { if( conn != null ) conn.sendCmd("f"); } catch (Exception e) {e.printStackTrace();}
 	}
 }

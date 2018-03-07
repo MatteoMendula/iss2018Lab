@@ -3,7 +3,7 @@
  * radarForRobot.qa       
  * ==============================================================
  */            
-System radargui                      
+System radargui                         
 Event local_radarReady  : radargui( STATE )  		//STATE = ready|off
 Event polar             : p( Distance, Angle  )  	 
    
