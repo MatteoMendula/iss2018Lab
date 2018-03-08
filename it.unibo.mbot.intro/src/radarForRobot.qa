@@ -4,7 +4,7 @@
  * ==============================================================
  */            
 System radargui                         
-Event local_radarReady  : radargui( STATE )  		//STATE = ready|off
+//Event local_radarReady  : radargui( STATE )  		//STATE = ready|off
 Event polar             : p( Distance, Angle  )  	 
    
 Context ctxRadarForRobot  ip [ host="localhost"   port=8033 ]  
@@ -14,7 +14,7 @@ QActor radarrobot context ctxRadarForRobot  {
     Plan init normal [            
 		javaRun  it.unibo.radar.common.radarSupport.setUpRadarGui()
  	]
-    switchTo waitDataToShow    
+    switchTo waitDataToShow      
         
     Plan waitDataToShow [ ]     
  	 transition stopAfter 86400000  //one day	

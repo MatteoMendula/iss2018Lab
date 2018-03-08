@@ -14,17 +14,17 @@ Event unityAddr   : unityAddr( ADDR )				//From user interface
 Context ctxMbotControl ip [ host="localhost"   port=8029 ]  -httpserver   
 
 QActor rover context ctxMbotControl {   
-	Plan init normal [    
+	Plan init normal [     
 	    	println("rover START")    	
   	    ] 
-	    switchTo waitUserCmd     
+	    switchTo waitUserCmd        
 		
    	Plan waitUserCmd[  	]  
   	transition stopAfter 600000    
  		whenEvent usercmd   -> execMove
-   	finally repeatPlan 
+   	finally repeatPlan   
 	
-  	Plan execMove resumeLastPlan[   
+  	Plan execMove resumeLastPlan[     
   		printCurrentEvent;
     	onEvent usercmd :  usercmd( robotgui(w(X)) ) -> switchTo moveForward;    
     	onEvent usercmd :  usercmd( robotgui(s(X)) ) -> switchTo moveBackward;  
@@ -32,15 +32,16 @@ QActor rover context ctxMbotControl {
    		onEvent usercmd :  usercmd( robotgui(d(X)) ) -> switchTo turnRight ;   
    		onEvent usercmd :  usercmd( robotgui(h(X)) ) -> switchTo stopTheRobot ; 
    		onEvent usercmd :  usercmd( robotgui(f(X)) ) -> javaRun it.unibo.rover.mbotConnArduino.mbotLinefollow() ;    
-    	onEvent usercmd :  usercmd( robotgui(unityAddr(X)) ) -> switchTo connectToUnity;    
+    	onEvent usercmd :  usercmd( robotgui(unityAddr(X)) ) -> switchTo connectToUnity;    //X=localhost at the moment
    		onEvent usercmd :  usercmd( robotgui(x(X)) ) -> switchTo terminataAppl
    	]
   
  	Plan connectToUnity resumeLastPlan[ 
- 		onEvent usercmd :  usercmd( robotgui(unityAddr(ADDR)) ) -> connectUnity ADDR ;
+ 		onEvent usercmd :  usercmd( robotgui(unityAddr(ADDR)) ) -> println(ADDR) ;
+ 		connectUnity "localhost" ;  
  		addRule unityOn ;  
 		createUnityObject "rover" ofclass "Prefabs/CustomActor" ;
-  		backwards 70 time ( 800 ) ;    	  
+  		backwards 70 time ( 800 ) ;    	   
    	    right 70 time ( 1000 )   //position
 	]   
   	
