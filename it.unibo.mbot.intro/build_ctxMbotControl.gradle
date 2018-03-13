@@ -66,6 +66,7 @@ UNIBO SUPPORTS
 	  compile fileTree(dir: './libs/unibo', include: 'uniboEnvBaseAwt.jar')
 	  compile fileTree(dir: './libs/unibo', include: '2p301.jar')
 	  compile fileTree(dir: './libs/unibo', include: 'qa18Akka.jar')
+	  compile fileTree(dir: './libs/unibo', include: 'radarPojo.jar')
 	  compile fileTree(dir: './libs/http',  include: 'nanoHTTPD.jar')
 /*
 JSON

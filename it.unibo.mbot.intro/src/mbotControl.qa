@@ -78,8 +78,8 @@ QActor rover context ctxMbotControl {
 		stop 40 time ( 10 );
 		javaRun it.unibo.rover.mbotConnArduino.mbotStop()
 	]
-	
-	Plan terminataAppl resumeLastPlan [
+	  
+	Plan terminataAppl resumeLastPlan [    
 		stop 40 time ( 10 );
 		javaRun it.unibo.rover.mbotConnArduino.mbotStop();
 		actorOp terminateSystem

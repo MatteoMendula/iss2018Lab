@@ -13,20 +13,19 @@ Context ctxMbotControl ip  [ host="localhost"    port=8029 ]   -standalone
 QActor populateradar context ctxRobotToRadar{
 	Plan init normal [  
  		javaRun it.unibo.commToRadar.polarToRadar.connect("localhost", "8033" );
+ 		javaRun it.unibo.commToRadar.polarToRadar.sendPolar( "50", "90" ) ;
   		println("populateradar STARTED") 		 
 	]
-	switchTo waitForEvents  
+	switchTo waitForEvents     
 	  
 	Plan waitForEvents[    ]       
   	transition stopAfter 600000    
- 		whenEvent polar       ->  sendToRadar
+ 		whenEvent polar  ->  sendToRadar
     finally repeatPlan       
 	
 	Plan sendToRadar resumeLastPlan [  
 		printCurrentEvent; 
 		onEvent polar   : p( DISTANCE, ANGLE )                -> 
-					javaRun it.unibo.commToRadar.polarToRadar.sendPolar( DISTANCE, ANGLE )
+				javaRun it.unibo.commToRadar.polarToRadar.sendPolar( DISTANCE, ANGLE )
  	] 
- 	 
- 	
 }
