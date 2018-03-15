@@ -17,4 +17,9 @@ private static int msgNum = 1;
 		String msg = "msg(polar,event,"+ qa.getName() +",none," + msgContent + ","  + msgNum++ +")";
 		if( addr != null ) qa.sendTcpMsg( addr, port, msg );
 	}
+	public static void sendPolarToNodeServer(QActor qa, String D, String A) throws Exception {
+ 		String msgContent = "p("+D+","+A+")";
+		qa.println("sendPolarToNodeServer: " + msgContent);
+		qa.sendTcpMsg( "localhost", "8057", msgContent );
+	}
 }

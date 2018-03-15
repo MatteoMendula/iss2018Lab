@@ -1,0 +1,18 @@
+/* 
+ * ==============================================================
+ * robotRadarAppl.qa
+ * ==============================================================
+ */ 
+System robotRadarAppl 
+Event polar       : p( Distance, Angle  )
+  
+Context ctxRobtRadarAppl    ip [ host="localhost"   port=8055 ]       
+Context ctxMbotControl      ip [ host="localhost"   port=8029 ]   
+Context ctxRadarBase        ip [ host="localhost"   port=8033 ]    
+
+QActor robotradarappl context ctxRobtRadarAppl{
+	Plan init normal [  
+		println("robotradarappl STARTS ") ;
+		delay 600000    
+ 	]	
+}

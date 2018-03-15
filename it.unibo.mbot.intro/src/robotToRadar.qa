@@ -4,28 +4,25 @@
  * ==============================================================
  */ 
 System robotToRadar  
-Event    polar    : p( Distance, Angle  )
+Event    polar  : p( Distance, Angle  )
   
-Context ctxRobotToRadar ip [ host="localhost"    port=8055 ]       
-Context ctxMbotControl ip  [ host="localhost"    port=8029 ]   -standalone 
-//Context ctxRadarBase   ip [ host="localhost"   port=8033 ]   //The radar is a qa application
+Context ctxRobotToRadar ip [ host="localhost"    port=8055 ]    
+Context ctxMbotControl ip  [ host="localhost"    port=8029 ]    
 
-QActor populateradar context ctxRobotToRadar{
+QActor nodeserveractivator context ctxRobotToRadar {
 	Plan init normal [  
- 		javaRun it.unibo.commToRadar.polarToRadar.connect("localhost", "8033" );
- 		javaRun it.unibo.commToRadar.polarToRadar.sendPolar( "50", "90" ) ;
-  		println("populateradar STARTED") 		 
+   		println("NODE nodeserveractivator STARTED") ;		 
+ 		nodeOp "./nodeCode/PolarToRadar.js -o"   //WARNING: the actor is engaged
 	]
-	switchTo waitForEvents     
-	  
-	Plan waitForEvents[    ]       
-  	transition stopAfter 600000    
- 		whenEvent polar  ->  sendToRadar
-    finally repeatPlan       
 	
-	Plan sendToRadar resumeLastPlan [  
-		printCurrentEvent; 
-		onEvent polar   : p( DISTANCE, ANGLE )                -> 
-				javaRun it.unibo.commToRadar.polarToRadar.sendPolar( DISTANCE, ANGLE )
- 	] 
+}
+QActor populateradar context ctxRobotToRadar{
+	Plan init normal [  ]
+	switchTo waitForEvents       
+	  
+	Plan waitForEvents[  printCurrentEvent  ]       
+  	transition stopAfter 600000    
+ 		whenEvent polar : p( D, A )  do   
+ 			javaRun it.unibo.commToRadar.polarToRadar.sendPolarToNodeServer( D, A )
+    finally repeatPlan       
 }
