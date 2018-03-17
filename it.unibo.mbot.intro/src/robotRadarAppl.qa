@@ -6,7 +6,7 @@
 System robotRadarAppl 
 Event polar       : p( Distance, Angle  )
   
-Context ctxRobtRadarAppl    ip [ host="localhost"   port=8055 ]       
+Context ctxRobtRadarAppl    ip [ host="localhost"   port=8095 ]       
 Context ctxMbotControl      ip [ host="localhost"   port=8029 ]   
 Context ctxRadarBase        ip [ host="localhost"   port=8033 ]    
 

@@ -11,10 +11,10 @@ Event realSonar   : sonar( DISTANCE )				//From real sonar on real robot
 Event    polar    : p( Distance, Angle )
 Event unityAddr   : unityAddr( ADDR )				//From user interface
  
-Context ctxMbotControl ip [ host="localhost"   port=8029 ]  -httpserver   
+Context ctxMbotControl ip [ host="localhost"   port=8029 ] -g cyan -httpserver   
 
 QActor rover context ctxMbotControl {   
-	Plan init normal [     
+	Plan init normal [       
 	    	println("rover START")    	
   	    ] 
 	    switchTo waitUserCmd        
@@ -25,7 +25,7 @@ QActor rover context ctxMbotControl {
    	finally repeatPlan   
 	
   	Plan execMove resumeLastPlan[     
-  		printCurrentEvent;
+  		printCurrentEvent; 
     	onEvent usercmd :  usercmd( robotgui(w(X)) ) -> switchTo moveForward;    
     	onEvent usercmd :  usercmd( robotgui(s(X)) ) -> switchTo moveBackward;  
   		onEvent usercmd :  usercmd( robotgui(a(X)) ) -> switchTo turnLeft;   
@@ -36,15 +36,23 @@ QActor rover context ctxMbotControl {
    		onEvent usercmd :  usercmd( robotgui(x(X)) ) -> switchTo terminataAppl
    	]
   
- 	Plan connectToUnity resumeLastPlan[ 
- 		onEvent usercmd :  usercmd( robotgui(unityAddr(ADDR)) ) -> println(ADDR) ;
+  	Plan connectToUnity resumeLastPlan[ 
+  		onEvent usercmd : usercmd(robotgui(unityAddr(ADDR))) -> println(ADDR);//ADDR=localhost in this version
+ 		[ !? unityOn ] println( "UNITY already connected"  )
+	]   
+	switchTo [ not !? unityOn ] doconnectToUnity
+	
+ 	Plan doconnectToUnity resumeLastPlan[ 
+   		println("ACTIVATING UNITY. Wait a moment ... ") ;
+  		javaRun it.unibo.commToRadar.polarToRadar.customExecute("C:/Didattica2018Run/unityStart.bat") ;
+ 		delay 10000;	//wait until Unity activated
  		connectUnity "localhost" ;  
- 		addRule unityOn ;  
 		createUnityObject "rover" ofclass "Prefabs/CustomActor" ;
   		backwards 70 time ( 800 ) ;    	   
-   	    right 70 time ( 1000 )   //position
+   	    right 70 time ( 1000 ) ;  //position
+ 		addRule unityOn 
 	]   
-  	
+ 		
   	Plan moveForward resumeLastPlan[ 
    		javaRun it.unibo.rover.mbotConnArduino.mbotForward()
   	]

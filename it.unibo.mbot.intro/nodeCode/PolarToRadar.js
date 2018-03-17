@@ -37,25 +37,17 @@ var emitEventForRadar = function( data ){
 var host   = "localhost";
 var port   = 8057;	
 
-
 var server = net.createServer(function(socket) {
-	socket.on('data', function( data ) {
+	socket.on('data', function( data ) { //data has the form p(DISTANCE,ANGLE)
 		var dataNoWhiteSpaces = (""+data).trim();
-//		console.log("PolarToRadar received " +  dataNoWhiteSpaces.length );
 	    emitEventForRadar( dataNoWhiteSpaces );  
 	  });
 	  
 	socket.on('end', socket.end);  
-	/*
-	 * The pipe() function reads data from a readable stream as it becomes available 
-	 *  and writes it to a destination writable stream.
-	 *  The socket object implements both the readable and writable stream interface, 
-	 *  so it is therefore writing any data it receives back to the socket.
-	 */
- 	//socket.pipe(socket);	 
 });
 
-emitEventForRadar("p(70, 0)");
+//STARTING
+emitEventForRadar("p(70, 0)");	//just to show 
 console.log("PolarToRadar starts at " + port);
 server.listen(port, host );
 
@@ -67,3 +59,10 @@ netcat localshot 8057 --> Echo server
 node PolarToRadar.js  (and after this run PolarToRadarTester)
 ----------------------------------------------
 */
+/*
+ * The pipe() function reads data from a readable stream as it becomes available 
+ *  and writes it to a destination writable stream.
+ *  The socket object implements both the readable and writable stream interface, 
+ *  so it is therefore writing any data it receives back to the socket.
+ */
+	//socket.pipe(socket);	 

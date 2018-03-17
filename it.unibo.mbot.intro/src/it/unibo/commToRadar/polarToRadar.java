@@ -1,4 +1,6 @@
 package it.unibo.commToRadar;
+import java.io.IOException;
+
 import it.unibo.qactors.akka.QActor;
 
 public class polarToRadar {
@@ -21,5 +23,20 @@ private static int msgNum = 1;
  		String msgContent = "p("+D+","+A+")";
 		qa.println("sendPolarToNodeServer: " + msgContent);
 		qa.sendTcpMsg( "localhost", "8057", msgContent );
+	}
+	public static void customExecute(QActor qa, String cmd) {
+		try {
+			Runtime.getRuntime().exec(cmd);
+		} catch (IOException e) { e.printStackTrace(); } 
+	}
+	public static void customRunJar(QActor qa, String cmd) {
+		try {
+			Runtime.getRuntime().exec("java -jar " + cmd );
+		} catch (IOException e) { e.printStackTrace(); }
+	}
+	public static void customRunJava(QActor qa, String cmd) {
+		try {
+			Runtime.getRuntime().exec("java " + cmd );
+		} catch (IOException e) { e.printStackTrace(); }
 	}
 }

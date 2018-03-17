@@ -2,12 +2,12 @@
 /*
 This code is generated only ONCE
 */
-package it.unibo.nodeserveractivator;
+package it.unibo.radareventsubscriber;
 import it.unibo.is.interfaces.IOutputEnvView;
 import it.unibo.qactors.QActorContext;
 
-public class Nodeserveractivator extends AbstractNodeserveractivator { 
-	public Nodeserveractivator(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
+public class Radareventsubscriber extends AbstractRadareventsubscriber { 
+	public Radareventsubscriber(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
 		super(actorId, myCtx, outEnvView);
 	}
 /*
