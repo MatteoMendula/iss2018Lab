@@ -9,7 +9,7 @@
 System robotToRadarAdapter  
 Event    polar  : p( Distance, Angle  )
   
-Context ctxRobotToRadarAdapter ip [ host="localhost"    port=8055 ]     
+Context ctxRobotToRadarAdapter ip [ host="localhost"    port=8067 ]     
 Context ctxMbotControl         ip [ host="localhost"    port=8029 ]   
 
 QActor populateradar context ctxRobotToRadarAdapter{
@@ -23,23 +23,4 @@ QActor populateradar context ctxRobotToRadarAdapter{
     finally repeatPlan       
 }
 
-//QActor componentactivator context ctxRobotToRadarAdapter {
-//	Plan init normal [  
-//		//The radar takes some time to start and to end its testing phase;
-//		println("ACTIVATING RADAR") ;
-//		javaRun it.unibo.commToRadar.polarToRadar.customExecute("C:/Didattica2018Run/radarStart.bat") ; 		
-// 		
-//		println("ACTIVATING UNITY") ;
-//  		javaRun it.unibo.commToRadar.polarToRadar.customExecute("C:/Didattica2018Run/unityStart.bat") ;
-//	 		
-//		//The robot requires Unity;
-// 		delay 10000;
-//		println("ACTIVATING ROBOT") ;
-//		javaRun it.unibo.commToRadar.polarToRadar.customExecute("C:/Didattica2018Run/robotStart.bat") ; 
-// 		
-//		//PolarToRadar requires the radar;
-//  		delay 3000;
-//   		println("ACTIVATING NODE APPLICATION") ;		 
-// 		nodeOp "./nodeCode/PolarToRadar.js -o"   //WARNING: the actor is engaged since PolarToRadar.js waits
-// 	]
-//}
+ 

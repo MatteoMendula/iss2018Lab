@@ -9,7 +9,7 @@ Event    polar  : p( Distance, Angle  )
 //pubSubServer  "tcp://m2m.eclipse.org:1883"    
 pubSubServer  "tcp://test.mosquitto.org:1883"  
 
-Context ctxRadarToSubscriber ip [ host="localhost"    port=8085 ]     
+Context ctxRadarToSubscriber ip [ host="localhost"    port=8035 ]     
 Context ctxRadar  ip [ host="localhost"    port=8033 ]   -standalone  
 
 QActor radareventsubscriber context ctxRadarToSubscriber{
