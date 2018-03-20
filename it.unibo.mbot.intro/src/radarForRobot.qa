@@ -4,7 +4,6 @@
  * ==============================================================
  */            
 System radargui                         
-//Event local_radarReady  : radargui( STATE )  		//STATE = ready|off
 Event polar             : p( Distance, Angle  )  	 
    
 Context ctxRadarForRobot  ip [ host="localhost"   port=8033 ]  
@@ -27,5 +26,3 @@ QActor radarrobot context ctxRadarForRobot  {
 		onEvent polar   : p(D,A) ->  javaRun it.unibo.radar.common.radarSupport.sendDataToGui(D,A)   
 	]  
 }
- 
-
