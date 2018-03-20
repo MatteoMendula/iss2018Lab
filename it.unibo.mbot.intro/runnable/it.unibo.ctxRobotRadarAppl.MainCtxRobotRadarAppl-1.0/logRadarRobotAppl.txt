@@ -1,0 +1,24 @@
+	ACTIVATING it.unibo.qactors.QActorContext@33833882 ctxrobotradarappl ncores=4 port=8095 webDir=null testing=false
+	%%% activateAkkaSystem in progress ...ctxrobotradarappl
+			=== CtxServerAgent onReceive autoMsgwork
+	%%% CtxServerAgent ctxrobotradarappl_Server waitForAConnection on  port 8095
+	%%% QActorContext activateSenderAgents TOWARDS context -> ctxmbotcontrol sa=sa_8029
+	%%% QActorContext send updatesyskb SENDER=remotectx_ctxrobotradarappl sa=sa_8029
+	%%% QActorContext activateSenderAgents TOWARDS context -> ctxradarbase sa=sa_8033
+	%%% QActorContext send updatesyskb SENDER=remotectx_ctxrobotradarappl sa=sa_8033
+	%%% SystemCreationActor numOfcontexts= 3 application actors=2
+	%%% CtxServerAgent ctxrobotradarappl_Server waitForAConnection on  port 8095
+	%%% CtxServerAgent ctxrobotradarappl_Server waitForAConnection on  port 8095
+	%%% CtxServerAgent ctxrobotradarappl_Server waitForAConnection on  port 8095
+"robotradarappl STARTS "
+	%%%  SystemCreationActor terminates1:robotradarappl_ctrl  1/2
+	%%%  SystemCreationActor terminates1:robotradarappl  2/2
+    %%% SystemCreationActor GOING TO CLOSE it.unibo.platform.tcp.SocketTcpConnSupport@4354b28f
+    %%% SystemCreationActor GOING TO CLOSE it.unibo.platform.tcp.SocketTcpConnSupport@6999f515
+    %%% SystemCreationActor GOING TO CLOSE it.unibo.platform.tcp.SocketTcpConnSupport@640d60d9
+	%%% SYSTEM TERMINATES EXECUTOR 
+ %%% ReceiverAgent postStopreceiver_1 closeConnection
+ %%% ReceiverAgent postStopreceiver_3 closeConnection
+ %%% ReceiverAgent postStopreceiver_2 closeConnection
+[INFO] [03/20/2018 15:01:40.852] [Thread-0] [CoordinatedShutdown(akka://ctxrobotradarappl)] Starting coordinated shutdown from JVM shutdown hook
+[WARN] [03/20/2018 15:01:50.893] [Thread-0] [CoordinatedShutdown(akka://ctxrobotradarappl)] CoordinatedShutdown from JVM shutdown failed: Futures timed out after [10000 milliseconds]

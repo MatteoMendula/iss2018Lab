@@ -1,0 +1,78 @@
+/*        
+ * ==============================================================
+ * radarguiMqtt.qa       
+ * ==============================================================
+ */            
+ /*
+  * LOAD A Docker image for mosquitto
+  * docker run -ti -p 1883:1883 -p 9001:9001 toke/mosquitto
+  * 
+  * 
+  */
+System radarguimqtt              
+Event local_radar    : radargui( STATE )        //STATE = ready|off
+Event polar          : p( Distance, Angle  )  	//emitted by the plant (on Raspberry)
+Event alarm          : alarm( obstacle, p( Distance, Angle  ) )
+  
+Dispatch polarMsg    : p( Distance, Angle  )          
+     
+pubSubServer  "tcp://test.mosquitto.org:1883" 	//   "tcp://192.168.0.104:1883"  "tcp://m2m.eclipse.org:1883"
+
+Context  ctxRadarMqtt    ip [ host="192.168.1.19"  port=8033 ]   
+EventHandler evh for  alarm -print ;
+
+QActor  radarguimqtt context ctxRadarMqtt  {   	  	  
+Rules{     
+	checknear( D,A ) :- output( checknear(D,A) ), eval( lt, D, 15 ).
+}  
+    Plan init normal [        
+        println("RADAR init the GUI ... ") ;     
+        javaRun  it.unibo.radar.common.radarSupport.setUpRadarGui();  
+/*R0*/  connectAsSubscriber "unibo/mqtt/radar" ;
+/*R01*/ emit local_radar : radargui( ready )
+	]
+	 switchTo  waitkMsgs 
+ 
+     Plan waitkMsgs [ 	]  
+		transition stopAfter 86400000  //one day
+ /*R1*/ 	whenMsg polarMsg  -> handleSonarInfo ,
+ 	    	whenEvent polar   -> handleSonarInfo 
+        finally repeatPlan  
+    
+	Plan handleSonarInfo resumeLastPlan [
+		printCurrentMessage;
+ 		printCurrentEvent;
+/*R2*/  onMsg  polarMsg : p(D,A) ->  javaRun it.unibo.radar.common.radarSupport.sendDataToGui(D,A);   
+		onEvent polar   : p(D,A) ->  javaRun it.unibo.radar.common.radarSupport.sendDataToGui(D,A)  
+// 		onMsg polarMsg  : p(D,A)  ->  demo checknear(D,A);
+//  		onEvent polar   : p(D,A)  ->  demo checknear(D,A);
+//   		[ !? goalResult(checknear(D,A))] sound time(5500) file('./audio/tada2.wav') -asynch ;
+///*R3*/	[ ?? goalResult(checknear(D,A))] emit alarm : alarm( obstacle, p( D,A) )
+	] 
+	//WARNING: a switchTo cleans currentMessage and currentEvent
+}
+/*
+ * ----------------------------------------------------
+ * Simulation of a data publisher
+ * ----------------------------------------------------
+ */
+QActor testermqtt  context ctxRadarMqtt  {	 
+Rules{
+	p(80,0).	p(80,30).	p(30,50).	p(80,60).	p(20,70).	   
+	p(80,90).	p(80,120).	p(10,130).	p(80,150). 	p(80,180).	
+}
+	Plan init normal [  
+		 println("RADAR testermqtt STARTS ... ") ;        
+     	 connectAsPublisher "unibo/mqtt/radar"
+ 	]
+	//wait for the radar ready
+	transition stopAfter 86400000  //one day
+		whenEvent local_radar  -> dopublish  
+ 	
+ 	Plan dopublish resumeLastPlan [		
+		delay  1000 ; 
+ 		[ ?? p(D,A) ] publishMSg "unibo/mqtt/radar" for "radarguimqtt" -m polarMsg : p( D, A  ) else endPlan "dopublish ends"
+		
+   	]
+ 	finally repeatPlan
+}

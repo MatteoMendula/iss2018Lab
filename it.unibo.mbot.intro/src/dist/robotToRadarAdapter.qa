@@ -1,0 +1,24 @@
+/* 
+ * ==============================================================
+ * robotToRadarAdapter.qa
+ * This is activation model that starts a Node (micro)service that routes data 
+ * 		from a robot working in ctxMbotControl
+ * 		to a radar working in ctxRobotToRadar 
+ * ==============================================================
+ */ 
+System robotToRadarAdapter  
+Event    polar  : p( Distance, Angle  )
+  
+Context ctxRobotToRadarAdapter ip [ host="localhost"    port=8067 ]     
+Context ctxMbotControl         ip [ host="localhost"    port=8029 ]   
+
+QActor populateradar context ctxRobotToRadarAdapter{
+	Plan init normal [  ]
+	switchTo waitForEvents       
+	  
+	Plan waitForEvents[  printCurrentEvent  ]       
+  	transition stopAfter 600000    
+ 		whenEvent polar : p( D, A )  do   
+ 			javaRun it.unibo.commToRadar.polarToRadar.sendPolarToNodeServer( D, A )
+    finally repeatPlan       
+}

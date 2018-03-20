@@ -6,7 +6,7 @@
 System robotRadarApplActivator  
 
 Context ctxRobtRadarApplActivator ip [ host="localhost"   port=8078 ]       
- 
+  
 QActor robotradarapplactivator context ctxRobtRadarApplActivator {
 	Plan init normal [  
 		//The radar takes some time to start and to end its testing phase;
