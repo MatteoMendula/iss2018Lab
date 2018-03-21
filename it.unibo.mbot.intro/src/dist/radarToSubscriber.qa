@@ -1,0 +1,29 @@
+/* 
+ * ==============================================================
+ * radarToSubscriber.qa
+ * ==============================================================
+ */ 
+System radarToSubscriber  
+Event    polar  : p( Distance, Angle  )
+
+//pubSubServer  "tcp://m2m.eclipse.org:1883"    
+pubSubServer  "tcp://test.mosquitto.org:1883"  
+
+Context ctxRadarToSubscriber ip [ host="localhost"    port=8035 ]     
+Context ctxRadar  ip [ host="localhost"    port=8033 ]   -standalone  
+
+QActor radareventsubscriber context ctxRadarToSubscriber{
+	Plan init normal [  
+		connectAsSubscriber "unibo/mqtt/radarAppl" ; 		
+		println("radareventsubscriber START") 
+	]
+	switchTo waitForEvents       
+	  
+	Plan waitForEvents[ 		
+		printCurrentEvent;
+		delay 1000
+	]       
+  	transition stopAfter 600000    
+	  	whenEvent polar : p( D, A  )    do println ( perceived( p( D, A  ) ) )  
+    finally repeatPlan       
+}

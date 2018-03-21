@@ -1,0 +1,51 @@
+/* 
+ * ==============================================================
+ * mbotAppl.qa
+ * ==============================================================
+ */ 
+System mbotAppl  
+Event usercmd     : usercmd(CMD)
+Event sonar  	  : sonar(SONAR, TARGET, DISTANCE)	//From (virtual) sonar
+Event sonarDetect : sonarDetect(X)					//From (virtual robot) sonar
+Event realSonar   : sonar( DISTANCE )				//From real sonar on real robot
+Event    polar    : p( Distance, Angle  )
+Dispatch polarMsg : p( Distance, Angle  )
+ 
+Dispatch unityAddr : unityAddr( ADDR )
+  
+Context ctxMbotAppl    ip [ host="192.168.43.229"   port=8055 ]       
+Context ctxMbotControl ip [ host="192.168.43.67"    port=8029 ]   -standalone 
+//Context ctxRadarBase   ip [ host="localhost"        port=8033 ]   -standalone 
+
+
+QActor sonardetector context ctxMbotAppl{
+	Plan init normal [  
+		println("init the RADAR GUI ... ") ;     
+		javaRun  it.unibo.radar.common.radarSupport.setUpRadarGui() ;
+		println("sonardetector STARTED") 		 
+	]
+	switchTo waitForEvents
+	
+	Plan waitForEvents[ ]
+  	transition stopAfter 600000    
+ 		whenEvent sonar       ->  sendToRadar,
+  		whenEvent sonarDetect ->  sendToRadar,
+ 		whenEvent realSonar   ->  sendToRadar
+  	finally repeatPlan 
+	
+	Plan sendToRadar resumeLastPlan [  
+		printCurrentEvent; 
+		onEvent realSonar   : sonar( DISTANCE )                -> //sendRestPut "" -m  p( Distance, 0  )
+								//println(sonar( DISTANCE )); //emit polar : p(DISTANCE, 0) ;
+								javaRun it.unibo.radar.common.radarSupport.sendDataToGui(DISTANCE, "0") ;
+		onEvent sonar       : sonar(sonar1, TARGET, DISTANCE ) -> println(sonar(sonar1, TARGET, DISTANCE )); //emit polar : p(DISTANCE,30) ;
+		onEvent sonar       : sonar(sonar2, TARGET, DISTANCE ) -> println(sonar(sonar2, TARGET, DISTANCE )); //emit polar : p(DISTANCE,120) ;
+		onEvent sonarDetect : sonarDetect(TARGET)              -> println(sonarDetect(TARGET)) //switchTo showObstcle			
+	] 
+ 	
+	Plan showObstcle resumeLastPlan[
+		println( "found obstacle" );
+		emit polar : p(30,90) 
+//		sendto radarguibase in ctxRadarBase -m polarMsg : p( 30, 90  )
+	]
+}
