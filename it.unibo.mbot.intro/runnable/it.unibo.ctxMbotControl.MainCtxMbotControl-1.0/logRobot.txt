@@ -1,2 +1,0 @@
-	%%% SystemCreationActor numOfcontexts= 1 application actors=4
-[INFO] [03/20/2018 14:52:34.138] [Thread-3] [CoordinatedShutdown(akka://ctxmbotcontrol)] Starting coordinated shutdown from JVM shutdown hook
