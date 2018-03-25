@@ -142,10 +142,8 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %-------------------------------------------------
 %  User static rules about rover
 %------------------------------------------------- 
-unityAddr( "192.168.43.229").
-unityRemote( ADDR):-unityAddr( "localhost"), ! ,fail.
-unityRemote( ADDR):-unityOn, ! ,fail.
-unityRemote( ADDR):-unityAddr( ADDR).
+onRaspberry.
+unityConfig( "192.168.43.229","").
 foundObstacle:-retract( realDistance( D)),eval( lt,D,20).
 /*
 ------------------------------------------------------------------------

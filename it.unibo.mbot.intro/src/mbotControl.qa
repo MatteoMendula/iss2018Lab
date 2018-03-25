@@ -19,7 +19,7 @@ QActor rover context ctxMbotControl {
   	    ] 
 	    switchTo waitUserCmd        
 		
-   	Plan waitUserCmd[  	]  
+   	Plan waitUserCmd[  	]   
   	transition stopAfter 600000    
  		whenEvent usercmd   -> execMove
    	finally repeatPlan   

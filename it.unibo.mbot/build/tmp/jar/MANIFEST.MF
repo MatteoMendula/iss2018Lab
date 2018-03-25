@@ -9,5 +9,5 @@ Class-Path: .  lib/uniboInterfaces.jar lib/unibonoawtsupports.jar lib/
  .2.5.jar lib/aeron-client-1.2.5.jar lib/reactive-streams-1.0.0.jar li
  b/ssl-config-core_2.11-0.2.1.jar lib/agrona-0.9.5.jar lib/scala-parse
  r-combinators_2.11-1.0.4.jar
-Main-Class: it.unibo.ctxMbotControl.MainCtxMbotControl
+Main-Class: it.unibo.ctxMbotExecutor.MainCtxMbotExecutor
 

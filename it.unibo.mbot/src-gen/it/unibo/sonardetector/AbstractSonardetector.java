@@ -77,6 +77,8 @@ public abstract class AbstractSonardetector extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
+	    	temporaryStr = "\"sonardetector STARTS \"";
+	    	println( temporaryStr );  
 	    	//switchTo waitForEvents
 	        switchToPlanAsNextState(pr, myselfName, "sonardetector_"+myselfName, 
 	              "waitForEvents",false, false, null); 

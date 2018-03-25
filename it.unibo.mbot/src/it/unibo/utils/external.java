@@ -4,8 +4,27 @@ import java.io.IOException;
 import it.unibo.qactors.akka.QActor;
 
 public class external {
- 
-	public static void customExecute(QActor qa, String cmd) {
+private static boolean unityOn = false;
+
+	public static void connectRoverToUnity(QActor qa, String unityAaddr, String batchFile) {
+		if( unityOn ) qa.println("WARNING: UNITY already connected");
+		else {
+			batchFile = batchFile.replace("'", "");
+			System.out.println(" ***   connectRoverToUnity batchFile= "  + batchFile);
+			if( batchFile.length() > 0 ) {
+			//customExecute(qa,"./src/it/unibo/utils/unityStart.bat");
+				customExecute(qa, batchFile);
+				try {
+					qa.delayReactive(10000,"" , "");//wait for unity started
+				} catch (Exception e) {	}
+			}
+			qa.initUnityConnection(unityAaddr);
+			unityOn = true;
+			qa.createSimulatedActor("rover", "Prefabs/CustomActor"); 
+			qa.println("UNITY connected at " + unityAaddr );
+		} 
+	}
+	public static void customExecute(QActor qa, String cmd) { //./src/it/unibo/utils/
 		try { 
 //			System.out.println(" ***   customExecute dir= "  + qa.getPrologEngine().getCurrentDirectory() );
 			Runtime.getRuntime().exec(cmd);

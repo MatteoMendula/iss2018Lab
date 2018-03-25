@@ -56,23 +56,12 @@ public abstract class AbstractRover extends QActor {
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
-	    	stateTab.put("waitUserCmd",waitUserCmd);
+	    	stateTab.put("waitForCmd",waitForCmd);
 	    	stateTab.put("execMove",execMove);
 	    	stateTab.put("connectToUnity",connectToUnity);
-	    	stateTab.put("doconnectToUnity",doconnectToUnity);
-	    	stateTab.put("moveForward",moveForward);
-	    	stateTab.put("moveBackward",moveBackward);
+	    	stateTab.put("setAvatarInitialPosition",setAvatarInitialPosition);
 	    	stateTab.put("turnLeft",turnLeft);
 	    	stateTab.put("turnRight",turnRight);
-	    	stateTab.put("stopTheRobot",stopTheRobot);
-	    	stateTab.put("terminataAppl",terminataAppl);
-	    	stateTab.put("handleRobotSonarDetect",handleRobotSonarDetect);
-	    	stateTab.put("handleRobotRealSonar",handleRobotRealSonar);
-	    	stateTab.put("avoidRealObstacle",avoidRealObstacle);
-	    	stateTab.put("handleSonar",handleSonar);
-	    	stateTab.put("endOfMove",endOfMove);
-	    	stateTab.put("handleEndOfMove",handleEndOfMove);
-	    	stateTab.put("handleTout",handleTout);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -90,174 +79,152 @@ public abstract class AbstractRover extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?onRaspberry" )) != null ){
+	    	it.unibo.rover.mbotConnArduino.initRasp( myself  );
+	    	}
 	    	temporaryStr = "\"rover START\"";
 	    	println( temporaryStr );  
-	    	it.unibo.rover.mbotConnArduino.initRasp( this  );
-	    	//switchTo waitUserCmd
+	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
-	              "waitUserCmd",false, false, null); 
+	              "waitForCmd",false, false, null); 
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//init
 	    
-	    StateFun waitUserCmd = () -> {	
+	    StateFun waitForCmd = () -> {	
 	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_waitUserCmd",0);
+	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_waitForCmd",0);
 	     pr.incNumIter(); 	
-	    	String myselfName = "waitUserCmd";  
+	    	String myselfName = "waitForCmd";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"rover_"+myselfName,false,
-	          new StateFun[]{stateTab.get("execMove"), stateTab.get("handleRobotRealSonar") },//new StateFun[]
-	          new String[]{"true","E","usercmd", "true","E","realSonar" },
+	          new StateFun[]{stateTab.get("execMove") },//new StateFun[]
+	          new String[]{"true","M","moveRover" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
-	    }catch(Exception e_waitUserCmd){  
-	    	 println( getName() + " plan=waitUserCmd WARNING:" + e_waitUserCmd.getMessage() );
+	    }catch(Exception e_waitForCmd){  
+	    	 println( getName() + " plan=waitForCmd WARNING:" + e_waitForCmd.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
-	    };//waitUserCmd
+	    };//waitForCmd
 	    
 	    StateFun execMove = () -> {	
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("execMove",-1);
 	    	String myselfName = "execMove";  
-	    	printCurrentEvent(false);
-	    	//onEvent 
+	    	printCurrentMessage(false);
+	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(unityAddr(X)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			/* SwitchTransition */
-	    			String parg = "connectToUnity";
-	    			parg =  updateVars( Term.createTerm("usercmd(CMD)"), 
-	    				                Term.createTerm("usercmd(robotgui(unityAddr(X)))"), 
-	    				                Term.createTerm(currentEvent.getMsg()), parg);
-	    			if(parg != null){ 
-	    				switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
-	    			    	 		    		parg,false, true, null); 
-	    			    return;	
-	    			    //the control is given to the caller state
-	    			}
+	    	curT = Term.createTerm("cmd(moveForward)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		{/* JavaLikeMove */ 
+	    		String arg1 = "forward" ;
+	    		//end arg1
+	    		String arg2 = "40" ;
+	    		//end arg2
+	    		String arg3 = "60000" ;
+	    		//end arg3
+	    		it.unibo.utils.robotMixMoves.moveRobotAndAvatar(this,arg1,arg2,arg3 );
+	    		}
 	    	}
-	    	//onEvent 
+	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(w(X)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			/* SwitchTransition */
-	    			String parg = "moveForward";
-	    			parg =  updateVars( Term.createTerm("usercmd(CMD)"), 
-	    				                Term.createTerm("usercmd(robotgui(w(X)))"), 
-	    				                Term.createTerm(currentEvent.getMsg()), parg);
-	    			if(parg != null){ 
-	    				switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
-	    			    	 		    		parg,false, true, null); 
-	    			    return;	
-	    			    //the control is given to the caller state
-	    			}
+	    	curT = Term.createTerm("cmd(moveBackward)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		{/* JavaLikeMove */ 
+	    		String arg1 = "backward" ;
+	    		//end arg1
+	    		String arg2 = "40" ;
+	    		//end arg2
+	    		String arg3 = "60000" ;
+	    		//end arg3
+	    		it.unibo.utils.robotMixMoves.moveRobotAndAvatar(this,arg1,arg2,arg3 );
+	    		}
 	    	}
-	    	//onEvent 
+	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(s(X)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			/* SwitchTransition */
-	    			String parg = "moveBackward";
-	    			parg =  updateVars( Term.createTerm("usercmd(CMD)"), 
-	    				                Term.createTerm("usercmd(robotgui(s(X)))"), 
-	    				                Term.createTerm(currentEvent.getMsg()), parg);
-	    			if(parg != null){ 
-	    				switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
-	    			    	 		    		parg,false, true, null); 
-	    			    return;	
-	    			    //the control is given to the caller state
-	    			}
+	    	curT = Term.createTerm("cmd(turnLeft)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		/* SwitchTransition */
+	    		String parg = "turnLeft";
+	    		parg =  updateVars( Term.createTerm("cmd(CMD)"), 
+	    			                Term.createTerm("cmd(turnLeft)"), 
+	    			                Term.createTerm(currentMessage.msgContent()), parg);
+	    		if(parg != null){ 
+	    			switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
+	    		    	 		    		parg,false, true, null); 
+	    		    return;	
+	    		    //the control is given to the caller state
+	    		}
 	    	}
-	    	//onEvent 
+	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(a(X)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			/* SwitchTransition */
-	    			String parg = "turnLeft";
-	    			parg =  updateVars( Term.createTerm("usercmd(CMD)"), 
-	    				                Term.createTerm("usercmd(robotgui(a(X)))"), 
-	    				                Term.createTerm(currentEvent.getMsg()), parg);
-	    			if(parg != null){ 
-	    				switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
-	    			    	 		    		parg,false, true, null); 
-	    			    return;	
-	    			    //the control is given to the caller state
-	    			}
+	    	curT = Term.createTerm("cmd(turnRight)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		/* SwitchTransition */
+	    		String parg = "turnRight";
+	    		parg =  updateVars( Term.createTerm("cmd(CMD)"), 
+	    			                Term.createTerm("cmd(turnRight)"), 
+	    			                Term.createTerm(currentMessage.msgContent()), parg);
+	    		if(parg != null){ 
+	    			switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
+	    		    	 		    		parg,false, true, null); 
+	    		    return;	
+	    		    //the control is given to the caller state
+	    		}
 	    	}
-	    	//onEvent 
+	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(d(X)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			/* SwitchTransition */
-	    			String parg = "turnRight";
-	    			parg =  updateVars( Term.createTerm("usercmd(CMD)"), 
-	    				                Term.createTerm("usercmd(robotgui(d(X)))"), 
-	    				                Term.createTerm(currentEvent.getMsg()), parg);
-	    			if(parg != null){ 
-	    				switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
-	    			    	 		    		parg,false, true, null); 
-	    			    return;	
-	    			    //the control is given to the caller state
-	    			}
+	    	curT = Term.createTerm("cmd(moveStop)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		{/* JavaLikeMove */ 
+	    		String arg1 = "stop" ;
+	    		//end arg1
+	    		String arg2 = "40" ;
+	    		//end arg2
+	    		String arg3 = "10" ;
+	    		//end arg3
+	    		it.unibo.utils.robotMixMoves.moveRobotAndAvatar(this,arg1,arg2,arg3 );
+	    		}
 	    	}
-	    	//onEvent 
+	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(h(X)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			/* SwitchTransition */
-	    			String parg = "stopTheRobot";
-	    			parg =  updateVars( Term.createTerm("usercmd(CMD)"), 
-	    				                Term.createTerm("usercmd(robotgui(h(X)))"), 
-	    				                Term.createTerm(currentEvent.getMsg()), parg);
-	    			if(parg != null){ 
-	    				switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
-	    			    	 		    		parg,false, true, null); 
-	    			    return;	
-	    			    //the control is given to the caller state
-	    			}
+	    	curT = Term.createTerm("cmd(connectToUnity)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		/* SwitchTransition */
+	    		String parg = "connectToUnity";
+	    		parg =  updateVars( Term.createTerm("cmd(CMD)"), 
+	    			                Term.createTerm("cmd(connectToUnity)"), 
+	    			                Term.createTerm(currentMessage.msgContent()), parg);
+	    		if(parg != null){ 
+	    			switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
+	    		    	 		    		parg,false, true, null); 
+	    		    return;	
+	    		    //the control is given to the caller state
+	    		}
 	    	}
-	    	//onEvent 
+	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(x(X)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			/* SwitchTransition */
-	    			String parg = "terminataAppl";
-	    			parg =  updateVars( Term.createTerm("usercmd(CMD)"), 
-	    				                Term.createTerm("usercmd(robotgui(x(X)))"), 
-	    				                Term.createTerm(currentEvent.getMsg()), parg);
-	    			if(parg != null){ 
-	    				switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
-	    			    	 		    		parg,false, true, null); 
-	    			    return;	
-	    			    //the control is given to the caller state
-	    			}
-	    	}
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(f(X)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			{/* JavaLikeMove */ 
-	    			it.unibo.rover.mbotConnArduino.mbotLinefollow(this );
-	    			}
+	    	curT = Term.createTerm("cmd(followLine)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		{/* JavaLikeMove */ 
+	    		it.unibo.rover.mbotConnArduino.mbotLinefollow(this );
+	    		}
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
 	    }catch(Exception e_execMove){  
@@ -270,133 +237,42 @@ public abstract class AbstractRover extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("connectToUnity",-1);
 	    	String myselfName = "connectToUnity";  
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(unityAddr(ADDR)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg = "unityAddrFromWebGUI(ADDR)";
-	    			/* Print */
-	    			parg =  updateVars( Term.createTerm("usercmd(CMD)"), 
-	    			                    Term.createTerm("usercmd(robotgui(unityAddr(ADDR)))"), 
-	    				    		  	Term.createTerm(currentEvent.getMsg()), parg);
-	    			if( parg != null ) println( parg );
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityConfig(UNITYADDR,BATCH)" )) != null ){
+	    	it.unibo.utils.external.connectRoverToUnity( myself ,guardVars.get("UNITYADDR"), guardVars.get("BATCH")  );
 	    	}
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityRemote(ADDR)" )) != null ){
-	    	temporaryStr = "pleaseACTIVATEUNITYon(ADDR)";
-	    	temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
-	    	println( temporaryStr );  
-	    	}
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityOn" )) != null ){
-	    	temporaryStr = "\"UNITY already connected\"";
-	    	temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
-	    	println( temporaryStr );  
-	    	}
-	    	//switchTo doconnectToUnity
+	    	temporaryStr = "unityOn";
+	    	addRule( temporaryStr );  
+	    	//switchTo setAvatarInitialPosition
 	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
-	              "doconnectToUnity",false, true, " not !?unityOn" 
-	              ); 
+	              "setAvatarInitialPosition",false, false, null); 
 	    }catch(Exception e_connectToUnity){  
 	    	 println( getName() + " plan=connectToUnity WARNING:" + e_connectToUnity.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//connectToUnity
 	    
-	    StateFun doconnectToUnity = () -> {	
+	    StateFun setAvatarInitialPosition = () -> {	
 	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("doconnectToUnity",-1);
-	    	String myselfName = "doconnectToUnity";  
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityAddr(\"localhost\")" )) != null ){
-	    	temporaryStr = "\"ACTIVATING UNITY. Wait a moment ... \"";
-	    	temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
-	    	println( temporaryStr );  
-	    	}
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityAddr(\"localhost\")" )) != null ){
-	    	it.unibo.utils.external.customExecute( this ,"./src/it/unibo/utils/unityStart.bat"  );
-	    	}
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityAddr(\"localhost\")" )) != null ){
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(10000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "doconnectToUnity";
-	    	if( ! aar.getGoon() ) return ;
-	    	}
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityAddr(UNITYADDR)" )) != null ){
-	    	initUnityConnection( guardVars.get("UNITYADDR") );  
-	    	}
-	    	createSimulatedActor("rover", "Prefabs/CustomActor"); 
-	    	execUnity("rover","backward",800, 70,0); //rover: default namefor virtual robot		
+	     PlanRepeat pr = PlanRepeat.setUp("setAvatarInitialPosition",-1);
+	    	String myselfName = "setAvatarInitialPosition";  
+	    	execUnity("rover","backward",1000, 70,0); //rover: default namefor virtual robot		
 	    	execUnity("rover","right",1000, 70,0); //rover: default namefor virtual robot		
-	    	temporaryStr = "unityOn";
-	    	addRule( temporaryStr );  
-	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
-	    }catch(Exception e_doconnectToUnity){  
-	    	 println( getName() + " plan=doconnectToUnity WARNING:" + e_doconnectToUnity.getMessage() );
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "roverState(STATE)","roverState(ready)", guardVars ).toString();
+	    	emit( "local_rover", temporaryStr );
+	    	//switchTo waitForCmd
+	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
+	              "waitForCmd",false, false, null); 
+	    }catch(Exception e_setAvatarInitialPosition){  
+	    	 println( getName() + " plan=setAvatarInitialPosition WARNING:" + e_setAvatarInitialPosition.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
-	    };//doconnectToUnity
-	    
-	    StateFun moveForward = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("moveForward",-1);
-	    	String myselfName = "moveForward";  
-	    	Callable<String> body;
-	    int ractionTimeOut=0;
-	    ractionTimeOut = 30000;
-	    body= new Callable<String>(){
-	    	public String call() throws Exception {
-	      				it.unibo.utils.robotMixMoves.moveRobotAndAvatar( myself ,"forward", "40", "5000"  );
-	    			return currentActionResult;
-	    		}		
-	    		}; 
-	    		terminationEvId = QActorUtils.getNewName(IActorAction.endBuiltinEvent);
-	    currentTimedAction = new ActorTimedAction("ra_"+terminationEvId,this,myCtx,body,false,
-	    			terminationEvId, new String[]{}, outEnvView, ractionTimeOut	);
-	    currentTimedAction.execASynch();
-	      	//aaa
-	    msgTransition( pr,myselfName,"rover_"+myselfName,true,
-	          new StateFun[]{stateTab.get( "endOfMove"),stateTab.get( "handleRobotSonarDetect"),stateTab.get( "handleRobotRealSonar"),stateTab.get( "handleSonar"),stateTab.get( "execMove")},
-	          new String[]{"true","E",terminationEvId,"true","E","sonarDetect","true","E","realSonar","true","E","sonar","true","E","usercmd"},
-	          ractionTimeOut, "handleTout" );
-	    }catch(Exception e_moveForward){  
-	    	 println( getName() + " plan=moveForward WARNING:" + e_moveForward.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//moveForward
-	    
-	    StateFun moveBackward = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("moveBackward",-1);
-	    	String myselfName = "moveBackward";  
-	    	Callable<String> body;
-	    int ractionTimeOut=0;
-	    ractionTimeOut = 30000;
-	    body= new Callable<String>(){
-	    	public String call() throws Exception {
-	      				it.unibo.utils.robotMixMoves.moveRobotAndAvatar( myself ,"backward", "40", "5000"  );
-	    			return currentActionResult;
-	    		}		
-	    		}; 
-	    		terminationEvId = QActorUtils.getNewName(IActorAction.endBuiltinEvent);
-	    currentTimedAction = new ActorTimedAction("ra_"+terminationEvId,this,myCtx,body,false,
-	    			terminationEvId, new String[]{}, outEnvView, ractionTimeOut	);
-	    currentTimedAction.execASynch();
-	      	//aaa
-	    msgTransition( pr,myselfName,"rover_"+myselfName,true,
-	          new StateFun[]{stateTab.get( "endOfMove"),stateTab.get( "handleSonar"),stateTab.get( "execMove")},
-	          new String[]{"true","E",terminationEvId,"true","E","sonar","true","E","usercmd"},
-	          ractionTimeOut, "handleTout" );
-	    }catch(Exception e_moveBackward){  
-	    	 println( getName() + " plan=moveBackward WARNING:" + e_moveBackward.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//moveBackward
+	    };//setAvatarInitialPosition
 	    
 	    StateFun turnLeft = () -> {	
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("turnLeft",-1);
 	    	String myselfName = "turnLeft";  
-	    	it.unibo.rover.mbotConnArduino.mbotLeft( this  );
+	    	it.unibo.rover.mbotConnArduino.mbotLeft( myself  );
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityOn" )) != null ){
 	    	execUnity("rover","left",750, 40,0); //rover: default namefor virtual robot		
 	    	}
@@ -404,8 +280,10 @@ public abstract class AbstractRover extends QActor {
 	    	aar = delayReactive(900,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "turnLeft";
 	    	if( ! aar.getGoon() ) return ;
-	    	}it.unibo.rover.mbotConnArduino.mbotStop( this  );
-	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
+	    	}it.unibo.rover.mbotConnArduino.mbotStop( myself  );
+	    	//switchTo waitForCmd
+	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
+	              "waitForCmd",false, false, null); 
 	    }catch(Exception e_turnLeft){  
 	    	 println( getName() + " plan=turnLeft WARNING:" + e_turnLeft.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -416,7 +294,7 @@ public abstract class AbstractRover extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("turnRight",-1);
 	    	String myselfName = "turnRight";  
-	    	it.unibo.rover.mbotConnArduino.mbotRight( this  );
+	    	it.unibo.rover.mbotConnArduino.mbotRight( myself  );
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityOn" )) != null ){
 	    	execUnity("rover","right",750, 40,0); //rover: default namefor virtual robot		
 	    	}
@@ -424,155 +302,15 @@ public abstract class AbstractRover extends QActor {
 	    	aar = delayReactive(900,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "turnRight";
 	    	if( ! aar.getGoon() ) return ;
-	    	}it.unibo.rover.mbotConnArduino.mbotStop( this  );
-	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
+	    	}it.unibo.rover.mbotConnArduino.mbotStop( myself  );
+	    	//switchTo waitForCmd
+	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
+	              "waitForCmd",false, false, null); 
 	    }catch(Exception e_turnRight){  
 	    	 println( getName() + " plan=turnRight WARNING:" + e_turnRight.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//turnRight
-	    
-	    StateFun stopTheRobot = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("stopTheRobot",-1);
-	    	String myselfName = "stopTheRobot";  
-	    	temporaryStr = "\"	**** STOP THE ROBOT\"";
-	    	println( temporaryStr );  
-	    	execUnity("rover","stop",10, 40,0); //rover: default namefor virtual robot		
-	    	it.unibo.rover.mbotConnArduino.mbotStop( this  );
-	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
-	    }catch(Exception e_stopTheRobot){  
-	    	 println( getName() + " plan=stopTheRobot WARNING:" + e_stopTheRobot.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//stopTheRobot
-	    
-	    StateFun terminataAppl = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("terminataAppl",-1);
-	    	String myselfName = "terminataAppl";  
-	    	execUnity("rover","stop",10, 40,0); //rover: default namefor virtual robot		
-	    	it.unibo.rover.mbotConnArduino.mbotStop( this  );
-	    	parg = "terminateSystem"; 
-	    	actorOpExecute(parg, false);	//OCT17		 
-	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
-	    }catch(Exception e_terminataAppl){  
-	    	 println( getName() + " plan=terminataAppl WARNING:" + e_terminataAppl.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//terminataAppl
-	    
-	    StateFun handleRobotSonarDetect = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("handleRobotSonarDetect",-1);
-	    	String myselfName = "handleRobotSonarDetect";  
-	    	temporaryStr = "\"handleRobotSonarDetect\"";
-	    	println( temporaryStr );  
-	    	it.unibo.rover.mbotConnArduino.mbotBackward( this  );
-	    	execUnity("rover","backward",200, 40,0); //rover: default namefor virtual robot		
-	    	it.unibo.rover.mbotConnArduino.mbotStop( this  );
-	    	execUnity("rover","stop",100, 40,0); //rover: default namefor virtual robot		
-	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
-	    }catch(Exception e_handleRobotSonarDetect){  
-	    	 println( getName() + " plan=handleRobotSonarDetect WARNING:" + e_handleRobotSonarDetect.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//handleRobotSonarDetect
-	    
-	    StateFun handleRobotRealSonar = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("handleRobotRealSonar",-1);
-	    	String myselfName = "handleRobotRealSonar";  
-	    	temporaryStr = "\"handleRobotRealSonar\"";
-	    	println( temporaryStr );  
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("sonar(D)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("realSonar") && 
-	    		pengine.unify(curT, Term.createTerm("sonar(DISTANCE)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg="realDistance(D)";
-	    			/* AddRule */
-	    			parg = updateVars(Term.createTerm("sonar(DISTANCE)"),  Term.createTerm("sonar(D)"), 
-	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
-	    			if( parg != null ) addRule(parg);	    		  					
-	    	}
-	    	//switchTo avoidRealObstacle
-	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
-	              "avoidRealObstacle",false, true, " !?foundObstacle"); 
-	    }catch(Exception e_handleRobotRealSonar){  
-	    	 println( getName() + " plan=handleRobotRealSonar WARNING:" + e_handleRobotRealSonar.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//handleRobotRealSonar
-	    
-	    StateFun avoidRealObstacle = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("avoidRealObstacle",-1);
-	    	String myselfName = "avoidRealObstacle";  
-	    	temporaryStr = "\"the avatar must execute the same move of the real robot\"";
-	    	println( temporaryStr );  
-	    	it.unibo.utils.robotMixMoves.moveRobotAndAvatar( this ,"backward", "40", "800"  );
-	    	it.unibo.utils.robotMixMoves.moveRobotAndAvatar( this ,"stop", "40", "100"  );
-	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
-	    }catch(Exception e_avoidRealObstacle){  
-	    	 println( getName() + " plan=avoidRealObstacle WARNING:" + e_avoidRealObstacle.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//avoidRealObstacle
-	    
-	    StateFun handleSonar = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("handleSonar",-1);
-	    	String myselfName = "handleSonar";  
-	    	it.unibo.rover.mbotConnArduino.mbotStop( this  );
-	    	execUnity("rover","forward",500, 40,0); //rover: default namefor virtual robot		
-	    	execUnity("rover","stop",100, 40,0); //rover: default namefor virtual robot		
-	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
-	    }catch(Exception e_handleSonar){  
-	    	 println( getName() + " plan=handleSonar WARNING:" + e_handleSonar.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//handleSonar
-	    
-	    StateFun endOfMove = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("endOfMove",-1);
-	    	String myselfName = "endOfMove";  
-	    	temporaryStr = "\"endOfMove\"";
-	    	println( temporaryStr );  
-	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
-	    }catch(Exception e_endOfMove){  
-	    	 println( getName() + " plan=endOfMove WARNING:" + e_endOfMove.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//endOfMove
-	    
-	    StateFun handleEndOfMove = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("handleEndOfMove",-1);
-	    	String myselfName = "handleEndOfMove";  
-	    	temporaryStr = "\"handleEndOfMove\"";
-	    	println( temporaryStr );  
-	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
-	    }catch(Exception e_handleEndOfMove){  
-	    	 println( getName() + " plan=handleEndOfMove WARNING:" + e_handleEndOfMove.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//handleEndOfMove
-	    
-	    StateFun handleTout = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("handleTout",-1);
-	    	String myselfName = "handleTout";  
-	    	temporaryStr = "\"handleTout\"";
-	    	println( temporaryStr );  
-	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,false);
-	    }catch(Exception e_handleTout){  
-	    	 println( getName() + " plan=handleTout WARNING:" + e_handleTout.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//handleTout
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

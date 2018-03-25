@@ -1,0 +1,30 @@
+/*
+*
+* A GraphViz DOT FSM description 
+* Please use a GraphViz visualizer (like http://www.webgraphviz.com)
+*  
+*/
+
+digraph finite_state_machine {
+	rankdir=LR
+	size="8,5"
+	
+	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	avoidRealObstacle [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	handleSonar [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	handleRobotSonarDetect [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	goAhead [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	takeData [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	handleRobotRealSonar [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	
+	init -> goAhead [ label = "switch" ][ color = black ][ fontcolor = black ]
+	goAhead -> handleRobotRealSonar [ label = "realSonar" ][ color = black ][ fontcolor = black ]
+	handleRobotRealSonar -> avoidRealObstacle [ label = "[ !? foundObstacle ], switch" ][ color = black ][ fontcolor = black ]
+	goAhead -> handleRobotSonarDetect [ label = "sonarDetect" ][ color = black ][ fontcolor = black ]
+	goAhead -> handleSonar [ label = "sonar" ][ color = black ][ fontcolor = black ]
+	avoidRealObstacle -> goAhead [ label = "switch" ][ color = black ][ fontcolor = black ]
+	goAhead -> handleToutBuiltIn [ label = "timeout(600000)" ][ color = green ][ fontcolor = green ]
+	handleSonar -> takeData [ label = "switch" ][ color = black ][ fontcolor = black ]
+	handleRobotSonarDetect -> goAhead [ label = "switch" ][ color = black ][ fontcolor = black ]
+	takeData -> goAhead [ label = "switch" ][ color = black ][ fontcolor = black ]
+}
