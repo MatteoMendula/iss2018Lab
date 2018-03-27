@@ -204,8 +204,8 @@ public abstract class AbstractUsercmdmanager extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("terminataAppl",-1);
 	    	String myselfName = "terminataAppl";  
-	    	execUnity("rover","stop",10, 40,0); //rover: default namefor virtual robot		
-	    	it.unibo.rover.mbotConnArduino.mbotStop( myself  );
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmd(CMD)","cmd(moveStop)", guardVars ).toString();
+	    	sendMsg("moveRover","rover", QActorContext.dispatch, temporaryStr ); 
 	    	parg = "terminateSystem"; 
 	    	actorOpExecute(parg, false);	//OCT17		 
 	    	repeatPlanNoTransition(pr,myselfName,"usercmdmanager_"+myselfName,false,false);

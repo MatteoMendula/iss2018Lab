@@ -12,7 +12,6 @@ private static boolean unityOn = false;
 			batchFile = batchFile.replace("'", "");
 			System.out.println(" ***   connectRoverToUnity batchFile= "  + batchFile);
 			if( batchFile.length() > 0 ) {
-			//customExecute(qa,"./src/it/unibo/utils/unityStart.bat");
 				customExecute(qa, batchFile);
 				try {
 					qa.delayReactive(10000,"" , "");//wait for unity started

@@ -1,7 +1,7 @@
 %====================================================================================
 % Context ctxMbotExecutor  SYSTEM-configuration: file it.unibo.ctxMbotExecutor.mbotExecutor.pl 
 %====================================================================================
-context(ctxmbotexecutor, "192.168.43.67",  "TCP", "8029" ).  		 
+context(ctxmbotexecutor, "localhost",  "TCP", "8029" ).  		 
 %%% -------------------------------------------
 qactor( usercmdmanager , ctxmbotexecutor, "it.unibo.usercmdmanager.MsgHandle_Usercmdmanager"   ). %%store msgs 
 qactor( usercmdmanager_ctrl , ctxmbotexecutor, "it.unibo.usercmdmanager.Usercmdmanager"   ). %%control-driven 

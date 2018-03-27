@@ -6,7 +6,7 @@
 var net       = require('net');
 var http      = require("http");
 
-var host          = "192.168.43.67"; //192.168.43.67
+var host          = "localhost"; //192.168.43.67
 var qaport        = 8029; 
 var socketToQaCtx = null; 
 

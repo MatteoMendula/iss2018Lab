@@ -1,9 +1,8 @@
 /* 
- * ==============================================================
+ * =======================================================================================
  * mbotExecutor.qa
- * A robot called rover is able to execute move commands in a 
- * (real + virtual) environment 
- * ==============================================================
+ * A robot called rover is able to execute move commands in a (real + virtual) environment 
+ * =======================================================================================
  */    
 System mbotExecutor            
 Event usercmd     : usercmd(CMD)  					//from web gui
@@ -15,7 +14,8 @@ Event local_rover : roverState(STATE)				// STATE: ready | ..
  
 Dispatch moveRover : cmd( CMD )   					//from usercmdmanager
 
-Context ctxMbotExecutor ip [ host="192.168.43.67"   port=8029 ]  -httpserver   //192.168.43.67
+Context ctxMbotExecutor ip [ host="localhost"   port=8029 ] -g green -httpserver   //192.168.43.67
+//Context ctxRadarBase    ip [ host="localhost"   port=8033 ]  -standalone 
  
 /* 
  * -----------------------------------------------------
@@ -39,8 +39,7 @@ QActor usercmdmanager context ctxMbotExecutor {
     	onEvent usercmd :  usercmd( robotgui(unityAddr(X)) )  -> forward rover -m moveRover : cmd(connectToUnity)  
     ] 
 	Plan terminataAppl [    
-		stop 40 time ( 10 );
-		javaRun it.unibo.rover.mbotConnArduino.mbotStop();
+		forward rover -m moveRover : cmd(moveStop); 
 		actorOp terminateSystem
 	]
 }
@@ -52,9 +51,9 @@ QActor usercmdmanager context ctxMbotExecutor {
  */  
 QActor rover context ctxMbotExecutor {   
 	Rules{	  
-		onRaspberry.
-		//unityConfig("localhost", "unityStart.bat").  
-		unityConfig("192.168.43.229", "").  
+		//onRaspberry.
+		unityConfig("localhost", "unityStart.bat").  
+		//unityConfig("192.168.43.229", "").  
 		foundObstacle :- retract( realDistance(D) ), eval( lt, D, 20 ).
 	}
 	Plan init normal [       
@@ -70,13 +69,13 @@ QActor rover context ctxMbotExecutor {
 	
   	Plan execMove resumeLastPlan[     
   		printCurrentMessage;
-    	onMsg moveRover : cmd( moveForward )    -> javaRun it.unibo.utils.robotMixMoves.moveRobotAndAvatar("forward",  "40", "60000");     
-    	onMsg moveRover : cmd( moveBackward)    -> javaRun it.unibo.utils.robotMixMoves.moveRobotAndAvatar("backward", "40", "60000");  
-  		onMsg moveRover : cmd( turnLeft )       -> switchTo turnLeft;   
-   		onMsg moveRover : cmd( turnRight )      -> switchTo turnRight ;   
-   		onMsg moveRover : cmd( moveStop )       -> javaRun it.unibo.utils.robotMixMoves.moveRobotAndAvatar("stop", "40", "10")  ; 
-   		onMsg moveRover : cmd( connectToUnity ) -> switchTo [ not !? unityOn ] connectToUnity ; 
-   		onMsg moveRover : cmd( followLine )     -> javaRun it.unibo.rover.mbotConnArduino.mbotLinefollow()     
+    	onMsg moveRover : cmd(moveForward)    -> javaRun it.unibo.utils.robotMixMoves.moveRobotAndAvatar("forward","40","-1");     
+    	onMsg moveRover : cmd(moveBackward)   -> javaRun it.unibo.utils.robotMixMoves.moveRobotAndAvatar("backward","40","-1");  
+  		onMsg moveRover : cmd(turnLeft)       -> switchTo turnLeft;   
+   		onMsg moveRover : cmd(turnRight)      -> switchTo turnRight ;   
+   		onMsg moveRover : cmd(moveStop)       -> javaRun it.unibo.utils.robotMixMoves.moveRobotAndAvatar("stop","40","-1")  ; 
+   		onMsg moveRover : cmd(connectToUnity) -> switchTo [ not !? unityOn ] connectToUnity ; 
+   		onMsg moveRover : cmd(followLine)     -> javaRun it.unibo.rover.mbotConnArduino.mbotLinefollow()     
    	]     
        
    	Plan connectToUnity[ 
@@ -86,7 +85,7 @@ QActor rover context ctxMbotExecutor {
  	switchTo setAvatarInitialPosition   
  	Plan setAvatarInitialPosition[
     	 backwards 70 time ( 1000 ) ;    	   
-   	     right 70 time ( 1000 )   	;
+   	     right     70 time ( 1000 )   	;
    	     emit local_rover : roverState( ready )	
  	]	
  	switchTo waitForCmd

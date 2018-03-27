@@ -142,8 +142,7 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %-------------------------------------------------
 %  User static rules about rover
 %------------------------------------------------- 
-onRaspberry.
-unityConfig( "192.168.43.229","").
+unityConfig( "localhost","unityStart.bat").
 foundObstacle:-retract( realDistance( D)),eval( lt,D,20).
 /*
 ------------------------------------------------------------------------

@@ -125,7 +125,7 @@ public abstract class AbstractRover extends QActor {
 	    		//end arg1
 	    		String arg2 = "40" ;
 	    		//end arg2
-	    		String arg3 = "60000" ;
+	    		String arg3 = "-1" ;
 	    		//end arg3
 	    		it.unibo.utils.robotMixMoves.moveRobotAndAvatar(this,arg1,arg2,arg3 );
 	    		}
@@ -141,7 +141,7 @@ public abstract class AbstractRover extends QActor {
 	    		//end arg1
 	    		String arg2 = "40" ;
 	    		//end arg2
-	    		String arg3 = "60000" ;
+	    		String arg3 = "-1" ;
 	    		//end arg3
 	    		it.unibo.utils.robotMixMoves.moveRobotAndAvatar(this,arg1,arg2,arg3 );
 	    		}
@@ -193,7 +193,7 @@ public abstract class AbstractRover extends QActor {
 	    		//end arg1
 	    		String arg2 = "40" ;
 	    		//end arg2
-	    		String arg3 = "10" ;
+	    		String arg3 = "-1" ;
 	    		//end arg3
 	    		it.unibo.utils.robotMixMoves.moveRobotAndAvatar(this,arg1,arg2,arg3 );
 	    		}
