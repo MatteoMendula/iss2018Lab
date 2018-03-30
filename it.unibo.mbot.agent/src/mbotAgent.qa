@@ -3,20 +3,24 @@
  * mbotAgent.qa
  * A robot that is able to move and to react to events
  * ==============================================================
- */   
-System mbotAgent             
-Event sonar  	  : sonar(SONAR, TARGET, DISTANCE)	//From (virtual) sonar
-Event sonarDetect : sonarDetect(X)					//From (virtual robot) sonar
-Event realSonar   : sonar( DISTANCE )				//From real sonar on real robot
- 
+ */     
+System mbotAgent     
+Event usercmd     : usercmd(CMD)        
+Event sonarSensor : sonar( NAME, DISTANCE )	//From rover or real robot
+  
 Dispatch moveRover : cmd( CMD )   					//from usercmdmanager
- 
-Context ctxMbotAgent    ip [ host="localhost"   port=8039 ]  -g yellow  //192.168.43.229
-Context ctxRadarBase    ip [ host="localhost"    port=8033 ]  -standalone 
-Context ctxMbotExecutor ip [ host="localhost"    port=8029 ]  -standalone   //192.168.43.67
-      
-QActor roveragent context ctxMbotAgent{
- 	     
+
+pubSubServer  "tcp://192.168.43.229:1883"
+
+Context ctxMbotAgent    ip [ host="192.168.43.229"   port=8039 ]    //192.168.43.229
+//Context ctxRadarBase    ip [ host="localhost"    port=8033 ]  -standalone 
+//Context ctxMbotExecutor ip [ host="localhost"    port=8029 ]  -standalone   //192.168.43.67
+//Context ctxRoverExecutor ip [ host="192.168.43.229"   port=8032 ]  -standalone     
+
+QActor roveragent context ctxMbotAgent -pubsub{
+Rules{
+	foundObstacle :- retract( sonar(roversonar, D) ), eval( lt, D, 20 ).
+} 	     
 	Plan init normal [  
 		println("rovercontroller STARTS") 		
 	]  
@@ -26,57 +30,39 @@ QActor roveragent context ctxMbotAgent{
 		println("rovercontroller going forward ") 
 //		sendto rover in ctxMbotExecutor -m moveRover : cmd(moveForward);
 	]
-	transition stopAfter 600000  
- 		whenEvent sonarDetect -> handleRobotSonarDetect ,
-		whenEvent realSonar   -> handleRobotRealSonar ,
-		whenEvent sonar       -> handleSonar  
-	
-	//Move back, far from the obstacle  	  
-	Plan handleRobotSonarDetect   [
-		sendto rover in ctxMbotExecutor -m moveRover : cmd(moveBackward);
-		delay 300;
-		sendto rover in ctxMbotExecutor -m moveRover : cmd(moveStop)
-	]
-	switchTo goAhead //TODO 
-	 
-	Plan handleRobotRealSonar [
-   		onEvent realSonar :  sonar( D ) -> addRule realDistance(D)   		
-	]
-	switchTo [ !? foundObstacle ]  avoidRealObstacle
-	
-	Plan avoidRealObstacle  [ 
-		sendto rover in ctxMbotExecutor -m moveRover : cmd(moveBackward);
-		delay 800;
-		sendto rover in ctxMbotExecutor -m moveRover : cmd(moveStop)
-	]
-	switchTo goAhead  //TODO  
-	
+	transition stopAfter 6000000    
+ 		whenEvent sonarSensor -> handleSonar  
+// 	finally repeatPlan
+ 	
 	/*
 	 * NOTE: The robot could moving either forward or backward
 	 * Move avatar out of sonar range
-	 *  
-	 */
- 	Plan handleSonar   [     
-// 		printCurrentEvent ;
-		sendto rover in ctxMbotExecutor -m moveRover : cmd(moveStop) ;
-		println("handleSonar") ;
-		sendto rover in ctxMbotExecutor -m moveRover : cmd(moveForward);
-		delay 500;
-		sendto rover in ctxMbotExecutor -m moveRover : cmd(moveStop) ;
-		onEvent sonar : sonar(SONAR, TARGET, DISTANCE) -> println( rrrrrrrrr(SONAR, TARGET, DISTANCE) )
-	]     
-	switchTo takeData    
-	   
-	Plan takeData[ 
-		//printCurrentEvent ;  //here null
-		println("rover turnLeft") ;
-		sendto rover in ctxMbotExecutor -m moveRover : cmd(turnLeft) ;
-		delay 1000;
-		println("rover turnRight") ;
-		sendto rover in ctxMbotExecutor -m moveRover : cmd(turnRight);
-		delay 1000
-	]
-	switchTo goAhead
+ 	 */
+ 	Plan handleSonar  [       
+  		printCurrentEvent ;   
+ 		onEvent sonarSensor : sonar(NAME, DISTANCE) -> addRule sonar(NAME, DISTANCE) ;
+//		emit usercmd  : usercmd( robotgui(h(low)) ) ;	//stop as immediate action		 
+  		[ !? sonar(realsonar, DISTANCE) ]  { //real sonar
+//  			[ !? foundObstacle ] {//avoidObstacle
+  				[ ?? sonar(roversonar, DISTANCE) ] println(avoidObstacleeeeeeeeeeeeee(DISTANCE) );//CONSUME sonar/2
+				emit usercmd :  usercmd( robotgui(s(low)) );	//backward
+				delay 500; //avoid to raise sonar events again 
+				emit usercmd :  usercmd( robotgui(h(low)) )	//stop 				
+//  			}
+		} else {//virtual sonars   
+			[ ?? sonar(roversonar, DISTANCE) ] {//obstacle  
+				emit usercmd  : usercmd( robotgui(h(low)) ) ;	//stop as immediate action
+				emit usercmd :  usercmd( robotgui(s(low)) )   
+			}else{ //fixed sonar   
+// 	 			emit usercmd :  usercmd( robotgui(w(low)) ) ;		 		 
+ 				[ ?? sonar(SONAR, DISTANCE) ] println( sonarrrrrrrrrrrrrrrrrrrrr(SONAR, DISTANCE) ) //CONSUME sonar/2
+ 			};
+			delay 500 ; //avoid to raise sonar events again   
+			emit usercmd :  usercmd( robotgui(h(low)) ) 		 	   
+		 }  
+	]       
+  	switchTo goAhead	 	     
+		
 }
 
 
@@ -90,7 +76,7 @@ QActor roveragent context ctxMbotAgent{
 //	]
 //	transition whenTime 100 -> endExplore
 // 		whenEvent sonarDetect -> explore   
-////		whenEvent realSonar   -> handleRobotRealSonar ,
+////		whenEvent realSonar   -> handleRoverSonar ,
 //	Plan endExplore[
 //		println("found HOLE") 
 //	]

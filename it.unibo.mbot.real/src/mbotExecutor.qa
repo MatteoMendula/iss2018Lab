@@ -1,0 +1,138 @@
+/* 
+ * =======================================================================================
+ * mbotExecutor.qa
+ * A robot called mbot is able to execute move commands in a REAL environment 
+ * =======================================================================================
+ */      
+System mbotExecutor            
+Event usercmd     : usercmd(CMD)  				//from web gui
+Event realSonar   : sonar( DISTANCE )			//From real sonar on real robot
+Event    polar    : p( Distance, Angle )
+Event local_mbot  : mbotState(STATE)			// STATE: ready | ..
+Event sonarSensor : sonar( NAME, DISTANCE )
+ 
+Dispatch moveMbot : cmd( CMD )   					//from usercmdmanager
+
+pubSubServer  "tcp://192.168.43.229:1883"
+
+Context ctxMbotExecutor ip  [ host="192.168.43.67"    port=8029 ]  -httpserver    
+//Context ctxRoverExecutor ip [ host="192.168.43.229"   port=8032 ] -standalone 
+/* 
+ * -----------------------------------------------------
+ * The usercmdmanager handles commands sent by the user 
+ * -----------------------------------------------------
+ */
+//WARNING: usercmdmanager used by roverExecutor 
+QActor mbotusercmdmanager context ctxMbotExecutor -pubsub{ 
+	Plan init normal[ ] //connect to mqtt
+ 	switchTo doWork
+ 	       
+	Plan doWork [ 
+		println("mbotusercmdmanager WAITS")
+	]
+  	transition stopAfter 3600000   	//1h 
+ 		whenEvent usercmd   -> execMove  
+//    	finally repeatPlan   
+  	
+  	Plan execMove [  
+  		printCurrentEvent;   
+     	onEvent usercmd :  usercmd( robotgui(w(X)) ) -> forward mbot -m moveMbot : cmd(moveForward);    
+    	onEvent usercmd :  usercmd( robotgui(s(X)) ) -> forward mbot -m moveMbot : cmd(moveBackward);  
+  		onEvent usercmd :  usercmd( robotgui(a(X)) ) -> forward mbot -m moveMbot : cmd(turnLeft);   
+   		onEvent usercmd :  usercmd( robotgui(d(X)) ) -> forward mbot -m moveMbot : cmd(turnRight);   
+   		onEvent usercmd :  usercmd( robotgui(h(X)) ) -> forward mbot -m moveMbot : cmd(moveStop);  
+    	onEvent usercmd :  usercmd( robotgui(f(X)) ) -> forward mbot -m moveMbot : cmd(followLine);        
+    	onEvent usercmd :  usercmd( robotgui(x(X)) ) -> {
+    		forward mbot -m moveMbot : cmd(moveStop); 
+			actorOp terminateSystem   		
+    	}   ;
+    	onEvent usercmd :  usercmd( robotgui(unityAddr(X)) )  -> 
+    		forward mbot -m moveMbot : cmd(connectToUnity)  
+    ] 
+    switchTo doWork
+}
+
+/*
+ * -----------------------------------------------------
+ * The mbot is a an interpreter of commands
+ * -----------------------------------------------------
+ */   
+QActor mbot context ctxMbotExecutor {   
+	Rules{	  
+		onRaspberry.
+  		foundObstacle :- retract( realDistance(D) ), eval( lt, D, 20 ).
+	}
+	Plan init normal [       
+ 	    [ !? onRaspberry] javaRun it.unibo.mbot.mbotConnArduino.initRasp()	;
+	    println("mbot START")    
+  	] 
+    switchTo waitForCmd        
+		
+   	Plan waitForCmd[  ]  
+  	transition stopAfter 3600000   	//1h 
+ 		whenMsg moveMbot   -> execMove 
+   	finally repeatPlan    
+	
+  	Plan execMove resumeLastPlan[     
+  		printCurrentMessage;
+    	onMsg moveMbot : cmd(moveForward)    -> javaRun it.unibo.mbot.mbotConnArduino.mbotForward();    
+    	onMsg moveMbot : cmd(moveBackward)   -> javaRun it.unibo.mbot.mbotConnArduino.mbotBackward(); 
+  		onMsg moveMbot : cmd(turnLeft)       -> {
+  			javaRun it.unibo.mbot.mbotConnArduino.mbotLeft();
+			delay 900;
+ 			javaRun it.unibo.mbot.mbotConnArduino.mbotStop()				
+  		};    
+   		onMsg moveMbot : cmd(turnRight)      -> {
+			javaRun it.unibo.mbot.mbotConnArduino.mbotRight();
+			delay 900;
+	 		javaRun it.unibo.mbot.mbotConnArduino.mbotStop()   			
+   		}  ;   
+   		onMsg moveMbot : cmd(moveStop)       -> javaRun it.unibo.mbot.mbotConnArduino.mbotStop();  
+    	onMsg moveMbot : cmd(followLine)     -> javaRun it.unibo.mbot.mbotConnArduino.mbotLinefollow()     
+   	]     
+       	
+//	Plan turnLeft  [
+//		javaRun it.unibo.mbot.mbotConnArduino.mbotLeft();
+//		delay 900;
+// 		javaRun it.unibo.mbot.mbotConnArduino.mbotStop()	
+//	]
+//	switchTo waitForCmd
+//	
+//	Plan turnRight  [
+//		javaRun it.unibo.mbot.mbotConnArduino.mbotRight();
+//		delay 900;
+// 		javaRun it.unibo.mbot.mbotConnArduino.mbotStop()
+//	]
+//	switchTo waitForCmd
+}  
+ 
+/*
+ * -----------------------------------------------------
+ * Convert sonar events into polar
+ * -----------------------------------------------------
+ */
+//WARNING: sonardetector used by roverExecutor 
+QActor realsonardetector context ctxMbotExecutor -pubsub{	
+	Plan init normal [
+		println("sonardetector STARTS ")
+	]
+	switchTo waitForEvents
+	
+	Plan waitForEvents[ ]    
+  	transition stopAfter 3600000   	//1h     
+  		whenEvent realSonar   ->  handleRealSonar
+	  	
+ 	Plan handleRealSonar [ 
+ 		printCurrentEvent; 		
+//		onEvent realSonar   : sonar( DISTANCE ) -> {
+//			emit polar       : p(DISTANCE, 0) ; 
+//			emit sonarSensor : sonar( realsonar, DISTANCE )	
+//		}		 
+		onEvent realSonar   : sonar( DISTANCE ) -> 
+			emit sonarSensor : sonar( realsonar, DISTANCE )		;  //convert in int???
+		onEvent realSonar   : sonar( DISTANCE ) -> 
+			emit polar : p( DISTANCE,0 )		 
+ 	]
+ 	switchTo waitForEvents
+ }
+

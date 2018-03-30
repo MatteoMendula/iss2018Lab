@@ -1,0 +1,123 @@
+/* 
+ * =======================================================================================
+ * roverExecutor.qa
+ * A robot called rover is able to execute move commands in a VIRTUAL environment 
+ * Moreover it emits polar    : p( Distance, Angle ) events
+ * =======================================================================================
+ */    
+System roverExecutor               
+Event usercmd     : usercmd(CMD)  					//from web gui
+Event sonar  	  : sonar(SONAR, TARGET, DISTANCE)	//From (virtual) sonar
+Event sonarSensor : sonar( NAME, DISTANCE)			
+Event sonarDetect : sonarDetect(X)					//From (virtual robot) sonar
+Event    polar    : p( Distance, Angle )
+ 
+Dispatch moveRover : cmd( CMD )   					//from usercmdmanager  
+
+//pubSubServer  "tcp://m2m.eclipse.org:1883" 
+pubSubServer  "tcp://192.168.43.229:1883"
+
+Context ctxRoverExecutor ip [ host="192.168.43.229"   port=8032 ] -g white -httpserver  
+//Context ctxRadarBase     ip [ host="localhost"   port=8033 ] -standalone 
+   
+/* 
+ * -----------------------------------------------------
+ * The usercmdmanager handles commands sent by the user
+ * -----------------------------------------------------
+ */
+QActor usercmdmanager context ctxRoverExecutor -pubsub { 
+	Plan init normal[ ]
+  	transition stopAfter 3600000   	//1h 
+ 		whenEvent usercmd   -> execMove    
+    	finally repeatPlan   
+  	  
+  	Plan execMove resumeLastPlan[     
+  		onEvent usercmd :  usercmd( CMD )            -> emit usercmd : usercmd( CMD ); //for mqtt
+     	onEvent usercmd :  usercmd( robotgui(w(X)) ) -> forward rover -m moveRover : cmd(moveForward);    
+    	onEvent usercmd :  usercmd( robotgui(s(X)) ) -> forward rover -m moveRover : cmd(moveBackward);  
+  		onEvent usercmd :  usercmd( robotgui(a(X)) ) -> forward rover -m moveRover : cmd(turnLeft);   
+   		onEvent usercmd :  usercmd( robotgui(d(X)) ) -> forward rover -m moveRover : cmd(turnRight);   
+   		onEvent usercmd :  usercmd( robotgui(h(X)) ) -> forward rover -m moveRover : cmd(moveStop);  
+    	onEvent usercmd :  usercmd( robotgui(f(X)) ) -> forward rover -m moveRover : cmd(followLine);        
+    	onEvent usercmd :  usercmd( robotgui(x(X)) ) -> {
+    	    //terminataAppl
+			forward rover -m moveRover : cmd(moveStop); 
+			actorOp terminateSystem
+	    };
+    	onEvent usercmd :  usercmd( robotgui(unityAddr(X)) )  -> forward rover -m moveRover : cmd(connectToUnity)  
+    ] 
+ }
+
+/*  
+ * -----------------------------------------------------
+ * The rover is a an interpreter of commands
+ * -----------------------------------------------------
+ */  
+QActor rover context ctxRoverExecutor  {   
+	Rules{	  
+		//unityOn. //set by connectToUnity
+		unityConfig("localhost", "unityStart.bat").  
+	}
+	Plan init normal [       
+	    println("rover START")    
+  	] 
+    switchTo waitForCmd        
+		
+   	Plan waitForCmd[  ]  
+  	transition stopAfter 3600000   	//1h   
+ 		whenMsg moveRover   -> execMove 
+   	finally repeatPlan    
+	
+  	Plan execMove resumeLastPlan[       
+  		printCurrentMessage;
+    	onMsg moveRover : cmd(moveForward)    -> onward 40 time(0) ;  //0 means asynch
+    	onMsg moveRover : cmd(moveBackward)   -> backwards 40 time(0) ;
+  		onMsg moveRover : cmd(turnLeft)       -> left 40 time(750)  ;   
+   		onMsg moveRover : cmd(turnRight)      -> right 40 time(750) ;   
+   		onMsg moveRover : cmd(moveStop)       -> stop 40 time(10) ;            
+   		onMsg moveRover : cmd(connectToUnity) -> {
+   			 [ not !? unityOn ] {   
+   			 	 //connectToUnity 
+	     		 [ !? unityConfig(UNITYADDR, BATCH) ] javaRun it.unibo.utils.external.connectRoverToUnity( UNITYADDR, BATCH ) ;
+	  		 	 addRule unityOn ;
+	  		 	 //setAvatarInitialPosition
+      	 		 backwards 70 time ( 1000 ) ;    	   
+   	     	     right     70 time ( 1000 )   
+   			}else println("UNITY ALREADY ACTIVATED")  
+   		}		    
+   	]        
+   	switchTo waitForCmd        
+}  
+
+/*
+ * -----------------------------------------------------
+ * Convert sonar events into polar
+ * -----------------------------------------------------
+ */
+QActor sonardetector context ctxRoverExecutor -pubsub {
+	Plan init normal [
+		println("sonardetector STARTS ")
+	]
+	switchTo waitForEvents  
+	
+	Plan waitForEvents[ ]      
+  	transition stopAfter 3600000   	//1h       
+ 		whenEvent sonar       ->  sendToRadar,
+  		whenEvent sonarDetect ->  showObstcle
+  	finally repeatPlan  
+	  
+	Plan sendToRadar resumeLastPlan [      
+  		printCurrentEvent; 		
+  		//these events cab ne captured because the context
+		//emit again to send via Mqtt in order to propagate to agents
+		onEvent sonar  : sonar(NAME, TARGET, DISTANCE )   -> emit sonarSensor : sonar(NAME, DISTANCE) ;
+		onEvent sonar  : sonar(sonar1, TARGET, DISTANCE ) -> emit polar : p(DISTANCE,30)  ;
+		onEvent sonar  : sonar(sonar2, TARGET, DISTANCE ) -> emit polar : p(DISTANCE,120) 
+ 	]  	
+	Plan showObstcle resumeLastPlan[
+		println( "found obstacle" );	
+		onEvent sonarDetect  : sonarDetect( TARGET ) -> emit sonarSensor : sonar(roversonar, 30)  ;
+		emit polar : p(30,90) 
+	]
+}
+

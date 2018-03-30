@@ -15,11 +15,11 @@ Event local_rover : roverState(STATE)				// STATE: ready | ..
 Dispatch moveRover : cmd( CMD )   					//from usercmdmanager
 
 Context ctxMbotExecutor ip [ host="localhost"   port=8029 ] -g green -httpserver   //192.168.43.67
-//Context ctxRadarBase    ip [ host="localhost"   port=8033 ]  -standalone 
- 
+Context ctxRadarBase    ip [ host="localhost"   port=8033 ]  -standalone 
+  
 /* 
  * -----------------------------------------------------
- * The usercmdmanager handles commands sent by the user
+ * The usercmdmanager handles commands sent by the user 
  * -----------------------------------------------------
  */
 QActor usercmdmanager context ctxMbotExecutor { 
@@ -36,7 +36,8 @@ QActor usercmdmanager context ctxMbotExecutor {
    		onEvent usercmd :  usercmd( robotgui(h(X)) ) -> forward rover -m moveRover : cmd(moveStop);  
     	onEvent usercmd :  usercmd( robotgui(f(X)) ) -> forward rover -m moveRover : cmd(followLine);        
     	onEvent usercmd :  usercmd( robotgui(x(X)) ) -> switchTo terminataAppl ;
-    	onEvent usercmd :  usercmd( robotgui(unityAddr(X)) )  -> forward rover -m moveRover : cmd(connectToUnity)  
+    	onEvent usercmd :  usercmd( robotgui(unityAddr(X)) )  -> 
+    		forward rover -m moveRover : cmd(connectToUnity)  
     ] 
 	Plan terminataAppl [    
 		forward rover -m moveRover : cmd(moveStop); 
@@ -79,7 +80,8 @@ QActor rover context ctxMbotExecutor {
    	]     
        
    	Plan connectToUnity[ 
-  		 [ !? unityConfig(UNITYADDR, BATCH) ] javaRun it.unibo.utils.external.connectRoverToUnity( UNITYADDR, BATCH ) ;
+  		 [ !? unityConfig(UNITYADDR, BATCH) ] 
+  		 	javaRun it.unibo.utils.external.connectRoverToUnity( UNITYADDR, BATCH ) ;
   		 addRule unityOn 
 	]   
  	switchTo setAvatarInitialPosition   

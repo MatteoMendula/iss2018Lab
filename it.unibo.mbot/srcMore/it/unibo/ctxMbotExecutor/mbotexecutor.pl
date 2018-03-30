@@ -1,7 +1,11 @@
 %====================================================================================
 % Context ctxMbotExecutor  SYSTEM-configuration: file it.unibo.ctxMbotExecutor.mbotExecutor.pl 
 %====================================================================================
+pubsubserveraddr("").
+pubsubsystopic("unibo/qasys").
+%%% -------------------------------------------
 context(ctxmbotexecutor, "localhost",  "TCP", "8029" ).  		 
+context(ctxradarbase, "localhost",  "TCP", "8033" ).  		 
 %%% -------------------------------------------
 qactor( usercmdmanager , ctxmbotexecutor, "it.unibo.usercmdmanager.MsgHandle_Usercmdmanager"   ). %%store msgs 
 qactor( usercmdmanager_ctrl , ctxmbotexecutor, "it.unibo.usercmdmanager.Usercmdmanager"   ). %%control-driven 
