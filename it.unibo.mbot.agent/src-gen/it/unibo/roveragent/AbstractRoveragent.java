@@ -56,8 +56,9 @@ public abstract class AbstractRoveragent extends QActor {
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
-	    	stateTab.put("goAhead",goAhead);
-	    	stateTab.put("handleSonar",handleSonar);
+	    	stateTab.put("lookAtSonars",lookAtSonars);
+	    	stateTab.put("alarmHandlePolicy",alarmHandlePolicy);
+	    	stateTab.put("handleSonarEvents",handleSonarEvents);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -81,98 +82,158 @@ public abstract class AbstractRoveragent extends QActor {
 	    	String myselfName = "init";  
 	    	temporaryStr = "\"rovercontroller STARTS\"";
 	    	println( temporaryStr );  
-	    	//switchTo goAhead
+	    	//switchTo lookAtSonars
 	        switchToPlanAsNextState(pr, myselfName, "roveragent_"+myselfName, 
-	              "goAhead",false, false, null); 
+	              "lookAtSonars",false, false, null); 
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//init
 	    
-	    StateFun goAhead = () -> {	
+	    StateFun lookAtSonars = () -> {	
 	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("goAhead",-1);
-	    	String myselfName = "goAhead";  
-	    	temporaryStr = "\"rovercontroller going forward \"";
+	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_lookAtSonars",0);
+	     pr.incNumIter(); 	
+	    	String myselfName = "lookAtSonars";  
+	    	temporaryStr = "\"lookAtSonars\"";
 	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"roveragent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("handleSonar") },//new StateFun[]
-	          new String[]{"true","E","sonarSensor" },
+	          new StateFun[]{stateTab.get("alarmHandlePolicy"), stateTab.get("handleSonarEvents") },//new StateFun[]
+	          new String[]{"true","M","alarmmsg", "true","E","sonarSensor" },
 	          6000000, "handleToutBuiltIn" );//msgTransition
-	    }catch(Exception e_goAhead){  
-	    	 println( getName() + " plan=goAhead WARNING:" + e_goAhead.getMessage() );
+	    }catch(Exception e_lookAtSonars){  
+	    	 println( getName() + " plan=lookAtSonars WARNING:" + e_lookAtSonars.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
-	    };//goAhead
+	    };//lookAtSonars
 	    
-	    StateFun handleSonar = () -> {	
+	    StateFun alarmHandlePolicy = () -> {	
 	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("handleSonar",-1);
-	    	String myselfName = "handleSonar";  
+	     PlanRepeat pr = PlanRepeat.setUp("alarmHandlePolicy",-1);
+	    	String myselfName = "alarmHandlePolicy";  
+	    	printCurrentMessage(false);
+	    	temporaryStr = "\"ALARM HANDLING POLICY ... \"";
+	    	println( temporaryStr );  
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
+	    	emit( "usercmd", temporaryStr );
+	    	temporaryStr = "\"ALARM HANDLING POLICY DONE \"";
+	    	println( temporaryStr );  
+	    	repeatPlanNoTransition(pr,myselfName,"roveragent_"+myselfName,false,true);
+	    }catch(Exception e_alarmHandlePolicy){  
+	    	 println( getName() + " plan=alarmHandlePolicy WARNING:" + e_alarmHandlePolicy.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//alarmHandlePolicy
+	    
+	    StateFun handleSonarEvents = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("handleSonarEvents",-1);
+	    	String myselfName = "handleSonarEvents";  
 	    	printCurrentEvent(false);
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("sonar(NAME,DISTANCE)");
+	    	curT = Term.createTerm("sonar(realsonar,DISTANCE)");
 	    	if( currentEvent != null && currentEvent.getEventId().equals("sonarSensor") && 
 	    		pengine.unify(curT, Term.createTerm("sonar(NAME,DISTANCE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg="sonar(NAME,DISTANCE)";
-	    			/* AddRule */
-	    			parg = updateVars(Term.createTerm("sonar(NAME,DISTANCE)"),  Term.createTerm("sonar(NAME,DISTANCE)"), 
-	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
-	    			if( parg != null ) addRule(parg);	    		  					
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			{//actionseq
+	    			temporaryStr = "roversonar";
+	    			println( temporaryStr );  
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(s(low)))", guardVars ).toString();
+	    			emit( "usercmd", temporaryStr );
+	    			//delay  ( no more reactive within a plan)
+	    			aar = delayReactive(700,"" , "");
+	    			if( aar.getInterrupted() ) curPlanInExec   = "handleSonarEvents";
+	    			if( ! aar.getGoon() ) return ;
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
+	    			emit( "usercmd", temporaryStr );
+	    			//delay  ( no more reactive within a plan)
+	    			aar = delayReactive(1500,"" , "");
+	    			if( aar.getInterrupted() ) curPlanInExec   = "handleSonarEvents";
+	    			if( ! aar.getGoon() ) return ;
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(s(low)))", guardVars ).toString();
+	    			emit( "usercmd", temporaryStr );
+	    			};//actionseq
 	    	}
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?sonar(realsonar,DISTANCE)" )) != null ){
-	    	{//actionseq
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??sonar(roversonar,DISTANCE)" )) != null ){
-	    	temporaryStr = "avoidObstacleeeeeeeeeeeeee(DISTANCE)";
-	    	temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
-	    	println( temporaryStr );  
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("sonar(roversonar,DISTANCE)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("sonarSensor") && 
+	    		pengine.unify(curT, Term.createTerm("sonar(NAME,DISTANCE)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			{//actionseq
+	    			temporaryStr = "roversonar";
+	    			println( temporaryStr );  
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(s(low)))", guardVars ).toString();
+	    			emit( "usercmd", temporaryStr );
+	    			//delay  ( no more reactive within a plan)
+	    			aar = delayReactive(700,"" , "");
+	    			if( aar.getInterrupted() ) curPlanInExec   = "handleSonarEvents";
+	    			if( ! aar.getGoon() ) return ;
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
+	    			emit( "usercmd", temporaryStr );
+	    			temporaryStr = "\"%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LONG ACTION\"";
+	    			println( temporaryStr );  
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(a(low)))", guardVars ).toString();
+	    			emit( "usercmd", temporaryStr );
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(a(low)))", guardVars ).toString();
+	    			emit( "usercmd", temporaryStr );
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(a(low)))", guardVars ).toString();
+	    			emit( "usercmd", temporaryStr );
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(a(low)))", guardVars ).toString();
+	    			emit( "usercmd", temporaryStr );
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(s(low)))", guardVars ).toString();
+	    			emit( "usercmd", temporaryStr );
+	    			temporaryStr = "\"%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LONG ACTION END\"";
+	    			println( temporaryStr );  
+	    			};//actionseq
 	    	}
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(s(low)))", guardVars ).toString();
-	    	emit( "usercmd", temporaryStr );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(500,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "handleSonar";
-	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
-	    	emit( "usercmd", temporaryStr );
-	    	};//actionseq
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("sonar(sonar1,DISTANCE)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("sonarSensor") && 
+	    		pengine.unify(curT, Term.createTerm("sonar(NAME,DISTANCE)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			{//actionseq
+	    			temporaryStr = "sonar1";
+	    			println( temporaryStr );  
+	    			//delay  ( no more reactive within a plan)
+	    			aar = delayReactive(500,"" , "");
+	    			if( aar.getInterrupted() ) curPlanInExec   = "handleSonarEvents";
+	    			if( ! aar.getGoon() ) return ;
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
+	    			emit( "usercmd", temporaryStr );
+	    			};//actionseq
 	    	}
-	    	else{ {//actionseq
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??sonar(roversonar,DISTANCE)" )) != null ){
-	    	{//actionseq
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
-	    	emit( "usercmd", temporaryStr );
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(s(low)))", guardVars ).toString();
-	    	emit( "usercmd", temporaryStr );
-	    	};//actionseq
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("sonar(sonar2,DISTANCE)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("sonarSensor") && 
+	    		pengine.unify(curT, Term.createTerm("sonar(NAME,DISTANCE)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			{//actionseq
+	    			temporaryStr = "sonar2";
+	    			println( temporaryStr );  
+	    			//delay  ( no more reactive within a plan)
+	    			aar = delayReactive(500,"" , "");
+	    			if( aar.getInterrupted() ) curPlanInExec   = "handleSonarEvents";
+	    			if( ! aar.getGoon() ) return ;
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
+	    			emit( "usercmd", temporaryStr );
+	    			};//actionseq
 	    	}
-	    	else{ {//actionseq
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??sonar(SONAR,DISTANCE)" )) != null ){
-	    	temporaryStr = "sonarrrrrrrrrrrrrrrrrrrrr(SONAR,DISTANCE)";
-	    	temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
-	    	println( temporaryStr );  
-	    	}
-	    	};//actionseq
-	    	}//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(500,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "handleSonar";
-	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
-	    	emit( "usercmd", temporaryStr );
-	    	};//actionseq
-	    	}
-	    	//switchTo goAhead
-	        switchToPlanAsNextState(pr, myselfName, "roveragent_"+myselfName, 
-	              "goAhead",false, false, null); 
-	    }catch(Exception e_handleSonar){  
-	    	 println( getName() + " plan=handleSonar WARNING:" + e_handleSonar.getMessage() );
+	    	repeatPlanNoTransition(pr,myselfName,"roveragent_"+myselfName,false,true);
+	    }catch(Exception e_handleSonarEvents){  
+	    	 println( getName() + " plan=handleSonarEvents WARNING:" + e_handleSonarEvents.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
-	    };//handleSonar
+	    };//handleSonarEvents
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

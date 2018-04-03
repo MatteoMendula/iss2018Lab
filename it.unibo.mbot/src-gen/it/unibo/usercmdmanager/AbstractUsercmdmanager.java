@@ -57,7 +57,6 @@ public abstract class AbstractUsercmdmanager extends QActor {
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
 	    	stateTab.put("execMove",execMove);
-	    	stateTab.put("terminataAppl",terminataAppl);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -169,17 +168,13 @@ public abstract class AbstractUsercmdmanager extends QActor {
 	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			/* SwitchTransition */
-	    			String parg = "terminataAppl";
-	    			parg =  updateVars( Term.createTerm("usercmd(CMD)"), 
-	    				                Term.createTerm("usercmd(robotgui(x(X)))"), 
-	    				                Term.createTerm(currentEvent.getMsg()), parg);
-	    			if(parg != null){ 
-	    				switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
-	    			    	 		    		parg,false, true, null); 
-	    			    return;	
-	    			    //the control is given to the caller state
-	    			}
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			{//actionseq
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmd(CMD)","cmd(moveStop)", guardVars ).toString();
+	    			sendMsg("moveRover","rover", QActorContext.dispatch, temporaryStr ); 
+	    			parg = "terminateSystem"; 
+	    			actorOpExecute(parg, false);	//OCT17		 
+	    			};//actionseq
 	    	}
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
@@ -199,21 +194,6 @@ public abstract class AbstractUsercmdmanager extends QActor {
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//execMove
-	    
-	    StateFun terminataAppl = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("terminataAppl",-1);
-	    	String myselfName = "terminataAppl";  
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmd(CMD)","cmd(moveStop)", guardVars ).toString();
-	    	sendMsg("moveRover","rover", QActorContext.dispatch, temporaryStr ); 
-	    	parg = "terminateSystem"; 
-	    	actorOpExecute(parg, false);	//OCT17		 
-	    	repeatPlanNoTransition(pr,myselfName,"usercmdmanager_"+myselfName,false,false);
-	    }catch(Exception e_terminataAppl){  
-	    	 println( getName() + " plan=terminataAppl WARNING:" + e_terminataAppl.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//terminataAppl
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

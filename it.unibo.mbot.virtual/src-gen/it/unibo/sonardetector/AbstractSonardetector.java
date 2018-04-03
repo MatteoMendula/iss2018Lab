@@ -111,7 +111,6 @@ public abstract class AbstractSonardetector extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("sendToRadar",-1);
 	    	String myselfName = "sendToRadar";  
-	    	printCurrentEvent(false);
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("sonar(NAME,TARGET,DISTANCE)");

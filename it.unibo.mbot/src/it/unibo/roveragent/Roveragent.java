@@ -2,12 +2,12 @@
 /*
 This code is generated only ONCE
 */
-package it.unibo.usercmdmanager;
+package it.unibo.roveragent;
 import it.unibo.is.interfaces.IOutputEnvView;
 import it.unibo.qactors.QActorContext;
 
-public class Usercmdmanager extends AbstractUsercmdmanager { 
-	public Usercmdmanager(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
+public class Roveragent extends AbstractRoveragent { 
+	public Roveragent(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
 		super(actorId, myCtx, outEnvView);
 	}
 /*

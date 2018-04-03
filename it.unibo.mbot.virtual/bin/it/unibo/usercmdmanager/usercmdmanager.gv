@@ -11,8 +11,11 @@ digraph finite_state_machine {
 	
 	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
 	execMove [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	doWork [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
-	init -> handleToutBuiltIn [ label = "timeout(3600000)" ][ color = green ][ fontcolor = green ]
-	init -> execMove [ label = "usercmd" ][ color = red ][ fontcolor = red ][ dir = both ]
-	init -> init [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
+	doWork -> handleToutBuiltIn [ label = "timeout(3600000)" ][ color = green ][ fontcolor = green ]
+	doWork -> execMove [ label = "usercmd" ][ color = red ][ fontcolor = red ][ dir = both ]
+	doWork -> action [ label = "alarm" ][ color = red ][ fontcolor = red ][ dir = both ]
+	init -> doWork [ label = "switch" ][ color = black ][ fontcolor = black ]
+	doWork -> doWork [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
 }

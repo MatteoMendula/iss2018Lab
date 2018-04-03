@@ -1,0 +1,8 @@
+plan(1,init, sentence(true,move(print("roveragent STARTS")),'','' ))
+plan(1,lookAtSonars, sentence(true,move(print("roveragent lookAtSonars ")),'','' ))
+plan(1,handleFixedSonar, sentence(true,delay( 500) ,'','' ))
+plan(2,handleFixedSonar, sentence(true,raise( usercmd , usercmd( robotgui( h( low))) )'),'','' ))
+plan(1,handleSonar, sentence(true,printCurrentEvent(false),'','' ))
+plan(2,handleSonar, sentence(true,raise( usercmd , usercmd( robotgui( s( low))) )'),'','' ))
+plan(3,handleSonar, sentence(true,delay( 500) ,'','' ))
+plan(4,handleSonar, sentence(true,raise( usercmd , usercmd( robotgui( h( low))) )'),'','' ))

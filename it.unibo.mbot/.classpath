@@ -27,7 +27,7 @@
 	<classpathentry kind="lib" path="C:/Didattica2018Work/iss2018Lab/it.unibo.libs2018/libs/unibo/unibonoawtsupports.jar"/>
 	<classpathentry kind="lib" path="C:/Didattica2018Work/iss2018Lab/it.unibo.libs2018/libs/unibo/uniboEnvBaseAwt.jar"/>
 	<classpathentry kind="lib" path="C:/Didattica2018Work/iss2018Lab/it.unibo.libs2018/libs/unibo/2p301.jar"/>
-	<classpathentry kind="lib" path="C:/Didattica2018Work/iss2018Lab/it.unibo.libs2018/libs/unibo/qa18Akka.jar"/>
 	<classpathentry kind="lib" path="C:/Didattica2018Work/iss2018Lab/it.unibo.libs2018/libs/http/nanoHTTPD.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/it.unibo.qactors"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

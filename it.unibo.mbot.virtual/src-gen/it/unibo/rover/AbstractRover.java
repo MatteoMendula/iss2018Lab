@@ -73,6 +73,10 @@ public abstract class AbstractRover extends QActor {
 	    
 	    StateFun init = () -> {	
 	    try{	
+	     mqttServer = "tcp://192.168.43.229:1883";
+	     addRule( "pubsubserveraddr(\"tcp://192.168.43.229:1883\")" ); //for ActorContext
+	     connectToSend( this.getName(), "tcp://192.168.43.229:1883", "unibo/qasys" );	
+	     connectAndSubscribe( this.getName(), "tcp://192.168.43.229:1883", "unibo/qasys" );
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
 	    	temporaryStr = "\"rover START\"";
@@ -93,8 +97,28 @@ public abstract class AbstractRover extends QActor {
 	    	String myselfName = "waitForCmd";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"rover_"+myselfName,false,
-	          new StateFun[]{stateTab.get("execMove") },//new StateFun[]
-	          new String[]{"true","M","moveRover" },
+	          new StateFun[]{
+	          () -> {	//AD HOC state to execute an action and resumeLastPlan
+	          try{
+	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
+	            //ActionSwitch for a message or event
+	             if( currentEvent.getMsg().startsWith("alarm") ){
+	            	//println("WARNING: variable substitution not yet fully implemented " ); 
+	            	{//actionseq
+	            	temporaryStr = "alarm(X)";
+	            	println( temporaryStr );  
+	            	temporaryStr = QActorUtils.unifyMsgContent(pengine, "alarm(X)","alarm(X)", guardVars ).toString();
+	            	emit( "alarmev", temporaryStr );
+	            	};//actionseq
+	             }
+	            repeatPlanNoTransition(pr1,"adhocstate","adhocstate",false,true);
+	          }catch(Exception e ){  
+	             println( getName() + " plan=waitForCmd WARNING:" + e.getMessage() );
+	             //QActorContext.terminateQActorSystem(this); 
+	          }
+	          },
+	           stateTab.get("execMove") },//new StateFun[]
+	          new String[]{"true","E","alarm", "true","M","moveRover" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitForCmd){  
 	    	 println( getName() + " plan=waitForCmd WARNING:" + e_waitForCmd.getMessage() );
@@ -109,62 +133,74 @@ public abstract class AbstractRover extends QActor {
 	    	printCurrentMessage(false);
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(moveForward)");
+	    	curT = Term.createTerm("usercmd(robotgui(h(X)))");
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		execUnity("rover","stop",0, 40,0); //rover: default namefor virtual robot		
+	    	}
+	    	//onMsg 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("usercmd(robotgui(w(X)))");
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		execUnity("rover","forward",0, 40,0); //rover: default namefor virtual robot		
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(moveBackward)");
+	    	curT = Term.createTerm("usercmd(robotgui(s(X)))");
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		execUnity("rover","backward",0, 40,0); //rover: default namefor virtual robot		
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(turnLeft)");
+	    	curT = Term.createTerm("usercmd(robotgui(a(X)))");
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		execUnity("rover","left",750, 40,0); //rover: default namefor virtual robot		
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(turnRight)");
+	    	curT = Term.createTerm("usercmd(robotgui(d(X)))");
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		execUnity("rover","right",750, 40,0); //rover: default namefor virtual robot		
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(moveStop)");
+	    	curT = Term.createTerm("usercmd(robotgui(x(X)))");
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		execUnity("rover","stop",10, 40,0); //rover: default namefor virtual robot		
+	    		{//actionseq
+	    		parg = "terminateSystem"; 
+	    		actorOpExecute(parg, false);	//OCT17		 
+	    		};//actionseq
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(connectToUnity)");
+	    	curT = Term.createTerm("usercmd(robotgui(unityAddr(X)))");
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " not !?unityOn" )) != null )
 	    		{
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityConfig(UNITYADDR,BATCH)" )) != null ){
-	    		it.unibo.utils.external.connectRoverToUnity( myself ,guardVars.get("UNITYADDR"), guardVars.get("BATCH")  );
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityConfig(BATCH)" )) != null ){
+	    		it.unibo.utils.external.connectRoverToUnity( myself ,guardVars.get("BATCH")  );
 	    		}
 	    		temporaryStr = "unityOn";
 	    		addRule( temporaryStr );  

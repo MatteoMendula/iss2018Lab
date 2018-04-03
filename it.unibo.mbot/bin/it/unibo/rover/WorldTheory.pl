@@ -143,7 +143,6 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %  User static rules about rover
 %------------------------------------------------- 
 unityConfig( "localhost","unityStart.bat").
-foundObstacle:-retract( realDistance( D)),eval( lt,D,20).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),

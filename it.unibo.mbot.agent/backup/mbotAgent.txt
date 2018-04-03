@@ -1,0 +1,237 @@
+/* 
+ * ==============================================================
+ * mbotAgent.qa
+ * A robot that is able to move and to react to events
+ * ==============================================================
+ */     
+System mbotAgent     
+Event usercmd      : usercmd(CMD)     
+Event alarmev      : alarm( X )   
+Event sonarSensor  : sonar( NAME, DISTANCE )	//From rover or real robot
+Dispatch moveRover : cmd( CMD )   		 
+Dispatch alarmmsg  : alarm( X ) 	//same payload as alarmev
+
+pubSubServer  "tcp://192.168.43.229:1883"    
+
+Context ctxMbotAgent ip [ host="192.168.43.229"   port=8039 ]    //192.168.43.229
+//EventHandler evh for sonarSensor, alarmev -print {	//event-driven
+//	memoCurrentEvent -lastonly for roveragent    //memorize last event only
+////	demo updateEventHistory for roveragent
+//};     
+EventHandler evh for alarmev -print {	//event-driven
+//	demo replaceRule( alarmOn, alarmOn ) for roveragent  //just one
+	emit usercmd fromContent alarm(fire) to usercmd( robotgui(h(low)) );
+	forwardEvent roveragent -m alarmmsg 
+};
+
+QActor roveragent context ctxMbotAgent -pubsub{      
+Rules{
+//	updateEventHistory :- retract( msg(alarmev, 'event',  EMITTER,  none,  alarm(X), MSGNUM) ),!,
+//				  //output( storeEvent(alarm)  ),
+//				  updateKb( detected(alarm, alarm(X) ) ).
+//	updateEventHistory :- retract( msg(sonarSensor, 'event',  EMITTER,  none,   sonar(NAME, DISTANCE), MSGNUM) ),!,
+//	              //output( storeEvent(sonarSensor)  ),
+// 				  updateKb( detected(sonarSensor, sonar(NAME, DISTANCE) ) ).
+// 	updateKb( FACT )   :- 
+// 				  output( updateKb( FACT ) ),  
+// 				  //write into a log (TODO)
+// 				  assert( FACT ).
+
+	 
+	foundObstacle :- retract( sonar(roversonar, D) ), eval( lt, D, 20 ).
+} 	     
+	Plan init normal [  
+		println("rovercontroller STARTS") 		
+	]  
+	switchTo lookAtSonars	     
+	Plan lookAtSonars[    
+ 		println("lookAtSonars")   
+//		[ ?? alarmOn ] { //could be set by evh while roveragent is doing handleSonarEvents
+// 			println("lookAtSonars: THERE IS an alarm") ;
+// 			emit usercmd : usercmd( robotgui(h(low)) ) ;    //immediate stop
+// 			forward roveragent -m alarmmsg : alarm(fire) 	//automsg
+// 		}  
+ 	] 
+	transition   stopAfter 6000000     
+//		whenEvent alarmev :       -> replaceRule( alarmOn, alarmOn) , //handleAlarm,
+		whenMsg  alarmmsg       -> alarmHandelPolicy,
+ 		whenEvent  sonarSensor  -> handleSonarEvents //handleAllEvents   	 
+	finally repeatPlan
+	
+//	Plan handleAlarm resumeLastPlan[
+//		emit usercmd : usercmd( robotgui(h(low)) ) ;   //stop 
+//		forward roveragent -m alarmmsg : alarmmsg( done )  //
+//	]    
+	Plan alarmHandelPolicy resumeLastPlan[
+		emit usercmd : usercmd( robotgui(h(low)) ) ;   //stop 
+		printCurrentMessage;  
+		println("ALARM HANDLING POLICY ... ") ;
+// 		emit usercmd :  usercmd( robotgui(a(low)) )	;    
+//		delay 1000;
+// 		emit usercmd :  usercmd( robotgui(d(low)) )	;    
+// 		delay 1000;
+ 		emit usercmd :  usercmd( robotgui(h(low)) )	; //stop
+		println("ALARM HANDLING POLICY DONE ") 
+	]
+//	transition stopAfter 6000000    
+//		whenMsg  alarmmsg : alarmmsg(done)	do {
+//			removeRule alarmOn;
+//			[ !? alarmOn ] println("FATAL ERROR")
+//		}	
+	Plan handleSonarEvents resumeLastPlan[
+		printCurrentEvent;
+		onEvent sonarSensor : sonar(realsonar, DISTANCE) -> {
+			//virtual obstacle
+			println(  roversonar  );
+			emit usercmd :  usercmd( robotgui(s(low)) ) ; //retrogress
+			delay 700 ;    //continue to move to stop sonar events    
+			emit usercmd : usercmd( robotgui(h(low)) ) ; 		 	   
+			delay 1500   ;  //in this time an alarm could be emitted, but alarmOn is set by evh
+			emit usercmd :  usercmd( robotgui(s(low)) )  //retrogress and stop if alarm			
+		}; 
+		onEvent sonarSensor : sonar(roversonar, DISTANCE) -> {
+			//virtual obstacle
+			println(  roversonar  );
+			emit usercmd :  usercmd( robotgui(s(low)) ) ; //retrogress
+			delay 700 ;    //continue to move to stop sonar events    
+			emit usercmd : usercmd( robotgui(h(low)) ) ; 		 	        
+			println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LONG ACTION");        
+			delay 2000   ;  //in this time an alarm could be emitted     
+			emit usercmd :  usercmd( robotgui(s(low)) ) ; //retrogress 	
+			println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LONG ACTION END")   
+ 		};
+		onEvent sonarSensor : sonar(sonar1, DISTANCE) -> {
+			//fixed sonar (moving ahead or backwards)
+			println( sonar1 );    //no variable substitution, sorry
+			delay 500 ;    //continue to move to stop sonar events  
+			emit usercmd : usercmd( robotgui(h(low)) ) 		 	   			
+		};		
+		onEvent sonarSensor : sonar(sonar2, DISTANCE) -> {
+			//fixed sonar (moving ahead or backwards)
+			println( sonar2 );    //no variable substitution, sorry
+			delay 500 ;    //continue to move to stop sonar events  
+			emit usercmd : usercmd( robotgui(h(low)) ) 		 	          			
+		}
+ 	]
+	
+}//roveragent
+  
+
+//QActor alarmhandleragent context ctxMbotAgent{ 
+//	Plan init normal [  println("alarmhandleragent STARTS") ] 
+//	switchTo doWork
+//	
+//	Plan doWork[ println("alarmhandleragent WAITS") ] 
+//	transition stopAfter 600000
+//		whenMsg alarmmsg  -> handleAlarm
+//	finally repeatPlan
+//		  
+//	Plan handleAlarm resumeLastPlan[
+//		println("ALARM HANDLING POLICY ... ") ;
+// 		emit usercmd :  usercmd( robotgui(l(low)) )	;
+//		delay 2000;
+// 		emit usercmd :  usercmd( robotgui(h(low)) )	; //stop
+//		println("ALARM HANDLING POLICY DONE ") ;
+//		forward roveragent -m alarmmsg : alarmmsg( done )
+//	]
+//	    
+//}
+
+//	Plan explore[
+//		//printCurrentEvent ;  //here null
+//		println("explore after rover sonar") ;
+//		sendto rover in ctxMbotExecutor -m moveRover : cmd(turnRight) ;
+//		delay 1000;
+//		sendto rover in ctxMbotExecutor -m moveRover : cmd(turnLeft) ;  //here we could find a hole
+//		delay 1000
+//	]
+//	transition whenTime 100 -> endExplore
+// 		whenEvent sonarDetect -> explore   
+////		whenEvent realSonar   -> handleRoverSonar ,
+//	Plan endExplore[
+//		println("found HOLE") 
+//	]
+ 		
+ 		
+ 		
+/* 	
+//	Plan handleAlarm resumeLastPlan [   
+//		emit usercmd : usercmd( robotgui(h(low)) );
+//		println("HANDLING THE ALARM ....");
+//		delay 1000;
+//		println("ALARM HANDLED, WE CAN GO ON")
+////		removeRule alarmOn  //if set by handleAllEvents
+//	]
+	Plan handleAllEvents resumeLastPlan[
+ 		println(handleAllEvents);
+// 		[ ??  msg(alarmev, 'event',  EMITTER,  none,  alarm(fire), MSGNUM ) ]  { 	//first, since 'as soon as possible'
+// 			println( alarm(fire) ); //no variable substitution, sorry
+// 			emit usercmd : usercmd( robotgui(h(low)) ) ;
+// 			endPlan "alarm"  
+// 		};		
+// 		[ ?? detected( alarm, alarm(fire) ) ]  { 	//first, since 'as soon as possible'
+// 			println( alarm(fire) ); //no variable substitution, sorry
+// 			emit usercmd : usercmd( robotgui(h(low)) )
+// 		};		
+		[ ?? msg(sonarSensor, 'event',  EMITTER,  none,   sonar(realsonar, DISTANCE), MSGNUM) ]  {
+			//real obstacle
+			println( realsonar )
+		}; 
+		[ ?? msg(sonarSensor, 'event',  EMITTER,  none,   sonar(roversonar, DISTANCE), MSGNUM) ]  { 
+			//virtual obstacle
+			println(  roversonar  );
+			emit usercmd :  usercmd( robotgui(s(low)) ) ; //retrogress
+			delay 700 ;    //continue to move to stop sonar events    
+			emit usercmd : usercmd( robotgui(h(low)) ) ; 		 	   
+			delay 1500   ;  //in this time an alarm could be emitted  ------------------------- 
+			emit usercmd :  usercmd( robotgui(s(low)) )  //retrogress and stop if alarm
+		 };
+		[ ??  msg(sonarSensor, 'event',  EMITTER,  none,   sonar(sonar1, DISTANCE), MSGNUM) ]  { 
+			//fixed sonar (moving ahead or backwards)
+			println( sonar1 );    //no variable substitution, sorry
+			delay 500 ;    //continue to move to stop sonar events  
+			emit usercmd : usercmd( robotgui(h(low)) ) 		 	   
+ 		};   
+		[ ??  msg(sonarSensor, 'event',  EMITTER,  none,   sonar(sonar2, DISTANCE), MSGNUM) ]  { 
+			//fixed sonar (moving ahead or backwards)
+			println( sonar2 );    //no variable substitution, sorry
+			delay 500 ;    //continue to move to stop sonar events  
+			emit usercmd : usercmd( robotgui(h(low)) ) 		 	          
+ 		}; 
+ 		[ ??  msg(alarmev, 'event',  EMITTER,  none,  alarm(fire), MSGNUM ) ]  { 	//last, since update
+ 			println( alarmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm(fire) ); //no variable substitution, sorry			 
+ 			emit usercmd : usercmd( robotgui(h(low)) ) ;
+ 			addRule alarmOn 
+ 		};		  
+ 		[ not !? msg(EV, 'event',  EMITTER,  none,   ANY, MSGNUM) ] 
+ 			 endPlan "no more events to handle"    
+	]  
+ 	finally repeatPlan
+
+
+
+//The robot is moving either forward or backward: move it out of sonar range.
+ 	Plan handleSonar  [       
+  		printCurrentEvent ;   
+ 		onEvent sonarSensor : sonar(NAME, DISTANCE) -> //update the local kb
+ 				addRule sonar(NAME, DISTANCE) ;
+  		[ !? sonar(realsonar, DISTANCE) ]  { //real sonar
+  				[ ?? sonar(roversonar, DISTANCE) ] println(avoidObstacle(DISTANCE) );//CONSUME sonar/2
+				emit usercmd :  usercmd( robotgui(s(low)) );	//retrogress
+				delay 500; //avoid to raise sonar events again 
+				emit usercmd :  usercmd( robotgui(h(low)) )	//stop 				
+		} else {//virtual sonars   
+			[ ?? sonar(roversonar, DISTANCE) ] { //obstacle  
+				emit usercmd  : usercmd( robotgui(h(low)) ) ;	 
+				emit usercmd :  usercmd( robotgui(s(low)) )  //retrogress
+			}else{ //fixed sonar   
+ 				[ ?? sonar(SONAR, DISTANCE) ] println( sonar(SONAR, DISTANCE) ) //CONSUME sonar/2
+ 			};
+			delay 500 ;    //avoid to raise sonar events again   
+			emit usercmd : usercmd( robotgui(h(low)) ) 		 	   
+		 }  
+	]       
+  	switchTo lookAtSonars	
+  	
+  	*/ 	
+ 		

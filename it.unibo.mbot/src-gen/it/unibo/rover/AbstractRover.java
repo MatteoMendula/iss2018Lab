@@ -58,10 +58,6 @@ public abstract class AbstractRover extends QActor {
 	    	stateTab.put("init",init);
 	    	stateTab.put("waitForCmd",waitForCmd);
 	    	stateTab.put("execMove",execMove);
-	    	stateTab.put("connectToUnity",connectToUnity);
-	    	stateTab.put("setAvatarInitialPosition",setAvatarInitialPosition);
-	    	stateTab.put("turnLeft",turnLeft);
-	    	stateTab.put("turnRight",turnRight);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -95,8 +91,7 @@ public abstract class AbstractRover extends QActor {
 	    
 	    StateFun waitForCmd = () -> {	
 	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_waitForCmd",0);
-	     pr.incNumIter(); 	
+	     PlanRepeat pr = PlanRepeat.setUp("waitForCmd",-1);
 	    	String myselfName = "waitForCmd";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"rover_"+myselfName,false,
@@ -125,7 +120,7 @@ public abstract class AbstractRover extends QActor {
 	    		//end arg1
 	    		String arg2 = "40" ;
 	    		//end arg2
-	    		String arg3 = "-1" ;
+	    		String arg3 = "0" ;
 	    		//end arg3
 	    		it.unibo.utils.robotMixMoves.moveRobotAndAvatar(this,arg1,arg2,arg3 );
 	    		}
@@ -141,7 +136,7 @@ public abstract class AbstractRover extends QActor {
 	    		//end arg1
 	    		String arg2 = "40" ;
 	    		//end arg2
-	    		String arg3 = "-1" ;
+	    		String arg3 = "0" ;
 	    		//end arg3
 	    		it.unibo.utils.robotMixMoves.moveRobotAndAvatar(this,arg1,arg2,arg3 );
 	    		}
@@ -152,17 +147,18 @@ public abstract class AbstractRover extends QActor {
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
 	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		/* SwitchTransition */
-	    		String parg = "turnLeft";
-	    		parg =  updateVars( Term.createTerm("cmd(CMD)"), 
-	    			                Term.createTerm("cmd(turnLeft)"), 
-	    			                Term.createTerm(currentMessage.msgContent()), parg);
-	    		if(parg != null){ 
-	    			switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
-	    		    	 		    		parg,false, true, null); 
-	    		    return;	
-	    		    //the control is given to the caller state
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		{//actionseq
+	    		it.unibo.rover.mbotConnArduino.mbotLeft( myself  );
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityOn" )) != null ){
+	    		execUnity("rover","left",750, 40,0); //rover: default namefor virtual robot		
 	    		}
+	    		else{ //delay  ( no more reactive within a plan)
+	    		aar = delayReactive(900,"" , "");
+	    		if( aar.getInterrupted() ) curPlanInExec   = "execMove";
+	    		if( ! aar.getGoon() ) return ;
+	    		}it.unibo.rover.mbotConnArduino.mbotStop( myself  );
+	    		};//actionseq
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
@@ -170,17 +166,18 @@ public abstract class AbstractRover extends QActor {
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
 	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		/* SwitchTransition */
-	    		String parg = "turnRight";
-	    		parg =  updateVars( Term.createTerm("cmd(CMD)"), 
-	    			                Term.createTerm("cmd(turnRight)"), 
-	    			                Term.createTerm(currentMessage.msgContent()), parg);
-	    		if(parg != null){ 
-	    			switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
-	    		    	 		    		parg,false, true, null); 
-	    		    return;	
-	    		    //the control is given to the caller state
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		{//actionseq
+	    		it.unibo.rover.mbotConnArduino.mbotRight( myself  );
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityOn" )) != null ){
+	    		execUnity("rover","right",750, 40,0); //rover: default namefor virtual robot		
 	    		}
+	    		else{ //delay  ( no more reactive within a plan)
+	    		aar = delayReactive(900,"" , "");
+	    		if( aar.getInterrupted() ) curPlanInExec   = "execMove";
+	    		if( ! aar.getGoon() ) return ;
+	    		}it.unibo.rover.mbotConnArduino.mbotStop( myself  );
+	    		};//actionseq
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
@@ -193,7 +190,7 @@ public abstract class AbstractRover extends QActor {
 	    		//end arg1
 	    		String arg2 = "40" ;
 	    		//end arg2
-	    		String arg3 = "-1" ;
+	    		String arg3 = "0" ;
 	    		//end arg3
 	    		it.unibo.utils.robotMixMoves.moveRobotAndAvatar(this,arg1,arg2,arg3 );
 	    		}
@@ -204,17 +201,23 @@ public abstract class AbstractRover extends QActor {
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
 	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		/* SwitchTransition */
-	    		String parg = "connectToUnity";
-	    		parg =  updateVars( Term.createTerm("cmd(CMD)"), 
-	    			                Term.createTerm("cmd(connectToUnity)"), 
-	    			                Term.createTerm(currentMessage.msgContent()), parg);
-	    		if(parg != null){ 
-	    			switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
-	    		    	 		    		parg,false, true, null); 
-	    		    return;	
-	    		    //the control is given to the caller state
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		{//actionseq
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " not !?unityOn" )) != null )
+	    		{
+	    		{//actionseq
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityConfig(UNITYADDR,BATCH)" )) != null ){
+	    		it.unibo.utils.external.connectRoverToUnity( myself ,guardVars.get("UNITYADDR"), guardVars.get("BATCH")  );
 	    		}
+	    		temporaryStr = "unityOn";
+	    		addRule( temporaryStr );  
+	    		execUnity("rover","backward",1000, 70,0); //rover: default namefor virtual robot		
+	    		execUnity("rover","right",1000, 70,0); //rover: default namefor virtual robot		
+	    		};//actionseq
+	    		}
+	    		else{ temporaryStr = "\"UNITY ALREADY ACTIVE\"";
+	    		println( temporaryStr );  
+	    		}};//actionseq
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
@@ -226,91 +229,14 @@ public abstract class AbstractRover extends QActor {
 	    		it.unibo.rover.mbotConnArduino.mbotLinefollow(this );
 	    		}
 	    	}
-	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
+	    	//switchTo waitForCmd
+	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
+	              "waitForCmd",false, true, null); 
 	    }catch(Exception e_execMove){  
 	    	 println( getName() + " plan=execMove WARNING:" + e_execMove.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//execMove
-	    
-	    StateFun connectToUnity = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("connectToUnity",-1);
-	    	String myselfName = "connectToUnity";  
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityConfig(UNITYADDR,BATCH)" )) != null ){
-	    	it.unibo.utils.external.connectRoverToUnity( myself ,guardVars.get("UNITYADDR"), guardVars.get("BATCH")  );
-	    	}
-	    	temporaryStr = "unityOn";
-	    	addRule( temporaryStr );  
-	    	//switchTo setAvatarInitialPosition
-	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
-	              "setAvatarInitialPosition",false, false, null); 
-	    }catch(Exception e_connectToUnity){  
-	    	 println( getName() + " plan=connectToUnity WARNING:" + e_connectToUnity.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//connectToUnity
-	    
-	    StateFun setAvatarInitialPosition = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("setAvatarInitialPosition",-1);
-	    	String myselfName = "setAvatarInitialPosition";  
-	    	execUnity("rover","backward",1000, 70,0); //rover: default namefor virtual robot		
-	    	execUnity("rover","right",1000, 70,0); //rover: default namefor virtual robot		
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "roverState(STATE)","roverState(ready)", guardVars ).toString();
-	    	emit( "local_rover", temporaryStr );
-	    	//switchTo waitForCmd
-	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
-	              "waitForCmd",false, false, null); 
-	    }catch(Exception e_setAvatarInitialPosition){  
-	    	 println( getName() + " plan=setAvatarInitialPosition WARNING:" + e_setAvatarInitialPosition.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//setAvatarInitialPosition
-	    
-	    StateFun turnLeft = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("turnLeft",-1);
-	    	String myselfName = "turnLeft";  
-	    	it.unibo.rover.mbotConnArduino.mbotLeft( myself  );
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityOn" )) != null ){
-	    	execUnity("rover","left",750, 40,0); //rover: default namefor virtual robot		
-	    	}
-	    	else{ //delay  ( no more reactive within a plan)
-	    	aar = delayReactive(900,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "turnLeft";
-	    	if( ! aar.getGoon() ) return ;
-	    	}it.unibo.rover.mbotConnArduino.mbotStop( myself  );
-	    	//switchTo waitForCmd
-	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
-	              "waitForCmd",false, false, null); 
-	    }catch(Exception e_turnLeft){  
-	    	 println( getName() + " plan=turnLeft WARNING:" + e_turnLeft.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//turnLeft
-	    
-	    StateFun turnRight = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("turnRight",-1);
-	    	String myselfName = "turnRight";  
-	    	it.unibo.rover.mbotConnArduino.mbotRight( myself  );
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?unityOn" )) != null ){
-	    	execUnity("rover","right",750, 40,0); //rover: default namefor virtual robot		
-	    	}
-	    	else{ //delay  ( no more reactive within a plan)
-	    	aar = delayReactive(900,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "turnRight";
-	    	if( ! aar.getGoon() ) return ;
-	    	}it.unibo.rover.mbotConnArduino.mbotStop( myself  );
-	    	//switchTo waitForCmd
-	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
-	              "waitForCmd",false, false, null); 
-	    }catch(Exception e_turnRight){  
-	    	 println( getName() + " plan=turnRight WARNING:" + e_turnRight.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//turnRight
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

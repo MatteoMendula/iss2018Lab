@@ -11,7 +11,6 @@ digraph finite_state_machine {
 	
 	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
 	execMove [ color = black ][ fontcolor = black ][ penwidth = 3 ]
-	terminataAppl [ color = blue ][ fontcolor = blue ][ penwidth = 3 ]
 	
 	init -> handleToutBuiltIn [ label = "timeout(3600000)" ][ color = green ][ fontcolor = green ]
 	init -> execMove [ label = "usercmd" ][ color = red ][ fontcolor = red ][ dir = both ]
