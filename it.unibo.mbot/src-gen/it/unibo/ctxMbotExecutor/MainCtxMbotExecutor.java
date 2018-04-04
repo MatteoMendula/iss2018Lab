@@ -8,9 +8,13 @@ public class MainCtxMbotExecutor  {
 //MAIN
 public static QActorContext initTheContext() throws Exception{
 	IOutputEnvView outEnvView = SituatedSysKb.standardOutEnvView;
-	String webDir = null;
+	it.unibo.is.interfaces.IBasicEnvAwt env=new it.unibo.baseEnv.basicFrame.EnvFrame( 
+		"Env_ctxMbotExecutor",java.awt.Color.green , java.awt.Color.black );
+	env.init();
+	outEnvView = env.getOutputEnvView();
+	String webDir = "./srcMore/it/unibo/ctxMbotExecutor";
 	return QActorContext.initQActorSystem(
-		"ctxmbotexecutor", "./srcMore/it/unibo/ctxMbotExecutor/mbotagent.pl", 
+		"ctxmbotexecutor", "./srcMore/it/unibo/ctxMbotExecutor/mbotexecutor.pl", 
 		"./srcMore/it/unibo/ctxMbotExecutor/sysRules.pl", outEnvView,webDir,false);
 }
 public static void main(String[] args) throws Exception{
