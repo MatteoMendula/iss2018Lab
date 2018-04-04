@@ -10,13 +10,13 @@ digraph finite_state_machine {
 	size="8,5"
 	
 	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
-	lookAtSonars [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	doWork [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	alarmHandlePolicy [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	handleSonarEvents [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
-	init -> lookAtSonars [ label = "switch" ][ color = black ][ fontcolor = black ]
-	lookAtSonars -> handleSonarEvents [ label = "sonarSensor" ][ color = red ][ fontcolor = red ][ dir = both ]
-	lookAtSonars -> lookAtSonars [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
-	lookAtSonars -> alarmHandlePolicy [ label = "alarmmsg" ][ color = red ][ fontcolor = red ][ dir = both ]
-	lookAtSonars -> handleToutBuiltIn [ label = "timeout(6000000)" ][ color = green ][ fontcolor = green ]
+	doWork -> handleSonarEvents [ label = "sonarSensor" ][ color = red ][ fontcolor = red ][ dir = both ]
+	doWork -> handleToutBuiltIn [ label = "timeout(6000000)" ][ color = green ][ fontcolor = green ]
+	doWork -> alarmHandlePolicy [ label = "alarmmsg" ][ color = red ][ fontcolor = red ][ dir = both ]
+	init -> doWork [ label = "switch" ][ color = black ][ fontcolor = black ]
+	doWork -> doWork [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
 }

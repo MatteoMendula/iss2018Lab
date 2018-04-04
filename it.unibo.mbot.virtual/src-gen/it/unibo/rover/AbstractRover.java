@@ -73,14 +73,11 @@ public abstract class AbstractRover extends QActor {
 	    
 	    StateFun init = () -> {	
 	    try{	
-	     mqttServer = "tcp://192.168.43.229:1883";
-	     addRule( "pubsubserveraddr(\"tcp://192.168.43.229:1883\")" ); //for ActorContext
-	     connectToSend( this.getName(), "tcp://192.168.43.229:1883", "unibo/qasys" );	
-	     connectAndSubscribe( this.getName(), "tcp://192.168.43.229:1883", "unibo/qasys" );
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
 	    	temporaryStr = "\"rover START\"";
 	    	println( temporaryStr );  
+	     connectToMqttServer("tcp://192.168.43.229:1883");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
 	              "waitForCmd",false, false, null); 
@@ -105,8 +102,6 @@ public abstract class AbstractRover extends QActor {
 	             if( currentEvent.getMsg().startsWith("alarm") ){
 	            	//println("WARNING: variable substitution not yet fully implemented " ); 
 	            	{//actionseq
-	            	temporaryStr = "alarm(X)";
-	            	println( temporaryStr );  
 	            	temporaryStr = QActorUtils.unifyMsgContent(pengine, "alarm(X)","alarm(X)", guardVars ).toString();
 	            	emit( "alarmev", temporaryStr );
 	            	};//actionseq
@@ -212,9 +207,7 @@ public abstract class AbstractRover extends QActor {
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
-	    	//switchTo waitForCmd
-	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
-	              "waitForCmd",false, true, null); 
+	    	repeatPlanNoTransition(pr,myselfName,"rover_"+myselfName,false,true);
 	    }catch(Exception e_execMove){  
 	    	 println( getName() + " plan=execMove WARNING:" + e_execMove.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 

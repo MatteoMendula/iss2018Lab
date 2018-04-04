@@ -13,15 +13,31 @@ Event sonar  	   : sonar(SONAR, TARGET, DISTANCE)	//From (virtual) sonar
 Event sonarSensor  : sonar(NAME, DISTANCE)			////NAME= sonar1 | sonar2 | roversonar	
 Event sonarDetect  : sonarDetect(X)					//From (virtual robot) sonar
 Event    polar     : p( Distance, Angle )
+Event mindcmd      : usercmd(CMD)					//to command a real robot
 
 Dispatch moveRover : usercmd(CMD)    
 
-pubSubServer  "tcp://192.168.43.229:1883"   
+pubSubServer  "tcp://192.168.43.229:1883"      
 
 Context ctxRoverExecutor ip [ host="localhost"   port=8032 ] -g white -httpserver  
-EventHandler evh for usercmd -print {	//event-driven
+EventHandler evh for usercmd -print {	//event-driven but no Mqtt support yet
  	forwardEvent rover -m moveRover  	//from event to message
 };   
+
+QActor mindtobody context ctxRoverExecutor  -pubsub {
+	Plan init normal [  println("mindtobody STARTS ")   ] 
+	switchTo doWork
+	
+	Plan doWork[ println("mindtobody WAITS ... ") ]  
+	transition stopAfter 3600000   	//1h   
+  		whenEvent usercmd -> emitMindEvent
+  	finally repeatPlan
+  	
+  	Plan emitMindEvent resumeLastPlan[
+  		printCurrentEvent;
+  		onEvent usercmd : usercmd(CMD) -> emit mindcmd : usercmd(CMD)
+  	]
+}
 
 /*  
  * -----------------------------------------------------
@@ -38,14 +54,15 @@ QActor rover context ctxRoverExecutor  -pubsub {
    	Plan waitForCmd[  ]  
   	transition stopAfter 3600000   	//1h   
   		whenEvent alarm : alarm(X) do {
-  			println( alarm(X) );
-  			emit alarmev : alarm(X) //for mqtt  (no alarm, since recursion)
+  			//emit via Mqtt a new event (to avoid recursion);
+  			emit alarmev : alarm(X) 
   		},
  		whenMsg moveRover   -> execMove  	 
  	finally repeatPlan 
- 	
+ 	  
   	Plan execMove resumeLastPlan[  
-  		printCurrentMessage;     
+  		printCurrentMessage;    
+//  		onEvent  mindcmd : usercmd( CMD )              -> forward rover -m moveRover : usercmd( CMD );
     	onMsg moveRover : usercmd( robotgui(h(X)) )    -> stop 40 time(0) ;       
     	onMsg moveRover : usercmd( robotgui(w(X)) )    -> onward 40 time(0) ;  //0 means asynch
     	onMsg moveRover : usercmd( robotgui(s(X)) )    -> backwards 40 time(0) ;
@@ -53,7 +70,7 @@ QActor rover context ctxRoverExecutor  -pubsub {
    		onMsg moveRover : usercmd( robotgui(d(X)) )    -> right 40 time(750) ;   
    		onMsg moveRover : usercmd( robotgui(x(X)) )    -> { //TODO
    			actorOp terminateSystem
-   		}; 
+   		};  
    		onMsg moveRover :  usercmd( robotgui(unityAddr(X)) ) -> {   
    			[ not !? unityOn ] { 			    	 
 	     		 [ !? unityConfig( BATCH) ]  //Unity is on the current host
@@ -65,7 +82,7 @@ QActor rover context ctxRoverExecutor  -pubsub {
     	    } else println("UNITY ALREADY ACTIVATED")	
     	}	    
    	]        
-   	switchTo waitForCmd        
+//   	switchTo waitForCmd        
 }  
 
 /*
@@ -73,8 +90,8 @@ QActor rover context ctxRoverExecutor  -pubsub {
  * Convert sonar events into polar
  * -----------------------------------------------------
  */
-QActor sonardetector context ctxRoverExecutor -pubsub { 
-	Plan init normal [		println("sonardetector STARTS ") ]
+QActor sonardetector context ctxRoverExecutor -pubsub {  
+	Plan init normal [	println("sonardetector STARTS ") ]
 	switchTo waitForEvents       
 	  
 	Plan waitForEvents[ ]      

@@ -1,0 +1,35 @@
+/* 
+ * ==============================================================
+ * testMbotAgent.qa
+ * ==============================================================
+ */     
+System testMbotAgent     
+Event usercmd      : usercmd(CMD)     
+Event alarmev      : alarm( X )   
+Event sonarSensor  : sonar( NAME, DISTANCE )	//From rover or real robot
+  
+pubSubServer  "tcp://192.168.43.229:1883"
+
+Context ctxTestMbotAgent ip [ host="1ocalhost"   port=8043 ] 
+
+QActor testmbotagent context ctxTestMbotAgent -pubsub{ 
+	Plan init normal [  
+		println("testmbotagent STARTS") 		
+	]  
+	switchTo doWork	     
+	Plan doWork[    
+		demo assign(n,9);
+ 		emit sonarSensor : sonar( sonar1, 10 ) ;
+ 		delay 1000; 
+    	emit sonarSensor : sonar( roversonar, 20 ) ;	//long action
+   		emit alarmev     : alarm( fire)    
+ 	] 
+ 	switchTo raiseSeries  
+ 	
+ 	Plan raiseSeries[
+ 		[ !? inc(n,1,V)] emit sonarSensor : sonar( sonar2, V ) ;	//> 500msec
+		[ !? getVal(n,V)] println( emitted( sonar( sonar2, V ) ));		
+		delay 50 		
+ 	]
+ 	finally repeatPlan 30
+}

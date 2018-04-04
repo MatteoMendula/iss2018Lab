@@ -10,36 +10,34 @@ Event alarmev      : alarm( X )
 Event sonarSensor  : sonar( NAME, DISTANCE )	//From rover or real robot
 
 Dispatch alarmmsg  : alarm( X ) 	//same payload as alarmev
-Dispatch moveRover : cmd( CMD )
-
+ 
 pubSubServer  "tcp://192.168.43.229:1883"    
 
-Context ctxMbotAgent ip [ host="192.168.43.229"   port=8039 ]    //192.168.43.229
+Context ctxMbotAgent ip [ host="localhost"   port=8039 ]  -g cyan   //192.168.43.229
 EventHandler evh for alarmev -print {	//event-driven
-	forwardEvent roveragent -m alarmmsg 
-};  
+	forwardEvent roveragent -m alarmmsg   
+};   
 
 QActor roveragent context ctxMbotAgent -pubsub{      
-Rules{
-	foundObstacle :- retract( sonar(roversonar, D) ), eval( lt, D, 20 ).
-} 	     
 	Plan init normal [  
-		println("rovercontroller STARTS") 		
+		println("roveragent STARTS") 		
 	]  
-	switchTo lookAtSonars	     
-	Plan lookAtSonars[    
- 		println("lookAtSonars")   
+	switchTo doWork	        
+	Plan doWork[    
+ 		println("roveragent WAITS")   
  	] 
 	transition   stopAfter 6000000     
-		whenMsg  alarmmsg       -> alarmHandlePolicy,
- 		whenEvent  sonarSensor  -> handleSonarEvents   	 
-	finally repeatPlan
+  		whenMsg  alarmmsg       -> alarmHandlePolicy ,
+ 		whenEvent  sonarSensor  -> handleSonarEvents 	 
+ 	finally repeatPlan
 	
 	Plan alarmHandlePolicy resumeLastPlan[ 
 		printCurrentMessage;  
-		println("ALARM HANDLING POLICY ... ") ;
-		emit usercmd : usercmd( robotgui(h(low)) ) ;            
-		println("ALARM HANDLING POLICY DONE ") 
+		println("roveragent ALARM HANDLING POLICY ... ") ;
+		emit usercmd : usercmd( robotgui(w(low)) ) ;
+		delay 750 ;
+ 		emit usercmd : usercmd( robotgui(h(low)) ) ;     
+		println("roveragent ALARM HANDLING POLICY DONE ") 
 	]
 
 	Plan handleSonarEvents resumeLastPlan[
@@ -63,8 +61,6 @@ Rules{
 			//in this time an alarm could be emitted  
   		emit usercmd :  usercmd( robotgui(a(low)) )	;    //750 msec
   		emit usercmd :  usercmd( robotgui(a(low)) )	;    //750 msec
-  		emit usercmd :  usercmd( robotgui(a(low)) )	;    //750 msec  
-  		emit usercmd :  usercmd( robotgui(a(low)) )	;    //750 msec 			   
 		emit usercmd :  usercmd( robotgui(s(low)) ) ;    //retrogress 	
 			println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LONG ACTION END")   
  		};

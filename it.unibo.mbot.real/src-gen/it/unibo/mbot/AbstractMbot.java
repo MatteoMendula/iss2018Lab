@@ -112,9 +112,19 @@ public abstract class AbstractMbot extends QActor {
 	    	printCurrentMessage(false);
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(moveForward)");
+	    	curT = Term.createTerm("usercmd(robotgui(h(X)))");
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveMbot") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		{/* JavaLikeMove */ 
+	    		it.unibo.mbot.mbotConnArduino.mbotStop(this );
+	    		}
+	    	}
+	    	//onMsg 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("usercmd(robotgui(w(X)))");
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveMbot") && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
 	    		it.unibo.mbot.mbotConnArduino.mbotForward(this );
@@ -122,9 +132,9 @@ public abstract class AbstractMbot extends QActor {
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(moveBackward)");
+	    	curT = Term.createTerm("usercmd(robotgui(s(X)))");
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveMbot") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
 	    		it.unibo.mbot.mbotConnArduino.mbotBackward(this );
@@ -132,9 +142,9 @@ public abstract class AbstractMbot extends QActor {
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(turnLeft)");
+	    	curT = Term.createTerm("usercmd(robotgui(a(X)))");
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveMbot") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
@@ -148,9 +158,9 @@ public abstract class AbstractMbot extends QActor {
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(turnRight)");
+	    	curT = Term.createTerm("usercmd(robotgui(d(X)))");
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveMbot") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
@@ -164,19 +174,9 @@ public abstract class AbstractMbot extends QActor {
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(moveStop)");
+	    	curT = Term.createTerm("usercmd(robotgui(f(X)))");
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveMbot") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		{/* JavaLikeMove */ 
-	    		it.unibo.mbot.mbotConnArduino.mbotStop(this );
-	    		}
-	    	}
-	    	//onMsg 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(followLine)");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveMbot") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
 	    		it.unibo.mbot.mbotConnArduino.mbotLinefollow(this );

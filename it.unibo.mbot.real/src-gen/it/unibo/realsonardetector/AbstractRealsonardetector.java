@@ -73,14 +73,11 @@ public abstract class AbstractRealsonardetector extends QActor {
 	    
 	    StateFun init = () -> {	
 	    try{	
-	     mqttServer = "tcp://192.168.43.229:1883";
-	     addRule( "pubsubserveraddr(\"tcp://192.168.43.229:1883\")" ); //for ActorContext
-	     connectToSend( this.getName(), "tcp://192.168.43.229:1883", "unibo/qasys" );	
-	     connectAndSubscribe( this.getName(), "tcp://192.168.43.229:1883", "unibo/qasys" );
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
 	    	temporaryStr = "\"sonardetector STARTS \"";
 	    	println( temporaryStr );  
+	     connectToMqttServer("tcp://192.168.43.229:1883");
 	    	//switchTo waitForEvents
 	        switchToPlanAsNextState(pr, myselfName, "realsonardetector_"+myselfName, 
 	              "waitForEvents",false, false, null); 
