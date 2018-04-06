@@ -26,7 +26,7 @@ public abstract class AbstractRover extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://192.168.43.229:1883";
+	//protected String mqttServer = "tcp://localhost:1883";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -77,7 +77,7 @@ public abstract class AbstractRover extends QActor {
 	    	String myselfName = "init";  
 	    	temporaryStr = "\"rover START\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("tcp://192.168.43.229:1883");
+	     connectToMqttServer("tcp://localhost:1883");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "rover_"+myselfName, 
 	              "waitForCmd",false, false, null); 
@@ -179,7 +179,7 @@ public abstract class AbstractRover extends QActor {
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		parg = "terminateSystem"; 
+	    		parg = "terminateSystem()"; 
 	    		actorOpExecute(parg, false);	//OCT17		 
 	    		};//actionseq
 	    	}

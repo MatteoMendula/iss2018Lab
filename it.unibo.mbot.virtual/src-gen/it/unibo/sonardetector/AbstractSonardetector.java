@@ -26,7 +26,7 @@ public abstract class AbstractSonardetector extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://192.168.43.229:1883";
+	//protected String mqttServer = "tcp://localhost:1883";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -78,7 +78,7 @@ public abstract class AbstractSonardetector extends QActor {
 	    	String myselfName = "init";  
 	    	temporaryStr = "\"sonardetector STARTS \"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("tcp://192.168.43.229:1883");
+	     connectToMqttServer("tcp://localhost:1883");
 	    	//switchTo waitForEvents
 	        switchToPlanAsNextState(pr, myselfName, "sonardetector_"+myselfName, 
 	              "waitForEvents",false, false, null); 

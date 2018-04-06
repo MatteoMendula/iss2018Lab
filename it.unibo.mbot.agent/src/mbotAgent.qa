@@ -23,7 +23,7 @@ QActor roveragent context ctxMbotAgent -pubsub{
 		println("roveragent STARTS") 		
 	]  
 	switchTo doWork	        
-	Plan doWork[    
+	Plan doWork[     
  		println("roveragent WAITS")   
  	] 
 	transition   stopAfter 6000000     
@@ -33,17 +33,17 @@ QActor roveragent context ctxMbotAgent -pubsub{
 	
 	Plan alarmHandlePolicy resumeLastPlan[ 
 		printCurrentMessage;  
-		println("roveragent ALARM HANDLING POLICY ... ") ;
-		emit usercmd : usercmd( robotgui(w(low)) ) ;
-		delay 750 ;
+		println("roveragent ALARM HANDLING POLICY (turn left)... ") ;
+		emit usercmd : usercmd( robotgui(a(low)) ) ;  //680 in the real robot 
+// 		delay 700 ;     
  		emit usercmd : usercmd( robotgui(h(low)) ) ;     
 		println("roveragent ALARM HANDLING POLICY DONE ") 
-	]
+	] 
 
 	Plan handleSonarEvents resumeLastPlan[
 		printCurrentEvent;
 		onEvent sonarSensor : sonar(realsonar, DISTANCE) -> {
-			//virtual obstacle
+			//real obstacle
 			println(  roversonar  );
 			emit usercmd :  usercmd( robotgui(s(low)) ) ; //retrogress
 			delay 700 ;    //continue to move to stop sonar events    
@@ -52,16 +52,17 @@ QActor roveragent context ctxMbotAgent -pubsub{
 			emit usercmd :  usercmd( robotgui(s(low)) )  //retrogress and stop if alarm			
 		}; 
 		onEvent sonarSensor : sonar(roversonar, DISTANCE) -> {
-			//virtual obstacle
+			//virtual obstacle  
 			println(  roversonar  );
 			emit usercmd :  usercmd( robotgui(s(low)) ) ; //retrogress
 			delay 700 ;    //continue to move to stop sonar events    
 			emit usercmd : usercmd( robotgui(h(low)) ) ; 		 	        
 			println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LONG ACTION");        
 			//in this time an alarm could be emitted  
-  		emit usercmd :  usercmd( robotgui(a(low)) )	;    //750 msec
-  		emit usercmd :  usercmd( robotgui(a(low)) )	;    //750 msec
-		emit usercmd :  usercmd( robotgui(s(low)) ) ;    //retrogress 	
+  		emit usercmd :  usercmd( robotgui(a(low)) )	;    //750 / 680 msec
+  		emit usercmd :  usercmd( robotgui(a(low)) )	;    //750 / 680 msec
+  			println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GOING ON");  
+		emit usercmd :  usercmd( robotgui(w(low)) ) ;    //ahead 	
 			println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LONG ACTION END")   
  		};
 		onEvent sonarSensor : sonar(sonar1, DISTANCE) -> {
@@ -78,7 +79,3 @@ QActor roveragent context ctxMbotAgent -pubsub{
 		}
  	]
 }//roveragent
-  
-
- 
- 		

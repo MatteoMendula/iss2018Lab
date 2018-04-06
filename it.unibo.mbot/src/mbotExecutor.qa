@@ -50,8 +50,8 @@ QActor usercmdmanager context ctxMbotExecutor {
  * -----------------------------------------------------
  */  
 QActor rover context ctxMbotExecutor {   
-	Rules{	  
-		//onRaspberry.
+	Rules{	    
+		//onRaspberry. 
 		unityConfig("localhost", "unityStart.bat").  
 	}
 	Plan init normal [       

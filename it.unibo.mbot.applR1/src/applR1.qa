@@ -1,0 +1,76 @@
+/* 
+ * ==============================================================
+ * applR1.qa
+  * ==============================================================
+ */     
+System applR1     
+Event usercmd      : usercmd(CMD)     
+Event sonarSensor  : sonar( NAME, DISTANCE )	//From rover or real robot
+Event alarmev      : alarm( X )   
+Event taskexec     : taskexec(  tasktodo( NAME, ARGS ) )			
+Event tasktodo     : tasktodo( TASK, ARGS )	    //From other agents
+Event taskdone     : taskdone( TASK, ARGS )	
+
+Dispatch alarmmsg  : alarm( X ) 	//same payload as alarmev
+ 
+//pubSubServer  "tcp://192.168.43.229:1883"    
+pubSubServer  "tcp://localhost:1883"    		//for testing
+
+Context ctxApplR1 ip [ host="localhost"   port=8039 ]     //192.168.43.229
+EventHandler evh for alarmev -print {	 
+	forwardEvent applr1agent -m alarmmsg   
+};   
+//EventHandler evh1 for sonarSensor -print;	//for testing
+
+QActor applr1agent context ctxApplR1 -pubsub{       
+	Plan init normal [  ]  
+ 	switchTo waitFortask 
+ 	 
+	Plan waitFortask  [  
+		println("applr1agent EMITS taskexec ") 	;
+		emit taskexec  : taskexec(  tasktodo( obstacleAvoidance, on ) )	;		
+		println("applr1agent WAITS") 		
+	]  
+	transition stopAfter 360000  
+// 		whenMsg  alarmmsg    -> alarmHandlePolicy ,
+ 		whenEvent tasktodo  ->  checkForPassage // : tasktodo( obstacleAvoidance, ARG ) -> checkForPassage
+	  
+  	Plan checkForPassage [	//The robot is already in the right direction
+   	   println(  "checkForPassage ATTEMPT"  ) ;
+       emit usercmd : usercmd( robotgui(w(low)) ) ;  
+  	   delay 1000 ;
+  	   emit usercmd : usercmd( robotgui(a(low)) ) ;  //turn left 
+  	   delay 750 
+//	   emit usercmd : usercmd( robotgui(h(low)) )   // 
+   	]
+   	transition whenTime 1000 -> passageFound  //no sonarSensor emitted stopAfter 60000 //
+ 		//whenMsg  alarmmsg    -> alarmHandlePolicy ,
+ 		whenEvent sonarSensor : sonar(A, B) -> yetObstacle
+  
+  	Plan yetObstacle [
+  	  println( yetObstacle ); 
+ 	  emit usercmd : usercmd( robotgui(s(low)) ) ;  // 
+  	  delay 100  ;
+      emit usercmd : usercmd( robotgui( d(low)) ) ;  //turn right 		
+  	  delay 750 
+  	]
+  	switchTo checkForPassage
+  	
+  	Plan passageFound [
+  	   println(  "passageFound"  ) 
+//   	   emit taskdone :  taskdone( "obstacleAvoidance", "ok" )	
+  	]
+  	switchTo waitFortask
+
+/*
+ * ------------------------------------------------
+ */
+	Plan alarmHandlePolicy resumeLastPlan[ 
+		printCurrentMessage;  
+		println("applr1agent ALARM HANDLING POLICY (stop)... ") ;
+ 		emit usercmd : usercmd( robotgui(h(low)) ) ;     
+		println("applr1agent ALARM HANDLING POLICY DONE ") 
+	] 
+
+
+}//applr1agent

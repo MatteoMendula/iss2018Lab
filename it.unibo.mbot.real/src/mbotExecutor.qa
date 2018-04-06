@@ -40,7 +40,7 @@ QActor mbot context ctxMbotExecutor {
   	transition stopAfter 3600000   	//1h 
  		whenMsg moveMbot   -> execMove 
    	finally repeatPlan    
-	
+	   
   	Plan execMove resumeLastPlan[     
   		printCurrentMessage;
      	onMsg moveMbot : usercmd( robotgui(h(X)) )  -> javaRun it.unibo.mbot.mbotConnArduino.mbotStop();  
@@ -48,12 +48,12 @@ QActor mbot context ctxMbotExecutor {
     	onMsg moveMbot : usercmd( robotgui(s(X)) )  -> javaRun it.unibo.mbot.mbotConnArduino.mbotBackward(); 
   		onMsg moveMbot : usercmd( robotgui(a(X)) )   -> {
   			javaRun it.unibo.mbot.mbotConnArduino.mbotLeft();
-			delay 900;
+			delay 680;	//TODO: use some configuration parameter
  			javaRun it.unibo.mbot.mbotConnArduino.mbotStop()				
   		};    
    		onMsg moveMbot : usercmd( robotgui(d(X)) )  -> {
 			javaRun it.unibo.mbot.mbotConnArduino.mbotRight();
-			delay 900;
+			delay 680;//TODO: use some configuration parameter
 	 		javaRun it.unibo.mbot.mbotConnArduino.mbotStop()   			
    		}  ;   
     	onMsg moveMbot : usercmd( robotgui(f(X)) )  -> javaRun it.unibo.mbot.mbotConnArduino.mbotLinefollow()     

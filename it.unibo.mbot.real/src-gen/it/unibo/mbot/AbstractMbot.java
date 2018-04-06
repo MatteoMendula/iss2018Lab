@@ -150,7 +150,7 @@ public abstract class AbstractMbot extends QActor {
 	    		{//actionseq
 	    		it.unibo.mbot.mbotConnArduino.mbotLeft( myself  );
 	    		//delay  ( no more reactive within a plan)
-	    		aar = delayReactive(900,"" , "");
+	    		aar = delayReactive(680,"" , "");
 	    		if( aar.getInterrupted() ) curPlanInExec   = "execMove";
 	    		if( ! aar.getGoon() ) return ;
 	    		it.unibo.mbot.mbotConnArduino.mbotStop( myself  );
@@ -166,7 +166,7 @@ public abstract class AbstractMbot extends QActor {
 	    		{//actionseq
 	    		it.unibo.mbot.mbotConnArduino.mbotRight( myself  );
 	    		//delay  ( no more reactive within a plan)
-	    		aar = delayReactive(900,"" , "");
+	    		aar = delayReactive(680,"" , "");
 	    		if( aar.getInterrupted() ) curPlanInExec   = "execMove";
 	    		if( ! aar.getGoon() ) return ;
 	    		it.unibo.mbot.mbotConnArduino.mbotStop( myself  );

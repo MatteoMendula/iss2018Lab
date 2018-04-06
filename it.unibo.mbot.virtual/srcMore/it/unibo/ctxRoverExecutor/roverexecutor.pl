@@ -1,7 +1,7 @@
 %====================================================================================
 % Context ctxRoverExecutor  SYSTEM-configuration: file it.unibo.ctxRoverExecutor.roverExecutor.pl 
 %====================================================================================
-pubsubserveraddr("tcp://192.168.43.229:1883").
+pubsubserveraddr("tcp://localhost:1883").
 pubsubsystopic("unibo/qasys").
 %%% -------------------------------------------
 context(ctxroverexecutor, "localhost",  "TCP", "8032" ).  		 

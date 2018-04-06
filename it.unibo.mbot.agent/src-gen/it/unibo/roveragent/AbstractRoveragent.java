@@ -111,14 +111,10 @@ public abstract class AbstractRoveragent extends QActor {
 	     PlanRepeat pr = PlanRepeat.setUp("alarmHandlePolicy",-1);
 	    	String myselfName = "alarmHandlePolicy";  
 	    	printCurrentMessage(false);
-	    	temporaryStr = "\"roveragent ALARM HANDLING POLICY ... \"";
+	    	temporaryStr = "\"roveragent ALARM HANDLING POLICY (turn left)... \"";
 	    	println( temporaryStr );  
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(w(low)))", guardVars ).toString();
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(a(low)))", guardVars ).toString();
 	    	emit( "usercmd", temporaryStr );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(750,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "alarmHandlePolicy";
-	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
 	    	emit( "usercmd", temporaryStr );
 	    	temporaryStr = "\"roveragent ALARM HANDLING POLICY DONE \"";
@@ -185,7 +181,9 @@ public abstract class AbstractRoveragent extends QActor {
 	    			emit( "usercmd", temporaryStr );
 	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(a(low)))", guardVars ).toString();
 	    			emit( "usercmd", temporaryStr );
-	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(s(low)))", guardVars ).toString();
+	    			temporaryStr = "\"%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GOING ON\"";
+	    			println( temporaryStr );  
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(w(low)))", guardVars ).toString();
 	    			emit( "usercmd", temporaryStr );
 	    			temporaryStr = "\"%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LONG ACTION END\"";
 	    			println( temporaryStr );  
