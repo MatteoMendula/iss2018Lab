@@ -16,11 +16,11 @@ digraph finite_state_machine {
 	alarmHandlePolicy [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	waitFortask [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
+	waitFortask -> checkForPassage [ label = "taskmsg" ][ color = black ][ fontcolor = black ]
+	checkForPassage -> yetObstacle [ label = "sonarSensor" ][ color = black ][ fontcolor = black ]
 	yetObstacle -> checkForPassage [ label = "switch" ][ color = black ][ fontcolor = black ]
 	passageFound -> waitFortask [ label = "switch" ][ color = black ][ fontcolor = black ]
-	waitFortask -> checkForPassage [ label = "tasktodo" ][ color = black ][ fontcolor = black ]
 	checkForPassage -> passageFound [ label = "timeout(1000)" ][ color = green ][ fontcolor = green ]
 	waitFortask -> handleToutBuiltIn [ label = "timeout(360000)" ][ color = green ][ fontcolor = green ]
 	init -> waitFortask [ label = "switch" ][ color = black ][ fontcolor = black ]
-	checkForPassage -> action [ label = "sonarSensor" ][ color = red ][ fontcolor = red ][ dir = both ]
 }

@@ -11,20 +11,24 @@ pubSubServer  "tcp://m2m.eclipse.org:1883"
 //pubSubServer  "tcp://test.mosquitto.org:1883"
 
 Context  ctxTestMqtt  ip [ host="localhost"   port=5023 ]         
-   
+    
 QActor qatestemitter context ctxTestMqtt  {   
 Rules{
 //	p(10,120).	p(20,120).	p(30,120).	p(40,120).	p(50,120).	  
 //	p(60,120).  p(70,120).	p(80,120).	p(10,120).   p(20,120).	
 	p(80,0).	p(80,30).	p(30,50).	p(80,60).	p(20,70).	   
 	p(80,90).	p(80,120).	p(10,130).	p(80,150). 	p(80,180).	
-
-} 
- 	Plan init normal  [      
-  		 connectAsPublisher "unibo/mqtt/radar"
+ 
+}     
+ 	Plan init normal  [        
+//  		 connectAsPublisher "unibo/mqtt/radar"
   	]       
-  	switchTo dopublish   	
- 	Plan dopublish  [		  
+//   	switchTo dopublish   	
+   	transition whenTime 1000 -> dopublish    
+//   		whenEvent polar -> dopublish
+   		whenEvent polar : p(A,B) ->  dopublish  
+   
+ 	Plan dopublish  [	 	  
  		delay  700 ; 
   		//[ !? p(D,A)] publishMSg  "unibo/mqtt/radar" for "perceiver"    -m polarMsg : p( D, A  )  ;
   		[ !? p(D,A)] publishMsg  "unibo/mqtt/radar" for "radarguimqtt" -m polarMsg : p( D, A  )  ;
@@ -46,4 +50,22 @@ QActor perceiver context ctxTestMqtt -g yellow {
 	  	whenEvent polar : p( D, A  )    do println ( perceived( p( D, A  ) ) ) ,
 	  	whenMsg   polarMsg : p( D, A )  do println ( received( p( D, A  ) ) )
 	finally repeatPlan
-}
+} 
+
+/*
+  		protected StateFun findNextStateOnEvent(
+				it.unibo.contactEvent.interfaces.IEventItem currentEvent,
+				String startEvid,
+				String msgUserTemplate, String msgTemplate, String plan
+				) throws Exception{
+			if( currentEvent.getMsg().startsWith(startEvid) ){
+        	String parg = "\"\"";
+          	parg =  updateVars( Term.createTerm(msgTemplate), 
+        	                    Term.createTerm(msgUserTemplate), 
+        		    		  	Term.createTerm(currentEvent.getMsg()), parg);
+			}
+         	if( parg != null )  return stateTab.get(plan);
+         	else return null ;
+		}
+ 
+ */

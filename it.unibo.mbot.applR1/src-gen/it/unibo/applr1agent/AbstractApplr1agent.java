@@ -101,7 +101,7 @@ public abstract class AbstractApplr1agent extends QActor {
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr1agent_"+myselfName,false,
 	          new StateFun[]{stateTab.get("checkForPassage") },//new StateFun[]
-	          new String[]{"true","E","tasktodo" },
+	          new String[]{"true","M","taskmsg" },
 	          360000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitFortask){  
 	    	 println( getName() + " plan=waitFortask WARNING:" + e_waitFortask.getMessage() );
@@ -129,19 +129,7 @@ public abstract class AbstractApplr1agent extends QActor {
 	    	if( ! aar.getGoon() ) return ;
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr1agent_"+myselfName,false,
-	          new StateFun[]{
-	          () -> {	//AD HOC state to execute an action and resumeLastPlan
-	          try{
-	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
-	                switchToPlanAsNextState(pr, myselfName, "applr1agent_"+myselfName, 
-	                      "yetObstacle",false, false, null); 
-	            repeatPlanNoTransition(pr1,"adhocstate","adhocstate",false,true);
-	          }catch(Exception e ){  
-	             println( getName() + " plan=checkForPassage WARNING:" + e.getMessage() );
-	             //QActorContext.terminateQActorSystem(this); 
-	          }
-	          }
-	          },//new StateFun[]
+	          new StateFun[]{stateTab.get("yetObstacle") },//new StateFun[]
 	          new String[]{"true","E","sonarSensor" },
 	          1000, "passageFound" );//msgTransition
 	    }catch(Exception e_checkForPassage){  
@@ -181,8 +169,10 @@ public abstract class AbstractApplr1agent extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("passageFound",-1);
 	    	String myselfName = "passageFound";  
-	    	temporaryStr = "\"passageFound\"";
+	    	temporaryStr = "\"passageFound. EMIT taskdone\"";
 	    	println( temporaryStr );  
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "taskdone(TASK,ARGS)","taskdone(\"obstacleAvoidance\",\"ok\")", guardVars ).toString();
+	    	emit( "taskdone", temporaryStr );
 	    	//switchTo waitFortask
 	        switchToPlanAsNextState(pr, myselfName, "applr1agent_"+myselfName, 
 	              "waitFortask",false, false, null); 

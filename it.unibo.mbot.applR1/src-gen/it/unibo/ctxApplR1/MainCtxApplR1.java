@@ -8,6 +8,10 @@ public class MainCtxApplR1  {
 //MAIN
 public static QActorContext initTheContext() throws Exception{
 	IOutputEnvView outEnvView = SituatedSysKb.standardOutEnvView;
+	it.unibo.is.interfaces.IBasicEnvAwt env=new it.unibo.baseEnv.basicFrame.EnvFrame( 
+		"Env_ctxApplR1",java.awt.Color.cyan , java.awt.Color.black );
+	env.init();
+	outEnvView = env.getOutputEnvView();
 	String webDir = null;
 	return QActorContext.initQActorSystem(
 		"ctxapplr1", "./srcMore/it/unibo/ctxApplR1/applr1.pl", 

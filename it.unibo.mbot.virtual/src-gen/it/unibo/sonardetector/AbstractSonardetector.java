@@ -95,7 +95,7 @@ public abstract class AbstractSonardetector extends QActor {
 	    	String myselfName = "waitForEvents";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"sonardetector_"+myselfName,false,
-	          new StateFun[]{stateTab.get("sendToRadar"), stateTab.get("showObstcle") },//new StateFun[]
+	          new StateFun[]{stateTab.get("sendToRadar"), stateTab.get("showObstcle") }, 
 	          new String[]{"true","E","sonar", "true","E","sonarDetect" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitForEvents){  

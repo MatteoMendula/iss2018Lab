@@ -94,8 +94,7 @@ public abstract class AbstractRover extends QActor {
 	    	String myselfName = "waitForCmd";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"rover_"+myselfName,false,
-	          new StateFun[]{
-	          () -> {	//AD HOC state to execute an action and resumeLastPlan
+	          new StateFun[]{() -> {	//AD HOC state to execute an action and resumeLastPlan
 	          try{
 	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
 	            //ActionSwitch for a message or event
@@ -112,7 +111,7 @@ public abstract class AbstractRover extends QActor {
 	             //QActorContext.terminateQActorSystem(this); 
 	          }
 	          },
-	           stateTab.get("execMove") },//new StateFun[]
+	           stateTab.get("execMove") }, 
 	          new String[]{"true","E","alarm", "true","M","moveRover" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitForCmd){  

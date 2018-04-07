@@ -96,7 +96,7 @@ public abstract class AbstractMbot extends QActor {
 	    	String myselfName = "waitForCmd";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"mbot_"+myselfName,false,
-	          new StateFun[]{stateTab.get("execMove") },//new StateFun[]
+	          new StateFun[]{stateTab.get("execMove") }, 
 	          new String[]{"true","M","moveMbot" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitForCmd){  

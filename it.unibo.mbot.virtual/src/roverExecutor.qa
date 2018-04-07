@@ -53,8 +53,8 @@ QActor rover context ctxRoverExecutor  -pubsub {
     switchTo waitForCmd            
 		 
    	Plan waitForCmd[  ]  
-  	transition stopAfter 3600000   	//1h   
-  		whenEvent alarm : alarm(X) do {
+  	transition stopAfter 3600000   	//1h 
+  		whenEvent alarm : alarm(X) do { 
   			emit alarmev : alarm(X) //emit via Mqtt a new event (to avoid recursion);
   		},
  		whenMsg moveRover   -> execMove  	  

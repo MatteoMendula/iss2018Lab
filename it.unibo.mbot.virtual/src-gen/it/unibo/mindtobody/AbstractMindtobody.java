@@ -96,7 +96,7 @@ public abstract class AbstractMindtobody extends QActor {
 	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"mindtobody_"+myselfName,false,
-	          new StateFun[]{stateTab.get("emitMindEvent") },//new StateFun[]
+	          new StateFun[]{stateTab.get("emitMindEvent") }, 
 	          new String[]{"true","E","usercmd" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doWork){  

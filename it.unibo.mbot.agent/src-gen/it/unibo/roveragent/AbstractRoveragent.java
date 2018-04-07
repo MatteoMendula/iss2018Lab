@@ -97,7 +97,7 @@ public abstract class AbstractRoveragent extends QActor {
 	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"roveragent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("alarmHandlePolicy"), stateTab.get("handleSonarEvents") },//new StateFun[]
+	          new StateFun[]{stateTab.get("alarmHandlePolicy"), stateTab.get("handleSonarEvents") }, 
 	          new String[]{"true","M","alarmmsg", "true","E","sonarSensor" },
 	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doWork){  
