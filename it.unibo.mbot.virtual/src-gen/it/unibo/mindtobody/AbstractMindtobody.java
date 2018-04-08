@@ -56,8 +56,6 @@ public abstract class AbstractMindtobody extends QActor {
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
-	    	stateTab.put("doWork",doWork);
-	    	stateTab.put("emitMindEvent",emitMindEvent);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -78,56 +76,12 @@ public abstract class AbstractMindtobody extends QActor {
 	    	temporaryStr = "\"mindtobody STARTS \"";
 	    	println( temporaryStr );  
 	     connectToMqttServer("tcp://localhost:1883");
-	    	//switchTo doWork
-	        switchToPlanAsNextState(pr, myselfName, "mindtobody_"+myselfName, 
-	              "doWork",false, false, null); 
+	    	repeatPlanNoTransition(pr,myselfName,"mindtobody_"+myselfName,false,false);
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//init
-	    
-	    StateFun doWork = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_doWork",0);
-	     pr.incNumIter(); 	
-	    	String myselfName = "doWork";  
-	    	temporaryStr = "\"mindtobody WAITS ... \"";
-	    	println( temporaryStr );  
-	    	//bbb
-	     msgTransition( pr,myselfName,"mindtobody_"+myselfName,false,
-	          new StateFun[]{stateTab.get("emitMindEvent") }, 
-	          new String[]{"true","E","usercmd" },
-	          3600000, "handleToutBuiltIn" );//msgTransition
-	    }catch(Exception e_doWork){  
-	    	 println( getName() + " plan=doWork WARNING:" + e_doWork.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//doWork
-	    
-	    StateFun emitMindEvent = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("emitMindEvent",-1);
-	    	String myselfName = "emitMindEvent";  
-	    	printCurrentEvent(false);
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(CMD)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg="usercmd(CMD)";
-	    			/* RaiseEvent */
-	    			parg = updateVars(Term.createTerm("usercmd(CMD)"),  Term.createTerm("usercmd(CMD)"), 
-	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
-	    			if( parg != null ) emit( "mindcmd", parg );
-	    	}
-	    	repeatPlanNoTransition(pr,myselfName,"mindtobody_"+myselfName,false,true);
-	    }catch(Exception e_emitMindEvent){  
-	    	 println( getName() + " plan=emitMindEvent WARNING:" + e_emitMindEvent.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//emitMindEvent
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

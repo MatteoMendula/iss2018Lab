@@ -15,29 +15,29 @@ Event sonarDetect  : sonarDetect(X)					//From (virtual robot) sonar
 Event    polar     : p( Distance, Angle )
 Event mindcmd      : usercmd(CMD)					//to command a real robot
     
-Dispatch moveRover : usercmd(CMD)      
-  
+Dispatch moveRover : usercmd(CMD)       
+    
 //pubSubServer  "tcp://192.168.43.229:1883"    
 pubSubServer  "tcp://localhost:1883"    		//for testing
 
 Context ctxRoverExecutor ip [ host="localhost"   port=8032 ] -g white -httpserver  
-EventHandler evh for usercmd -print {	//event-driven but no Mqtt support yet
+EventHandler evh for usercmd, mindcmd -print {	//event-driven ; no Mqtt support yet
  	forwardEvent rover -m moveRover  	//from event to message
-};   
-
+};     
+ 
 QActor mindtobody context ctxRoverExecutor  -pubsub {  
 	Plan init normal [  println("mindtobody STARTS ")   ] 
-	switchTo doWork  
-	
-	Plan doWork[ println("mindtobody WAITS ... ") ]  
-	transition stopAfter 3600000   	//1h   
-  		whenEvent usercmd -> emitMindEvent
-  	finally repeatPlan
-  	
-  	Plan emitMindEvent resumeLastPlan[
-  		printCurrentEvent;
-  		onEvent usercmd : usercmd(CMD) -> emit mindcmd : usercmd(CMD)
-  	]
+//	switchTo doWork  
+//	
+//	Plan doWork[ println("mindtobody WAITS ... ") ]  
+//	transition stopAfter 3600000   	//1h   
+//  		whenEvent usercmd -> emitMindEvent
+//  	finally repeatPlan
+//  	
+//  	Plan emitMindEvent resumeLastPlan[
+//  		printCurrentEvent;
+//  		onEvent usercmd : usercmd(CMD) -> emit mindcmd : usercmd(CMD)
+//  	]
 }
 
 /*  
@@ -90,7 +90,7 @@ QActor sonardetector context ctxRoverExecutor -pubsub {
 	Plan init normal [	println("sonardetector STARTS ") ]
 	switchTo waitForEvents       
 	  
-	Plan waitForEvents[ ]      
+	Plan waitForEvents[ ]       
   	transition stopAfter 3600000   	//1h         
   		//these events can be captured because sonardetector is in the  context ctxRoverExecutor
  		whenEvent sonar       ->  sendToRadar,
@@ -107,4 +107,4 @@ QActor sonardetector context ctxRoverExecutor -pubsub {
 		onEvent sonarDetect  : sonarDetect( TARGET ) -> emit sonarSensor : sonar(roversonar, 30)  ;
 		emit polar : p(30,90) 
 	]
-}
+} 

@@ -1,5 +1,1 @@
 plan(1,init, sentence(true,move(print("mindtobody STARTS ")),'','' ))
-plan(1,doWork, sentence(true,move(print("mindtobody WAITS ... ")),'','' ))
-plan(1,emitMindEvent, sentence(true,printCurrentEvent(false),'','' ))
-plan(2,emitMindEvent, sentence(true,eventswitch(usercmd, »usercmd( CMD), raise( mindcmd , usercmd( CMD) )') ),'','' ))
-plan(3,emitMindEvent, sentence(true,move(resumeplan),'','' ))

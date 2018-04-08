@@ -4,20 +4,21 @@
   * ==============================================================
  */     
 System applR1     
-Event usercmd      : usercmd(CMD)     
+Event mindcmd      : usercmd(CMD)     
 Event sonarSensor  : sonar( NAME, DISTANCE )	//From rover or real robot
 Event alarmev      : alarm( X )   
-Event taskexec     : taskexec(  tasktodo( NAME, ARGS ) )			
-Event tasktodo     : tasktodo( TASK, ARGS )	    //From other agents
-Event taskdone     : taskdone( TASK, ARGS )	
 
+Event taskexec     : taskexec(  tasktodo( NAME, ARGS ) )	//emitted by R0		
+Event tasktodo     : tasktodo( TASK, ARGS )	    //emitted for other agents
+Event taskdone     : taskdone( TASK, ARGS )		//emitted when found a passage 
+
+Dispatch taskmsg   : tasktodo( TASK, ARGS )		//same payload as tasktodo
 Dispatch alarmmsg  : alarm( X ) 	//same payload as alarmev
-Dispatch taskmsg   : tasktodo( TASK, ARGS )
 
 //pubSubServer  "tcp://192.168.43.229:1883"    
 pubSubServer  "tcp://localhost:1883"    		//for testing
 
-Context ctxApplR1 ip [ host="localhost"   port=8039 ]  -g cyan   //192.168.43.229
+Context ctxApplR1 ip [ host="localhost"   port=8039 ]     //192.168.43.229
 EventHandler evh for alarmev -print {	 
 	forwardEvent applr1agent -m alarmmsg   
 };
@@ -28,7 +29,7 @@ EventHandler evhtask for tasktodo -print {
 
 QActor applr1agent context ctxApplR1 -pubsub{       
 	Plan init normal [  ]  
- 	switchTo waitFortask 
+ 	switchTo waitFortask  
  	 
 	Plan waitFortask  [  
 		println("applr1agent EMITS taskexec ") 	;
@@ -41,21 +42,19 @@ QActor applr1agent context ctxApplR1 -pubsub{
 	  
   	Plan checkForPassage [	//The robot is already in the right direction
    	   println(  "checkForPassage ATTEMPT"  ) ;
-       emit usercmd : usercmd( robotgui(w(low)) ) ;  
+       emit mindcmd : usercmd( robotgui(w(low)) ) ;  
   	   delay 1000 ;
-  	   emit usercmd : usercmd( robotgui(a(low)) ) ;  //turn left 
-  	   delay 750  
-//	   emit usercmd : usercmd( robotgui(h(low)) )   // 
+  	   emit mindcmd : usercmd( robotgui(a(low)) )   //turn left 
    	]
    	transition whenTime 1000 -> passageFound  //no sonarSensor emitted stopAfter 60000 //
  		//whenMsg  alarmmsg    -> alarmHandlePolicy ,
  		whenEvent sonarSensor  -> yetObstacle //: sonar(A, B)
   
   	Plan yetObstacle [ 
-  	  println( yetObstacle ); 
- 	  emit usercmd : usercmd( robotgui(s(low)) ) ;  // 
-  	  delay 100  ;
-      emit usercmd : usercmd( robotgui( d(low)) ) ;  //turn right 		
+  	  println( yetObstacle );   
+ 	  emit mindcmd : usercmd( robotgui(s(low)) ) ;  // 
+  	  delay 200  ;
+      emit mindcmd : usercmd( robotgui( d(low)) ) ;  //turn right 		
   	  delay 750 
   	]
   	switchTo checkForPassage
@@ -72,7 +71,7 @@ QActor applr1agent context ctxApplR1 -pubsub{
 	Plan alarmHandlePolicy resumeLastPlan[  
 		printCurrentMessage;  
 		println("applr1agent ALARM HANDLING POLICY (stop)... ") ;
- 		emit usercmd : usercmd( robotgui(h(low)) ) ;     
+ 		emit mindcmd : usercmd( robotgui(h(low)) ) ;     
 		println("applr1agent ALARM HANDLING POLICY DONE ") 
 	] 
 

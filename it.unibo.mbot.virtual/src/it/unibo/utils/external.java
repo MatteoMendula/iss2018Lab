@@ -14,7 +14,7 @@ private static boolean unityOn = false;
 			if( batchFile.length() > 0 ) {
 				customExecute(qa, batchFile);
 				try {
-					Thread.sleep(6000);
+					Thread.sleep(8000);
 				} catch (Exception e) {	}
 			}
 			unityOn = true;

@@ -1,0 +1,3 @@
+plan(1,init, sentence(true,move(print("evlogagent STARTS")),'','' ))
+plan(1,logEvent, sentence(true,printCurrentEvent(false),'','' ))
+plan(2,logEvent, sentence(true,move(resumeplan),'','' ))

@@ -100,7 +100,7 @@ public abstract class AbstractApplr1agent extends QActor {
 	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr1agent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("checkForPassage") },//new StateFun[]
+	          new StateFun[]{stateTab.get("checkForPassage") }, 
 	          new String[]{"true","M","taskmsg" },
 	          360000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitFortask){  
@@ -116,20 +116,16 @@ public abstract class AbstractApplr1agent extends QActor {
 	    	temporaryStr = "\"checkForPassage ATTEMPT\"";
 	    	println( temporaryStr );  
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(w(low)))", guardVars ).toString();
-	    	emit( "usercmd", temporaryStr );
+	    	emit( "mindcmd", temporaryStr );
 	    	//delay  ( no more reactive within a plan)
 	    	aar = delayReactive(1000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "checkForPassage";
 	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(a(low)))", guardVars ).toString();
-	    	emit( "usercmd", temporaryStr );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(750,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "checkForPassage";
-	    	if( ! aar.getGoon() ) return ;
+	    	emit( "mindcmd", temporaryStr );
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr1agent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("yetObstacle") },//new StateFun[]
+	          new StateFun[]{stateTab.get("yetObstacle") }, 
 	          new String[]{"true","E","sonarSensor" },
 	          1000, "passageFound" );//msgTransition
 	    }catch(Exception e_checkForPassage){  
@@ -145,13 +141,13 @@ public abstract class AbstractApplr1agent extends QActor {
 	    	temporaryStr = "yetObstacle";
 	    	println( temporaryStr );  
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(s(low)))", guardVars ).toString();
-	    	emit( "usercmd", temporaryStr );
+	    	emit( "mindcmd", temporaryStr );
 	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(100,"" , "");
+	    	aar = delayReactive(200,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "yetObstacle";
 	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(d(low)))", guardVars ).toString();
-	    	emit( "usercmd", temporaryStr );
+	    	emit( "mindcmd", temporaryStr );
 	    	//delay  ( no more reactive within a plan)
 	    	aar = delayReactive(750,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "yetObstacle";
@@ -190,7 +186,7 @@ public abstract class AbstractApplr1agent extends QActor {
 	    	temporaryStr = "\"applr1agent ALARM HANDLING POLICY (stop)... \"";
 	    	println( temporaryStr );  
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
-	    	emit( "usercmd", temporaryStr );
+	    	emit( "mindcmd", temporaryStr );
 	    	temporaryStr = "\"applr1agent ALARM HANDLING POLICY DONE \"";
 	    	println( temporaryStr );  
 	    	repeatPlanNoTransition(pr,myselfName,"applr1agent_"+myselfName,false,true);

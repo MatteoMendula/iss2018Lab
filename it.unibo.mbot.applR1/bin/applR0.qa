@@ -8,8 +8,8 @@
  * 		taskdone : taskdone( obstacleAvoidance, _ )
   * ==============================================================
  */     
-System applR0     
-Event usercmd      : usercmd(CMD)     
+System applR0      
+Event mindcmd      : usercmd(CMD)     
 Event alarmev      : alarm( X )   
 Event sonarSensor  : sonar( NAME, DISTANCE )	//From rover or real robot
 Event taskexec     : taskexec(  tasktodo( NAME, ARGS ) )			
@@ -23,6 +23,8 @@ Dispatch atsonar1     : atsonar1(  DISTANCE )
 Dispatch atsonar2     : atsonar2(  DISTANCE )
 Dispatch waitAnswer   : waitAnswer(  ARG  )
 Dispatch hopemobile   : hopemobile(  ARG  )
+Dispatch updatePos    : updatePos(  ARG  )
+Dispatch redoWork     : redoWork(  ARG  )
  
 //pubSubServer  "tcp://192.168.43.229:1883"    
 pubSubServer  "tcp://localhost:1883"    		//for testing
@@ -42,116 +44,141 @@ Rules{
 	newtaskexecutor :-   
 		retract( msg( taskexec, 'event', EMITTER, none, taskexec(  tasktodo( NAME, ARGS ) ), MSGNUM ) ),
 		replaceRule( task(tasktodo( NAME, OLDARG ) ) , task(tasktodo( NAME, ARGS ) ) ), //just one
-		actorPrintln( task(tasktodo( NAME, ARGS ) ) )
-		.	
+		actorPrintln( task(tasktodo( NAME, ARGS ) ) ).	
 		
-	robotFinalPosition( DELTA ) :-
+	robotFinalPosition( RES ) :-
 		sonar1ok(D1),
-		sonar2ok(D2),
-		eval( minus, D1, D2, DELTA ).
-} 
+		actorPrintln( sonar1ok(D1) ),!,
+		retract( sonar2ok(D2) ),
+		actorPrintln( sonar2ok(D2) ),
+		eval( minus, D2, D1, DELTA ),
+		finalPosVal( DELTA, RES ).	
+	robotFinalPosition( wrong ).	
+	finalPosVal( DELTA, wrong ):-
+		eval( gt, DELTA, 3 ),!.
+	finalPosVal( DELTA, ok ).
+}   
 	Plan init normal [  ]  
 	switchTo doWork  
-	
+ 
 	Plan doWork  [     
 		println("applr0agent doWork") ;
- 		emit usercmd : usercmd( robotgui(w(low)) )   //forward	
-	]  
+ 		emit mindcmd : usercmd( robotgui(w(low)) )   //forward	
+	]   
 	transition   stopAfter 6000000        
   		whenMsg  alarmmsg       -> alarmHandlePolicy ,
  		whenEvent  sonarSensor  -> handleSonarEvents 	 
  	finally repeatPlan
 	
-
+ 
 	Plan handleSonarEvents resumeLastPlan [ 
-		printCurrentEvent; 
-//		onEvent sonarSensor : sonar(realsonar, DISTANCE) -> {
-//			emit usercmd : usercmd( robotgui(d(low)) ) ;	//right
-//			delay 750;
-//			emit usercmd : usercmd( robotgui(h(low)) ) ;	//stop			
-//			[ !? task(tasktodo( obstacleAvoidance, on ) ) ] {
-//				emit tasktodo : tasktodo( obstacleAvoidance, "do" );
-//				addRule waitAnswer
-//			}else endPlan "" 
-//		};   
 		onEvent sonarSensor : sonar(sonar1, DISTANCE) -> forward applr0agent -m atsonar1 : atsonar1(DISTANCE) ;
   		onEvent sonarSensor : sonar(sonar2, DISTANCE) -> forward applr0agent -m atsonar2 : atsonar2(DISTANCE) ;
-		onEvent sonarSensor : sonar(sonar2, DISTANCE) -> {
-			delay 200; //disengage
-			emit usercmd : usercmd( robotgui(h(low)) ) 	//stop		
- 		};
 		onEvent sonarSensor : sonar(roversonar, DISTANCE) -> {
-			emit usercmd : usercmd( robotgui(d(low)) ) ;	//right
-			delay 750;
- 			emit usercmd : usercmd( robotgui(h(low)) ) ;	//stop
-			[ !? task(tasktodo( obstacleAvoidance, on)) ] {
-				println("emitting  tasktodo ") ;
-				emit tasktodo : tasktodo( obstacleAvoidance, "do" ) ;
-				forward applr0agent -m waitAnswer : waitAnswer("obstacleAvoidance")
- 			} else { //hope mobile obstacle
-  				forward applr0agent -m hopemobile : hopemobile("") 
-  			}	
-		}
+  			emit mindcmd : usercmd( robotgui(h(low)) ) ;	//stop
+			println(sonar(roversonar));			
+			emit mindcmd : usercmd( robotgui(d(low)) ) ;	//right
+ 			forward applr0agent -m hopemobile : hopemobile("")
+		} 
   		//other events are ignored 
-  	 ]  	 
+  	 ]  	  
 //  	 switchTo [ ??waitAnswer ] waitAnswer   
   	 transition stopAfter 600000
-  	 	whenMsg hopemobile -> avoidMobileObstacle ,
+  	 	whenMsg hopemobile -> checkMobileObstacle ,
   	 	whenMsg atsonar1   -> robotAtSonar1 ,
-  	 	whenMsg atsonar2   -> robotAtSonar2 ,
-   	 	whenMsg waitAnswer -> doWaitAnswer
+  	 	whenMsg atsonar2   -> robotAtSonar2  
   	 
-  	 Plan avoidMobileObstacle[
- 		println("hopemobileobstacleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
- 		delay 1000; 
- 		emit usercmd : usercmd( robotgui(a(low)) ) 	//left 	 	
+  	 Plan checkMobileObstacle [
+   		println("checkMobileObstacle");
+ 		emit mindcmd : usercmd( robotgui(a(low)) ) ;	//left 	 		 	
+   		delay 1000  //hope that it will move  
   	 ]  
-  	 switchTo doWork
-  	 
+  	 transition whenTime 1000 -> doWork
+  	 	whenEvent sonarSensor -> fixedObstacle
+  	  
+  	 Plan fixedObstacle [ 
+  	 	println("fixedobstaclee");
+		[ !? task(tasktodo( obstacleAvoidance, on)) ] {
+			emit mindcmd : usercmd( robotgui(d(low)) ) ;	//right
+//			println("emitting  tasktodo ") ;
+			delay 700;
+			emit tasktodo : tasktodo( obstacleAvoidance, "do" ) ;
+			forward applr0agent -m waitAnswer : waitAnswer("obstacleAvoidance")
+ 		} else{
+ 			emit mindcmd : usercmd( robotgui(s(low)) ) ;
+ 			delay 800; //disengage
+ 			emit mindcmd : usercmd( robotgui(h(low)) ) ;
+ 			println( "SORRY: fixed obstacle without strategy" )
+  		}  	 	
+  	 ]
+  	 transition stopAfter 600000
+     	 whenMsg waitAnswer -> doWaitAnswer,
+     	 whenEvent alarmev  -> doWork
+  	   	 
   	 Plan robotAtSonar1 [
    	 	printCurrentMessage;
-  	 	onMsg atsonar1 : atsonar1(D) -> addRule sonar1ok(D)
-  	 ]
+  	 	onMsg atsonar1 : atsonar1(D) -> addRule sonar1ok(D)  
+   	 ]
   	 switchTo doWork
   	 
   	 Plan robotAtSonar2[
-  	 	printCurrentMessage;
+//  	 	delay 200 ; //disengage  //do not disengage until pos verified
+  	 	emit mindcmd : usercmd( robotgui(h(low)) ) ; //stop
   	 	onMsg atsonar2 : atsonar2(D) -> addRule sonar2ok(D);
-  	 	[ !? sonar1ok(D) ] println( atsonar1(D) );
-  	 	[ !? sonar2ok(D) ] println( atsonar2(D) )
+   	 	demo robotFinalPosition( RES );
+  	 	[ ?? goalResult(robotFinalPosition( wrong )) ] forward applr0agent -m updatePos : updatePos( "" );
+  	 	[ ?? goalResult(robotFinalPosition( ok )) ]    forward applr0agent -m redoWork  : redoWork( "" )
   	 ]
-  	 switchTo adjustRobotPosition
-  	 
-  	 Plan adjustRobotPosition [
-  	 	demo robotFinalPosition( DELTA );
-  	 	[ ?? goalResult(robotFinalPosition( DELTA )) ] println(DELTA)
-  	 	
+  	 transition stopAfter 600000 
+		whenMsg updatePos -> adjustRobotPosition ,
+		whenMsg redoWork  -> redoWork
+  
+    Plan redoWork[
+    	println( "REPOSITION THE ROBOT AND PRESS FIRE Button")
+    ]
+    transition stopAfter 600000
+    	whenEvent alarmev -> doWork
+    
+  	 Plan adjustRobotPosition  [  
+  	 		println( "going at place .... ");
+  	 		emit mindcmd : usercmd( robotgui(a(low)) ) ; //left
+  	 		delay 400;
+   	 		emit mindcmd : usercmd( robotgui(w(low)) ) ;
+  	 		delay 1500  ; //move a bit
+ 	 		emit mindcmd : usercmd( robotgui(d(low)) ) //right
+   	 ]
+  	 transition stopAfter 60000
+		whenEvent sonarSensor -> checkPos  	
+		
+  	 Plan checkPos [
+  	 	printCurrentEvent;
+  	 	onEvent sonarSensor : sonar( sonar2, D ) -> addRule sonar2ok(D)
   	 ]
+  	 switchTo robotAtSonar2
   	 
-  	 /*
-  	  * If applr1agent is not running we do not have any answer
-  	  * The independence of this component is reduced 
-  	  */  	  
+  	   	 
   	 Plan doWaitAnswer[
   	 	println("applr0agent WAITS that a passage is found") 
   	 ]
-  	 transition stopAfter 30000  
-		whenEvent taskdone -> 	checkTheAnswer // : taskdone(obstacleAvoidance,"ok" ) 
- 	 finally repeatPlan  //in case of some other answer
+  	 transition whenTime 60000 -> noAnswer  	//could be disconnected
+		whenEvent taskdone -> checkTheAnswer 
 	 
   	 Plan checkTheAnswer resumeLastPlan [
   	 	printCurrentEvent ;
-  	 	onEvent taskdone : taskdone(obstacleAvoidance,"ok" ) -> addRule goon ;
-  	 	delay 2000
+  	 	onEvent taskdone : taskdone(obstacleAvoidance,"ok" ) -> addRule goon 
      ]	
    	 switchTo [ ??goon  ] doWork
  
- 
+ 	Plan noAnswer[
+ 		println("applr0agent no answer received. Press FIRE to restart")
+ 	]
+ 	transition stopAfter 600000
+ 		whenEvent alarmev -> doWork
  
  	Plan alarmHandlePolicy resumeLastPlan[ 
 		printCurrentMessage;  
-		println("applr0agent ALARM HANDLING POLICY (stop)... ") ;
- 		emit usercmd : usercmd( robotgui(h(low)) ) ;     
+//		println("applr0agent ALARM HANDLING POLICY (stop)... ") ;
+// 		emit usercmd : usercmd( robotgui(h(low)) ) ;     
 		println("applr0agent ALARM HANDLING POLICY DONE ") 
 	]  
    	 

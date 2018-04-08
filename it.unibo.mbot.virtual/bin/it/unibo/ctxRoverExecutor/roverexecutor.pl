@@ -13,6 +13,6 @@ qactor( rover_ctrl , ctxroverexecutor, "it.unibo.rover.Rover"   ). %%control-dri
 qactor( sonardetector , ctxroverexecutor, "it.unibo.sonardetector.MsgHandle_Sonardetector"   ). %%store msgs 
 qactor( sonardetector_ctrl , ctxroverexecutor, "it.unibo.sonardetector.Sonardetector"   ). %%control-driven 
 %%% -------------------------------------------
-eventhandler(evh,ctxroverexecutor,"it.unibo.ctxRoverExecutor.Evh","usercmd").  
+eventhandler(evh,ctxroverexecutor,"it.unibo.ctxRoverExecutor.Evh","usercmd,mindcmd").  
 %%% -------------------------------------------
 

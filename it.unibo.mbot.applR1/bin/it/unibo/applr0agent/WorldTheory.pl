@@ -143,7 +143,10 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %  User static rules about applr0agent
 %------------------------------------------------- 
 newtaskexecutor:-retract( msg( taskexec,"event",EMITTER,none,taskexec( tasktodo( NAME,ARGS)),MSGNUM)),replaceRule( task( tasktodo( NAME,OLDARG)),task( tasktodo( NAME,ARGS))),actorPrintln( task( tasktodo( NAME,ARGS))).
-robotFinalPosition( DELTA):-sonar1ok( D1),sonar2ok( D2),eval( minus,D1,D2,DELTA).
+robotFinalPosition( RES):-sonar1ok( D1),actorPrintln( sonar1ok( D1)), ! ,retract( sonar2ok( D2)),actorPrintln( sonar2ok( D2)),eval( minus,D2,D1,DELTA),finalPosVal( DELTA,RES).
+robotFinalPosition( wrong).
+finalPosVal( DELTA,wrong):-eval( gt,DELTA,3), ! .
+finalPosVal( DELTA,ok).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),
