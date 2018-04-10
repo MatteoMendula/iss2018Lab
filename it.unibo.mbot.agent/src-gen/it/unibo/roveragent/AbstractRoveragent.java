@@ -26,7 +26,7 @@ public abstract class AbstractRoveragent extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://192.168.43.229:1883";
+	//protected String mqttServer = "tcp://localhost:1883";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -78,7 +78,7 @@ public abstract class AbstractRoveragent extends QActor {
 	    	String myselfName = "init";  
 	    	temporaryStr = "\"roveragent STARTS\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("tcp://192.168.43.229:1883");
+	     connectToMqttServer("tcp://localhost:1883");
 	    	//switchTo doWork
 	        switchToPlanAsNextState(pr, myselfName, "roveragent_"+myselfName, 
 	              "doWork",false, false, null); 
@@ -113,10 +113,10 @@ public abstract class AbstractRoveragent extends QActor {
 	    	printCurrentMessage(false);
 	    	temporaryStr = "\"roveragent ALARM HANDLING POLICY (turn left)... \"";
 	    	println( temporaryStr );  
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(a(low)))", guardVars ).toString();
-	    	emit( "usercmd", temporaryStr );
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
-	    	emit( "usercmd", temporaryStr );
+	    	//PublishMsgMove
+	    	parg = "usercmd(robotgui(a(low)))";
+	    	sendMsgMqtt(  "unibo/qasys", "moveRover", "rover", parg );
+	    	sendMsg("moveRover", "rover", "dispatch", "usercmd(  robotgui(d(low)) )");
 	    	temporaryStr = "\"roveragent ALARM HANDLING POLICY DONE \"";
 	    	println( temporaryStr );  
 	    	repeatPlanNoTransition(pr,myselfName,"roveragent_"+myselfName,false,true);
@@ -142,19 +142,19 @@ public abstract class AbstractRoveragent extends QActor {
 	    			temporaryStr = "roversonar";
 	    			println( temporaryStr );  
 	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(s(low)))", guardVars ).toString();
-	    			emit( "usercmd", temporaryStr );
+	    			emit( "mindcmd", temporaryStr );
 	    			//delay  ( no more reactive within a plan)
 	    			aar = delayReactive(700,"" , "");
 	    			if( aar.getInterrupted() ) curPlanInExec   = "handleSonarEvents";
 	    			if( ! aar.getGoon() ) return ;
 	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
-	    			emit( "usercmd", temporaryStr );
+	    			emit( "mindcmd", temporaryStr );
 	    			//delay  ( no more reactive within a plan)
 	    			aar = delayReactive(1500,"" , "");
 	    			if( aar.getInterrupted() ) curPlanInExec   = "handleSonarEvents";
 	    			if( ! aar.getGoon() ) return ;
 	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(s(low)))", guardVars ).toString();
-	    			emit( "usercmd", temporaryStr );
+	    			emit( "mindcmd", temporaryStr );
 	    			};//actionseq
 	    	}
 	    	//onEvent 
@@ -168,23 +168,23 @@ public abstract class AbstractRoveragent extends QActor {
 	    			temporaryStr = "roversonar";
 	    			println( temporaryStr );  
 	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(s(low)))", guardVars ).toString();
-	    			emit( "usercmd", temporaryStr );
+	    			emit( "mindcmd", temporaryStr );
 	    			//delay  ( no more reactive within a plan)
 	    			aar = delayReactive(700,"" , "");
 	    			if( aar.getInterrupted() ) curPlanInExec   = "handleSonarEvents";
 	    			if( ! aar.getGoon() ) return ;
 	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
-	    			emit( "usercmd", temporaryStr );
+	    			emit( "mindcmd", temporaryStr );
 	    			temporaryStr = "\"%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LONG ACTION\"";
 	    			println( temporaryStr );  
 	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(a(low)))", guardVars ).toString();
-	    			emit( "usercmd", temporaryStr );
+	    			emit( "mindcmd", temporaryStr );
 	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(a(low)))", guardVars ).toString();
-	    			emit( "usercmd", temporaryStr );
+	    			emit( "mindcmd", temporaryStr );
 	    			temporaryStr = "\"%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GOING ON\"";
 	    			println( temporaryStr );  
 	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(w(low)))", guardVars ).toString();
-	    			emit( "usercmd", temporaryStr );
+	    			emit( "mindcmd", temporaryStr );
 	    			temporaryStr = "\"%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LONG ACTION END\"";
 	    			println( temporaryStr );  
 	    			};//actionseq
@@ -204,7 +204,7 @@ public abstract class AbstractRoveragent extends QActor {
 	    			if( aar.getInterrupted() ) curPlanInExec   = "handleSonarEvents";
 	    			if( ! aar.getGoon() ) return ;
 	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
-	    			emit( "usercmd", temporaryStr );
+	    			emit( "mindcmd", temporaryStr );
 	    			};//actionseq
 	    	}
 	    	//onEvent 
@@ -222,7 +222,7 @@ public abstract class AbstractRoveragent extends QActor {
 	    			if( aar.getInterrupted() ) curPlanInExec   = "handleSonarEvents";
 	    			if( ! aar.getGoon() ) return ;
 	    			temporaryStr = QActorUtils.unifyMsgContent(pengine, "usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
-	    			emit( "usercmd", temporaryStr );
+	    			emit( "mindcmd", temporaryStr );
 	    			};//actionseq
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"roveragent_"+myselfName,false,true);

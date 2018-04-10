@@ -5,19 +5,20 @@
  * ==============================================================
  */     
 System mbotAgent     
-Event usercmd      : usercmd(CMD)     
+Event mindcmd      : usercmd(CMD)     
 Event alarmev      : alarm( X )   
 Event sonarSensor  : sonar( NAME, DISTANCE )	//From rover or real robot
 
 Dispatch alarmmsg  : alarm( X ) 	//same payload as alarmev
+Dispatch moveRover : usercmd(CMD)   
  
-pubSubServer  "tcp://192.168.43.229:1883"    
+pubSubServer  "tcp://localhost:1883"    
 
 Context ctxMbotAgent ip [ host="localhost"   port=8039 ]  -g cyan   //192.168.43.229
 EventHandler evh for alarmev -print {	//event-driven
 	forwardEvent roveragent -m alarmmsg   
 };   
-
+ 
 QActor roveragent context ctxMbotAgent -pubsub{      
 	Plan init normal [  
 		println("roveragent STARTS") 		
@@ -34,48 +35,47 @@ QActor roveragent context ctxMbotAgent -pubsub{
 	Plan alarmHandlePolicy resumeLastPlan[ 
 		printCurrentMessage;  
 		println("roveragent ALARM HANDLING POLICY (turn left)... ") ;
-		emit usercmd : usercmd( robotgui(a(low)) ) ;  //680 in the real robot 
-// 		delay 700 ;     
- 		emit usercmd : usercmd( robotgui(h(low)) ) ;     
+		//NOTE : we interact in this case by sending a message (and by going to a LOWER-LEVEL)
+ 		publishMsg "unibo/qasys" for "rover" -m moveRover : usercmd(  robotgui(a(low)) );
+ 		javaOp "sendMsg(\"moveRover\", \"rover\", \"dispatch\", \"usercmd(  robotgui(d(low)) )\")";
 		println("roveragent ALARM HANDLING POLICY DONE ") 
 	] 
-
 	Plan handleSonarEvents resumeLastPlan[
 		printCurrentEvent;
 		onEvent sonarSensor : sonar(realsonar, DISTANCE) -> {
 			//real obstacle
 			println(  roversonar  );
-			emit usercmd :  usercmd( robotgui(s(low)) ) ; //retrogress
+			emit mindcmd :  usercmd( robotgui(s(low)) ) ; //retrogress
 			delay 700 ;    //continue to move to stop sonar events    
-			emit usercmd : usercmd( robotgui(h(low)) ) ; 		 	   
+			emit mindcmd : usercmd( robotgui(h(low)) ) ; 		 	   
 			delay 1500   ;  //in this time, an alarm could be emitted
-			emit usercmd :  usercmd( robotgui(s(low)) )  //retrogress and stop if alarm			
+			emit mindcmd :  usercmd( robotgui(s(low)) )  //retrogress and stop if alarm			
 		}; 
 		onEvent sonarSensor : sonar(roversonar, DISTANCE) -> {
 			//virtual obstacle  
 			println(  roversonar  );
-			emit usercmd :  usercmd( robotgui(s(low)) ) ; //retrogress
+			emit mindcmd :  usercmd( robotgui(s(low)) ) ; //retrogress
 			delay 700 ;    //continue to move to stop sonar events    
-			emit usercmd : usercmd( robotgui(h(low)) ) ; 		 	        
+			emit mindcmd : usercmd( robotgui(h(low)) ) ; 		 	        
 			println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LONG ACTION");        
 			//in this time an alarm could be emitted  
-  		emit usercmd :  usercmd( robotgui(a(low)) )	;    //750 / 680 msec
-  		emit usercmd :  usercmd( robotgui(a(low)) )	;    //750 / 680 msec
+  		emit mindcmd :  usercmd( robotgui(a(low)) )	;    //750 / 680 msec
+  		emit mindcmd :  usercmd( robotgui(a(low)) )	;    //750 / 680 msec
   			println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GOING ON");  
-		emit usercmd :  usercmd( robotgui(w(low)) ) ;    //ahead 	
+		emit mindcmd :  usercmd( robotgui(w(low)) ) ;    //ahead 	
 			println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LONG ACTION END")   
  		};
 		onEvent sonarSensor : sonar(sonar1, DISTANCE) -> {
 			//fixed sonar (moving ahead or backwards)
 			println( sonar1 );    //no variable substitution, sorry
 			delay 500 ;    //continue to move to stop sonar events  
-			emit usercmd : usercmd( robotgui(h(low)) ) 		 	   			
+			emit mindcmd : usercmd( robotgui(h(low)) ) 		 	   			
 		};		
 		onEvent sonarSensor : sonar(sonar2, DISTANCE) -> {
 			//fixed sonar (moving ahead or backwards)
 			println( sonar2 );    //no variable substitution, sorry
 			delay 500 ;    //continue to move to stop sonar events  
-			emit usercmd : usercmd( robotgui(h(low)) ) 		 	          			
+			emit mindcmd : usercmd( robotgui(h(low)) ) 		 	          			
 		}
  	]
 }//roveragent

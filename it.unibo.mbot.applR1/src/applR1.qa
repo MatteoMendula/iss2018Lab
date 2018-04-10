@@ -2,7 +2,7 @@
  * ==============================================================
  * applR1.qa
   * ==============================================================
- */     
+ */       
 System applR1     
 Event mindcmd      : usercmd(CMD)     
 Event sonarSensor  : sonar( NAME, DISTANCE )	//From rover or real robot

@@ -31,12 +31,11 @@ pubSubServer  "tcp://localhost:1883"    		//for testing
 
 Context ctxApplR0 ip [ host="localhost"   port=8019 ]      //192.168.43.229
 EventHandler evh for alarmev -print {	 
-	forwardEvent applr0agent -m alarmmsg   
+	forwardEvent applr0agent -m alarmmsg     
 };    
 EventHandler evhtask for taskexec -print {	 
 	memoCurrentEvent -lastonly for applr0agent    ;
 	demo newtaskexecutor for applr0agent
-//	forwardEvent applr0agent -m dotaskmsg
 };   
   
 QActor applr0agent context ctxApplR0 -pubsub{    
@@ -56,8 +55,9 @@ Rules{
 	robotFinalPosition( wrong ).	
 	finalPosVal( DELTA, wrong ):-
 		eval( gt, DELTA, 3 ),!.
-	finalPosVal( DELTA, ok ).
+	finalPosVal( DELTA, ok ). 
 }   
+	
 	Plan init normal [  ]  
 	switchTo doWork  
  
@@ -69,7 +69,6 @@ Rules{
   		whenMsg  alarmmsg       -> alarmHandlePolicy ,
  		whenEvent  sonarSensor  -> handleSonarEvents 	 
  	finally repeatPlan
-	
  
 	Plan handleSonarEvents resumeLastPlan [ 
 		onEvent sonarSensor : sonar(sonar1, DISTANCE) -> forward applr0agent -m atsonar1 : atsonar1(DISTANCE) ;
@@ -82,7 +81,6 @@ Rules{
 		} 
   		//other events are ignored 
   	 ]  	  
-//  	 switchTo [ ??waitAnswer ] waitAnswer   
   	 transition stopAfter 600000
   	 	whenMsg hopemobile -> checkMobileObstacle ,
   	 	whenMsg atsonar1   -> robotAtSonar1 ,
@@ -122,7 +120,7 @@ Rules{
   	 switchTo doWork
   	 
   	 Plan robotAtSonar2[
-//  	 	delay 200 ; //disengage  //do not disengage until pos verified
+//  	delay 200 ; //disengage  //do not disengage until pos verified
   	 	emit mindcmd : usercmd( robotgui(h(low)) ) ; //stop
   	 	onMsg atsonar2 : atsonar2(D) -> addRule sonar2ok(D);
    	 	demo robotFinalPosition( RES );
@@ -155,8 +153,10 @@ Rules{
   	 	onEvent sonarSensor : sonar( sonar2, D ) -> addRule sonar2ok(D)
   	 ]
   	 switchTo robotAtSonar2
-  	 
-  	   	 
+
+/*
+ * From fixed obstacle policy
+ */  	  	   	 
   	 Plan doWaitAnswer[
   	 	println("applr0agent WAITS that a passage is found") 
   	 ]
@@ -174,7 +174,10 @@ Rules{
  	]
  	transition stopAfter 600000
  		whenEvent alarmev -> doWork
- 
+
+/*
+ * Handling alarms (TODO)
+ */
  	Plan alarmHandlePolicy resumeLastPlan[ 
 		printCurrentMessage;  
 //		println("applr0agent ALARM HANDLING POLICY (stop)... ") ;
