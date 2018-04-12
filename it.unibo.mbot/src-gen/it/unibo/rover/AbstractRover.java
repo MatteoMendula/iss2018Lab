@@ -95,7 +95,7 @@ public abstract class AbstractRover extends QActor {
 	    	String myselfName = "waitForCmd";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"rover_"+myselfName,false,
-	          new StateFun[]{stateTab.get("execMove") },//new StateFun[]
+	          new StateFun[]{stateTab.get("execMove") }, 
 	          new String[]{"true","M","moveRover" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitForCmd){  

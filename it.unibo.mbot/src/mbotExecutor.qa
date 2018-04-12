@@ -3,28 +3,30 @@
  * mbotExecutor.qa
  * A robot called rover is able to execute move commands in a (real + virtual) environment.
  * A more modular version is desirable.
+ * 
+ * WARNING: this module must be ALWAYS compiled before run it (shared classes in libraries)
  * =======================================================================================
- */    
+ */        
 System mbotExecutor            
 Event usercmd     : usercmd(CMD)  					//from web gui
 Event sonar  	  : sonar(SONAR, TARGET, DISTANCE)	//From (virtual) sonar
 Event sonarDetect : sonarDetect(X)					//From (virtual robot) sonar
 Event realSonar   : sonar( DISTANCE )				//From real sonar on real robot
-Event    polar    : p( Distance, Angle )
+Event    polar    : p( Distance, Angle )  
    
 Dispatch moveRover : cmd( CMD )   					//from usercmdmanager  
-
-Context ctxMbotExecutor ip [ host="localhost"   port=8029 ] -g green -httpserver   //192.168.43.67
-Context ctxRadarBase    ip [ host="localhost"   port=8033 ]  -standalone 	
+ 
+Context ctxMbotExecutor ip [ host="192.168.43.67"   port=8029 ]  -httpserver     
+Context ctxRadarBase    ip [ host="192.168.43.229"   port=8033 ]  -standalone 	 
   
-/* 
+/*   
  * -----------------------------------------------------
  * The usercmdmanager handles commands sent by the user 
  * -----------------------------------------------------
- */
+ */ 
 QActor usercmdmanager context ctxMbotExecutor { 
 	Plan init normal[ ]
-  	transition stopAfter 3600000   	//1h 
+  	transition stopAfter 3600000   	//1h   
  		whenEvent usercmd   -> execMove  
     	finally repeatPlan   
   	
@@ -50,9 +52,9 @@ QActor usercmdmanager context ctxMbotExecutor {
  * -----------------------------------------------------
  */  
 QActor rover context ctxMbotExecutor {   
-	Rules{	    
-		//onRaspberry. 
-		unityConfig("localhost", "unityStart.bat").  
+	Rules{	  onRaspberry. 
+		      //unityConfig("localhost", "unityStart.bat").    //(1) for testing
+		      unityConfig("192.168.43.229", "").  		 //(2) if onRaspberry is on
 	}
 	Plan init normal [       
  	    [ !? onRaspberry] javaRun it.unibo.rover.mbotConnArduino.initRasp()	;
@@ -79,9 +81,9 @@ QActor rover context ctxMbotExecutor {
 	 		javaRun it.unibo.rover.mbotConnArduino.mbotStop()   			
    		} ;   
    		onMsg moveRover : cmd(moveStop)       -> javaRun it.unibo.utils.robotMixMoves.moveRobotAndAvatar("stop","40","0")  ; 
-   		onMsg moveRover : cmd(connectToUnity) -> {  			
+   		onMsg moveRover : cmd(connectToUnity)  -> {  			
    			 [ not !? unityOn ] {
-   			 	//activate Unity
+   			 	//activate Unity [ only in case (1) ], else simply connect to UNITYADDR:6000
 				[ !? unityConfig(UNITYADDR, BATCH) ] 
   		 				javaRun it.unibo.utils.external.connectRoverToUnity( UNITYADDR, BATCH ) ;
   		 		addRule unityOn  ;  			 	

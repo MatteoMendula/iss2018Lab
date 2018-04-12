@@ -77,7 +77,7 @@ public abstract class AbstractUsercmdmanager extends QActor {
 	    	String myselfName = "init";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"usercmdmanager_"+myselfName,false,
-	          new StateFun[]{stateTab.get("execMove") },//new StateFun[]
+	          new StateFun[]{stateTab.get("execMove") }, 
 	          new String[]{"true","E","usercmd" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_init){  

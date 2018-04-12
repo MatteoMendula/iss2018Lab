@@ -94,8 +94,8 @@ public abstract class AbstractEvlogagent extends QActor {
 	    	String myselfName = "doWork";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"evlogagent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("logEvent"), stateTab.get("logEvent"), stateTab.get("logEvent") }, 
-	          new String[]{"true","E","usercmd", "true","E","sonarSensor", "true","E","mindcmd" },
+	          new StateFun[]{stateTab.get("logEvent"), stateTab.get("logEvent"), stateTab.get("logEvent"), stateTab.get("logEvent") }, 
+	          new String[]{"true","E","polar", "true","E","usercmd", "true","E","sonarSensor", "true","E","mindcmd" },
 	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doWork){  
 	    	 println( getName() + " plan=doWork WARNING:" + e_doWork.getMessage() );

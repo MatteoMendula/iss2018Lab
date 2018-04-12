@@ -18,5 +18,6 @@ digraph finite_state_machine {
 	doWork -> logEvent [ label = "usercmd" ][ color = red ][ fontcolor = red ][ dir = both ]
 	init -> doWork [ label = "switch" ][ color = black ][ fontcolor = black ]
 	doWork -> logEvent [ label = "mindcmd" ][ color = red ][ fontcolor = red ][ dir = both ]
+	doWork -> logEvent [ label = "polar" ][ color = red ][ fontcolor = red ][ dir = both ]
 	doWork -> doWork [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
 }

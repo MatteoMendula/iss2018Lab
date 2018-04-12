@@ -4,8 +4,8 @@
 pubsubserveraddr("").
 pubsubsystopic("unibo/qasys").
 %%% -------------------------------------------
-context(ctxmbotexecutor, "localhost",  "TCP", "8029" ).  		 
-context(ctxradarbase, "localhost",  "TCP", "8033" ).  		 
+context(ctxmbotexecutor, "192.168.43.67",  "TCP", "8029" ).  		 
+context(ctxradarbase, "192.168.43.229",  "TCP", "8033" ).  		 
 %%% -------------------------------------------
 qactor( usercmdmanager , ctxmbotexecutor, "it.unibo.usercmdmanager.MsgHandle_Usercmdmanager"   ). %%store msgs 
 qactor( usercmdmanager_ctrl , ctxmbotexecutor, "it.unibo.usercmdmanager.Usercmdmanager"   ). %%control-driven 

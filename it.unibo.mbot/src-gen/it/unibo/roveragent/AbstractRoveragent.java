@@ -95,9 +95,9 @@ public abstract class AbstractRoveragent extends QActor {
 	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"roveragent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("handleFixedSonar"), stateTab.get("handleSonar"), stateTab.get("handleSonar") },//new StateFun[]
+	          new StateFun[]{stateTab.get("handleFixedSonar"), stateTab.get("handleSonar"), stateTab.get("handleSonar") }, 
 	          new String[]{"true","E","sonar", "true","E","sonarDetect", "true","E","realSonar" },
-	          6000000, "handleToutBuiltIn" );//msgTransition
+	          600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_lookAtSonars){  
 	    	 println( getName() + " plan=lookAtSonars WARNING:" + e_lookAtSonars.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 

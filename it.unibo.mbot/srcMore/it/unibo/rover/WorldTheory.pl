@@ -142,7 +142,8 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %-------------------------------------------------
 %  User static rules about rover
 %------------------------------------------------- 
-unityConfig( "localhost","unityStart.bat").
+onRaspberry.
+unityConfig( "192.168.43.229","").
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),
