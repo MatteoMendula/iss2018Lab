@@ -15,9 +15,9 @@ Event realSonar   : sonar( DISTANCE )				//From real sonar on real robot
 Event    polar    : p( Distance, Angle )  
    
 Dispatch moveRover : cmd( CMD )   					//from usercmdmanager  
- 
-Context ctxMbotExecutor ip [ host="192.168.43.67"   port=8029 ]  -httpserver     
-Context ctxRadarBase    ip [ host="192.168.43.229"   port=8033 ]  -standalone 	 
+  
+Context ctxMbotExecutor ip [ host="localhost"   port=8029 ]  -httpserver     
+Context ctxRadarBase    ip [ host="localhost"   port=8033 ]  -standalone 	 
   
 /*   
  * -----------------------------------------------------
@@ -52,9 +52,9 @@ QActor usercmdmanager context ctxMbotExecutor {
  * -----------------------------------------------------
  */  
 QActor rover context ctxMbotExecutor {   
-	Rules{	  onRaspberry. 
-		      //unityConfig("localhost", "unityStart.bat").    //(1) for testing
-		      unityConfig("192.168.43.229", "").  		 //(2) if onRaspberry is on
+	Rules{	  //onRaspberry. 
+		      unityConfig("localhost", "unityStart.bat").    //(1) for testing
+		      //unityConfig("192.168.43.229", "").  		 //(2) if onRaspberry is on
 	}
 	Plan init normal [       
  	    [ !? onRaspberry] javaRun it.unibo.rover.mbotConnArduino.initRasp()	;
@@ -63,9 +63,9 @@ QActor rover context ctxMbotExecutor {
     switchTo waitForCmd        
 		
    	Plan waitForCmd[  ]  
-  	transition stopAfter 3600000   	//1h 
+  	transition stopAfter 3600000   	//1h  
  		whenMsg moveRover   -> execMove 
-
+ 
   	Plan execMove resumeLastPlan[     
   		printCurrentMessage;
     	onMsg moveRover : cmd(moveForward)    -> javaRun it.unibo.utils.robotMixMoves.moveRobotAndAvatar("forward","40","0");     
