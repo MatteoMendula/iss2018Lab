@@ -14,16 +14,13 @@ Event mbotcmd     : usercmd(CMD)
 
 Dispatch moveMbot : usercmd( CMD )
   
-Context ctxRealRobotExecutor ip [ host="192.168.43.67"   port=8029 ]  -httpserver     
+Context ctxRealRobotExecutor ip [ host="192.168.43.67"   port=8019 ] -httpserver     
 EventHandler evh for usercmd , mindcmd -print {	//event-driven
  	forwardEvent mbot -m moveMbot  	//from event to message     
 };
 Context ctxRadarBase    ip [ host="192.168.43.229"   port=8033 ]  -standalone 	 
   
 QActor mbot context ctxRealRobotExecutor {   
-	Rules{	  
-  		foundObstacle :- retract( realDistance(D) ), eval( lt, D, 20 ).
-	}
 	Plan init normal [       
  	    javaRun it.unibo.mbot.mbotConnArduino.initRasp()	;
 	    println("mbot START")    
@@ -61,24 +58,9 @@ QActor mbot context ctxRealRobotExecutor {
  */
 QActor sonardetector context ctxRealRobotExecutor{
 	Plan init normal [
-		println("sonardetector STARTS ")
-	]
-	switchTo waitForEvents
-	
-	Plan waitForEvents[ 
 		println("sonardetector WAITS ")
-	]    
-  	transition stopAfter 3600000   	//1h     
- 		whenEvent sonar  -> handleVirtualSonar,
-  		whenEvent sonarDetect : sonarDetect(X)  do println( sonarDetect(X) ),
- 		whenEvent realSonar   ->  handleRealSonar
-  	finally repeatPlan  
-	  
-  	Plan handleRealSonar resumeLastPlan[ 
- 		printCurrentEvent; 		
-		onEvent realSonar   : sonar( DISTANCE ) -> emit polar : p(DISTANCE, 0) 
- 	]
-  	Plan handleVirtualSonar resumeLastPlan[ 
- 		printCurrentEvent
 	]
- }
+  	transition stopAfter 3600000   	//1h     
+  		whenEvent realSonar   : sonar( DISTANCE ) do emit polar : p(DISTANCE, 0) 
+  	finally repeatPlan  
+}
