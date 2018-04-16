@@ -2,9 +2,6 @@ package it.unibo.mbot.serial;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -18,13 +15,9 @@ final static int DASH_ASCII = 45;
 final static int NEW_LINE_ASCII = 10;
 final static int CR_ASCII = 13;
 	
-
 private SerialPort serialPort;
 private List<String> list;
 private String curString = "";
- 
-
-//private BufferedReader input;
 
 	public SerialPortConnSupport( SerialPort serialPort, IOutputView outView ) {
 		super(outView);
@@ -45,7 +38,7 @@ private String curString = "";
   		serialPort.writeString("\n");
 //		println("SerialPortConnSupport has sent   " + msg);
 	}
-	//FEB2018 for mBot
+	//EXTENSION for mBot
 	public void sendCmd(String msg) throws Exception {
   		serialPort.writeBytes(msg.getBytes());
  	}
