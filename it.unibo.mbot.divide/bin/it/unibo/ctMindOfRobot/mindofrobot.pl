@@ -1,9 +1,6 @@
 %====================================================================================
 % Context ctMindOfRobot  SYSTEM-configuration: file it.unibo.ctMindOfRobot.mindOfRobot.pl 
 %====================================================================================
-pubsubserveraddr("").
-pubsubsystopic("unibo/qasys").
-%%% -------------------------------------------
 context(ctmindofrobot, "192.168.43.229",  "TCP", "8039" ).  		 
 context(ctxradarbase, "192.168.43.229",  "TCP", "8033" ).  		 
 %%% -------------------------------------------

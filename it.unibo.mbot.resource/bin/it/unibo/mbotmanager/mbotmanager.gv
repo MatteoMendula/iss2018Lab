@@ -1,0 +1,26 @@
+/*
+*
+* A GraphViz DOT FSM description 
+* Please use a GraphViz visualizer (like http://www.webgraphviz.com)
+*  
+*/
+
+digraph finite_state_machine {
+	rankdir=LR
+	size="8,5"
+	
+	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	handleBookingRelease [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	checkDeadine [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	handleBookingRequest [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	handelGetRobotDriveInterface [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	waitRequest [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	
+	waitRequest -> handleBookingRelease [ label = "bookingRelease" ][ color = black ][ fontcolor = black ]
+	waitRequest -> waitRequest [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
+	waitRequest -> handleBookingRequest [ label = "bookingRequest" ][ color = red ][ fontcolor = red ][ dir = both ]
+	handleBookingRelease -> waitRequest [ label = "switch" ][ color = black ][ fontcolor = black ]
+	waitRequest -> handelGetRobotDriveInterface [ label = "getRobotDriveInterface" ][ color = red ][ fontcolor = red ][ dir = both ]
+	init -> waitRequest [ label = "switch" ][ color = black ][ fontcolor = black ]
+	waitRequest -> checkDeadine [ label = "timeout(10000)" ][ color = green ][ fontcolor = green ][ dir = both ]
+}

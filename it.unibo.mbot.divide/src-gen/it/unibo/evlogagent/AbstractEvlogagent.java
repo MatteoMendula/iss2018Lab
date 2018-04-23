@@ -30,7 +30,7 @@ public abstract class AbstractEvlogagent extends QActor implements IActivity{
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "";
+	 
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			EnvFrame env = new EnvFrame( "Env_evlogagent", java.awt.Color.yellow  , java.awt.Color.black );
@@ -125,6 +125,18 @@ public abstract class AbstractEvlogagent extends QActor implements IActivity{
 	     PlanRepeat pr = PlanRepeat.setUp("logEvent",-1);
 	    	String myselfName = "logEvent";  
 	    	printCurrentEvent(false);
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("p(Distance,Angle)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("polar") && 
+	    		pengine.unify(curT, Term.createTerm("p(Distance,Angle)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			String parg="p(Distance,Angle)";
+	    			/* AddRule */
+	    			parg = updateVars(Term.createTerm("p(Distance,Angle)"),  Term.createTerm("p(Distance,Angle)"), 
+	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
+	    			if( parg != null ) addRule(parg);	    		  					
+	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"evlogagent_"+myselfName,false,true);
 	    }catch(Exception e_logEvent){  
 	    	 println( getName() + " plan=logEvent WARNING:" + e_logEvent.getMessage() );

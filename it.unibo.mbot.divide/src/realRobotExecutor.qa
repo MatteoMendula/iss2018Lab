@@ -14,7 +14,7 @@ Event mbotcmd     : usercmd(CMD)
 
 Dispatch moveMbot : usercmd( CMD )
   
-Context ctxRealRobotExecutor ip [ host="192.168.43.67"   port=8019 ] -httpserver     
+Context ctxRealRobotExecutor ip [ host="192.168.43.68"   port=8019 ] -httpserver     
 EventHandler evh for usercmd , mindcmd -print {	//event-driven
  	forwardEvent mbot -m moveMbot  	//from event to message     
 };
@@ -63,4 +63,22 @@ QActor sonardetector context ctxRealRobotExecutor{
   	transition stopAfter 3600000   	//1h     
   		whenEvent realSonar   : sonar( DISTANCE ) do emit polar : p(DISTANCE, 0) 
   	finally repeatPlan  
+}
+
+//Useful for testing
+QActor polarlogagent context ctxRealRobotExecutor -g yellow {       
+	Plan init normal [ 
+		println("evlogagent STARTS")
+	] 
+	switchTo doWork
+	
+	Plan doWork[]  
+	transition   stopAfter 600000 //10min         
+    	whenEvent  polar        -> logEvent
+     finally repeatPlan
+  	
+  	Plan  logEvent resumeLastPlan[
+  		printCurrentEvent ;
+  		onEvent polar : p( Distance, Angle ) -> addRule p( Distance, Angle ) 	//used in testing
+  	] 
 }

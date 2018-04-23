@@ -1,0 +1,91 @@
+/*
+ * ==============================================================
+ * it\unibo\mbot\resource\mbotResourceManager.qa
+ * ==============================================================
+ */ 
+ System mbotResourceManager 
+    
+ Event  notify                   : notify( ARG )
+   
+ Dispatch bookingRequest         : bookingRequest( NOTIFYME )	//NOTIFYME = true | false
+ Dispatch bookingRequestAnswer   : bookingRequestAnswer( TOKEN )
+ Dispatch bookingRelease         : bookingRelease( ACCESSTOKEN )
+ Dispatch getRobotDriveInterface : getRobotDriveInterface( ACCESSTOKEN )
+  
+ Context ctxMbotManager  ip [ host="localhost"   port=8076 ] -g yellow     
+  
+ QActor mbotmanager context ctxMbotManager { 
+ 	Rules{
+ 		initResourceState :-
+ 			assign( tokenVal, 10 ),			//value( tokenVal, 10 )
+ 			assign( stateOfRobot, free ).	//value( stateOfRobot, free )		
+ 		newAccessToken( V1 ) :- 
+  			inc( tokenVal, 10, V1 ),   
+			actorPrintln( newAccessToken(V1)  ),   
+  			assign( tokenVal, V1 ).
+ 		
+ 		engage( token(TOKEN) ) :- 
+   			getVal( stateOfRobot,free ),!,
+   			newAccessToken( TOKEN ),
+ 			actorPrintln( engageeeeeeeeeeeeeeeee( TOKEN ) ),
+  			assign( stateOfRobot,busy(TOKEN)  ).
+ 		engage( failure ).
+ 		
+ 		checkToken( TOKEN ):-  
+ 			actorPrintln( checkToken( TOKEN ) ),
+ 			getVal( stateOfRobot, busy(TOKEN) ).
+ 			
+ 		isengaged( TOKEN ) :-
+ 			getVal( stateOfRobot, busy(TOKEN) ).
+ 			
+ 		disengage  :- 
+ 			actorPrintln( dddddddddddddddddisengage ),
+ 			assign( stateOfRobot, free  ).
+ 			
+ 	}  
+ 	
+ 	Plan init normal [       
+  		demo initResourceState ;
+ 		[ ?? goalResult( initResourceState ) ] println("mbotmanager STARTS") ;
+ 		[ !? getVal( tokenVal, V ) ] println( curTokenValue(V) ) 
+     ]      
+    switchTo waitRequest 
+    
+    Plan waitRequest[ 
+     	[ not !? isengaged( TOKEN ) ]  emit notify : notify( available );	//emit every 10000 msec
+     	[ !? isengaged( TOKEN ) ] println( mbotmanager(WAITS, isengaged( TOKEN ) ) ) 
+     	else println( mbotmanager(WAITS, free) )
+    ]
+ 	transition whenTime 10000            -> checkDeadine
+ 		whenMsg bookingRequest           -> handleBookingRequest,
+		whenMsg getRobotDriveInterface   -> handelGetRobotDriveInterface,
+		whenMsg bookingRelease           -> handleBookingRelease
+	finally repeatPlan
+ 
+ 	Plan checkDeadine resumeLastPlan[
+  		[ !? isengaged( TOKEN ) ] println( "acquisition-deadline EXPIRED") ;
+  		[ !? isengaged( TOKEN ) ] selfMsg bookingRelease : bookingRelease(TOKEN)
+ 	]
+  	
+    Plan handleBookingRequest resumeLastPlan[ 
+    	println("handleBookingRequest STARTS") ;  
+    	printCurrentMessage;  
+    	demo engage( RES ); 
+     	[ ?? goalResult( engage( RES ) ) ] 
+    		replyToCaller -m bookingRequestAnswer : bookingRequestAnswer( RES )
+    ]    
+
+    Plan handelGetRobotDriveInterface resumeLastPlan [
+    	println("handelGetRobotDriveInterface STARTS") ;
+    	printCurrentMessage; 
+    	onMsg getRobotDriveInterface : getRobotDriveInterface(TOKEN) -> demo checkToken(TOKEN);
+    	[ ?? goalResult( checkToken(TOKEN) ) ] println("TODO RobotDriveInterfaceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+    ] 
+	
+    Plan handleBookingRelease [
+    	println("handleBookingRelease emitting notify");
+    	demo disengage  ;
+      	emit notify : notify( available )
+    ]
+ 	switchTo waitRequest	
+ }

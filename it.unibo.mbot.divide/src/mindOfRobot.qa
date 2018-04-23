@@ -14,7 +14,7 @@ Event mindcmd      : usercmd(CMD)
 Context ctMindOfRobot   ip [ host="192.168.43.229"   port=8039 ]      
 Context ctxRadarBase    ip [ host="192.168.43.229"   port=8033 ]  -standalone 
    
-QActor mind context ctMindOfRobot {              
+QActor mind context ctMindOfRobot {                
 	Plan init normal [       
  		println("mind STARTS") ;     
  		delay 2000; 
@@ -52,7 +52,7 @@ QActor mind context ctMindOfRobot {
 	]       
   	switchTo lookAtSonars	 	
 }//mind
-
+  
 QActor evlogagent context ctMindOfRobot -g yellow {       
 	Plan init normal [ 
 		println("evlogagent STARTS")
@@ -69,7 +69,8 @@ QActor evlogagent context ctMindOfRobot -g yellow {
    	finally repeatPlan
   	
   	Plan  logEvent resumeLastPlan[
-  		printCurrentEvent 
+  		printCurrentEvent ;
+  		onEvent polar : p( Distance, Angle ) -> addRule p( Distance, Angle ) 	//used in testing
   	] 
 }
 

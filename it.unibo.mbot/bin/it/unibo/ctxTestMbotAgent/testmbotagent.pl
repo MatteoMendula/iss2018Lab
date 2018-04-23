@@ -1,9 +1,6 @@
 %====================================================================================
 % Context ctxTestMbotAgent  SYSTEM-configuration: file it.unibo.ctxTestMbotAgent.testMbotAgent.pl 
 %====================================================================================
-pubsubserveraddr("").
-pubsubsystopic("unibo/qasys").
-%%% -------------------------------------------
 context(ctxtestmbotagent, "localhost",  "TCP", "8143" ).  		 
 context(ctxmbotexecutor, "localhost",  "TCP", "8029" ).  		 
 %%% -------------------------------------------

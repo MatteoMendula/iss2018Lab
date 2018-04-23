@@ -1,10 +1,7 @@
 %====================================================================================
 % Context ctxMbotExecutor  SYSTEM-configuration: file it.unibo.ctxMbotExecutor.mbotExecutor.pl 
 %====================================================================================
-pubsubserveraddr("tcp://192.168.43.229:1883").
-pubsubsystopic("unibo/qasys").
-%%% -------------------------------------------
-context(ctxmbotexecutor, "192.168.43.67",  "TCP", "8029" ).  		 
+context(ctxmbotexecutor, "192.168.43.68",  "TCP", "8029" ).  		 
 %%% -------------------------------------------
 qactor( mbot , ctxmbotexecutor, "it.unibo.mbot.MsgHandle_Mbot"   ). %%store msgs 
 qactor( mbot_ctrl , ctxmbotexecutor, "it.unibo.mbot.Mbot"   ). %%control-driven 

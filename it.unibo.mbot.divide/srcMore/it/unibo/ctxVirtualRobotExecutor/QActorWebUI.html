@@ -8,6 +8,22 @@
 <h3 id="h3">Robot Web UI</h3>
 
 <div> 
+<input size=85% type="textArea" id="input" value="[ true ], play('./audio/music_interlude20.wav'),20000,'alarm,obstacle', 'handleAlarm,handleObstacle'" />
+<input style="height: 30px; width: 90px;" type="button"
+ id="ExternalForward" value="RUN" 
+ onmousedown="document.getElementById('inputArea').value= document.getElementById('inputArea').value+'\n'+document.getElementById('input').value;
+ send('i-'+document.getElementById('input').value); "
+<br/>
+<textarea id="inputArea" cols="100" rows="10" style="overflow:scroll;">
+</textarea>
+</div>
+
+<div id="bottom">
+<center>
+<button onclick="setSpeed('high');">speedHigh</button>
+<button onclick="setSpeed('medium');">speedMedium</button>
+<button onclick="setSpeed('low');">speedLow</button>
+</center>
    
 </div>
  	<table id="robots">
@@ -41,8 +57,8 @@
 							style="height: 60px; width: 90px;" type="button"
 							id="ExternalForward" value="FORWARD" onmousedown="send('w('+curSpeed+')');" /></td>
 						<td align="center"><input
-							style="height: 60px; width: 90px; color:green" type="button" 
-							id="ExternalAlarm" value="UNITY" onmousedown="send( 'unityAddr( localhost )' );" /></td>
+							style="height: 60px; width: 90px; color:red " type="button" 
+							id="ExternalAlarm" value="OBSTACLE" onmousedown="send('e(alarm(obstacle))');" /></td>
 					</tr>
 					<tr>
 						<td align="center"><input
@@ -58,13 +74,13 @@
 					<tr>
 						<td align="center"><input
 							style="height: 40px; width: 90px; color:blue" type="button"
-							id="ExternalAlarm" value="LINEFLW" onmousedown="send('f('+curSpeed+')');" /></td>
+							id="ExternalAlarm" value="START" onmousedown="send('e(cmd(start))');" /></td>
 						<td align="center"><input
 							style="height: 60px; width: 90px;" type="button"
 							id="ExternalBackward" value="BACKWARD" onmousedown="send('s('+curSpeed+')');"/></td>
 						<td align="center"><input
 							style="height: 40px; width: 90px; color:blue" type="button"
-							id="ExternalAlarm" value="EXIT" onmousedown="send('x('+curSpeed+')');" /></td>
+							id="ExternalAlarm" value="STOP" onmousedown="send('e(cmd(stop))');" /></td>
 					</tr>
 				</table>
                 </center>

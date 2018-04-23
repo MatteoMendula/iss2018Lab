@@ -26,7 +26,7 @@ public abstract class AbstractRoveragent extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://localhost:1883";
+	 
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;

@@ -1,0 +1,91 @@
+/*
+ * ==============================================================
+ * it\unibo\mbot\resource\testerUser2.qa
+ * ==============================================================
+ */ 
+ System testerUser2
+       
+ Dispatch bookingRequest         : bookingRequest( NOTIFYME )		//NOTIFYME = true | false
+ Dispatch bookingRequestAnswer   : bookingRequestAnswer( TOKEN )
+ Dispatch bookingRelease         : bookingRelease( ACCESSTOKEN )
+   
+ Event getRobotDriveInterface : getRobotDriveInterface( ACCESSTOKEN )
+ Event notify                 : notify( ARG )
+  
+ Dispatch usage       : usage( TOKEN )  
+ Dispatch tryagain    : tryagain( ARG )
+ Dispatch failure     : failure( ARG )
+ 
+ Context ctxTesterUser2   ip [ host="localhost"   port=8068 ]     
+ Context ctxMbotManager   ip [ host="localhost"   port=8076 ]  -standalone 
+ 
+ QActor testeruser2 context ctxTesterUser2   { 
+  	Plan init normal [ 
+  		actorOp getName ;		     
+    	[?? actorOpDone(OP,R) ] println( myname( R ) ) ;
+		sendto mbotmanager in ctxMbotManager -m   bookingRequest : bookingRequest( true ) //send a first request
+    ]        
+ 	switchTo  doRequest   	
+    	
+    Plan doRequest[
+		println("testerUser2 emits request");
+		sendto mbotmanager in ctxMbotManager -m   bookingRequest : bookingRequest( true )
+   ]
+    transition stopAfter 600000
+    	whenMsg bookingRequestAnswer -> handleAnswer
+
+    Plan handleAnswer [
+		println("testerUser2 handleAnswer");
+    	printCurrentMessage;
+    	onMsg bookingRequestAnswer : bookingRequestAnswer( failure )   ->  selfMsg failure : failure( notoken ) ;
+    	onMsg bookingRequestAnswer : bookingRequestAnswer( token(TK) ) ->  selfMsg usage   : usage( token(TK) )
+    ] 
+	switchTo userLogic
+
+/*
+ * Business logic   
+ */	
+    Plan userLogic [
+		println("testerUser2 userLogic") 
+    ]
+    transition stopAfter 600000 
+    	whenMsg usage    -> usage,
+    	whenMsg failure  -> waitForNotification,
+    	whenMsg tryagain -> doRequest
+		
+	Plan usage[
+		onMsg usage : usage( token(TK) ) -> addRule token( TK ) ;
+		[ !? token( TOKEN ) ] println( testerUser2UUUUUUUUUUUUUUUUUsage(TOKEN) );
+		[ !? token( TOKEN ) ]  //explicit interaction with  mbotmanager in ctxMbotManager
+			sendto mbotmanager in ctxMbotManager -m  getRobotDriveInterface : getRobotDriveInterface( TOKEN ) ;
+		delay 2000
+	]  
+	switchTo simulateRelease
+	
+	Plan simulateRelease[
+		println("testerUser2 simulateRelease and look if there is the answer to the second request"); 
+		[ ?? token( TOKEN ) ]  //explicit interaction with  mbotmanager in ctxMbotManager
+ 			sendto mbotmanager in ctxMbotManager -m  bookingRelease : bookingRelease( TOKEN ) 
+	]
+    transition whenTime 10000 -> endOfJob
+    	whenMsg bookingRequestAnswer -> handleAnswer	//handle the second answer
+ 	 
+	Plan waitForNotification[
+		println("testerUser2 waitForNotification")  
+	]
+	transition stopAfter 600000
+		whenEvent notify  ->  lookAtNotification  
+ 	 
+	Plan lookAtNotification[
+		println("testerUser1 lookAtNotification");
+		onEvent notify : notify( available ) -> selfMsg tryagain : tryagain( true);
+		onEvent notify : notify( removed  )  -> addRule endOfJob 
+	]
+	switchTo [ not !? endOfJob ] userLogic
+ 
+ 	Plan endOfJob[
+		println("testerUser2 ENDS");
+		delay 600000
+	]
+ }
+

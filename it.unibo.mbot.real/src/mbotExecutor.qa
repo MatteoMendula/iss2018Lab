@@ -15,7 +15,7 @@ Dispatch moveMbot : usercmd( CMD )
 
 pubSubServer  "tcp://192.168.43.229:1883"
 
-Context ctxMbotExecutor ip  [ host="192.168.43.67"  port=8029 ]  -httpserver    
+Context ctxMbotExecutor ip  [ host="192.168.43.68"  port=8029 ]  -httpserver    
 EventHandler evh for usercmd , mindcmd -print {	//event-driven
  	forwardEvent mbot -m moveMbot  	//from event to message     
 };

@@ -26,7 +26,7 @@ public abstract class AbstractApplr0agent extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://localhost:1883";
+	 
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -86,7 +86,6 @@ public abstract class AbstractApplr0agent extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
-	     connectToMqttServer("tcp://localhost:1883");
 	    	//switchTo doWork
 	        switchToPlanAsNextState(pr, myselfName, "applr0agent_"+myselfName, 
 	              "doWork",false, false, null); 
@@ -107,7 +106,7 @@ public abstract class AbstractApplr0agent extends QActor {
 	    	emit( "mindcmd", temporaryStr );
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr0agent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("alarmHandlePolicy"), stateTab.get("handleSonarEvents") }, 
+	          new StateFun[]{stateTab.get("alarmHandlePolicy"), stateTab.get("handleSonarEvents") },//new StateFun[]
 	          new String[]{"true","M","alarmmsg", "true","E","sonarSensor" },
 	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doWork){  
@@ -164,7 +163,7 @@ public abstract class AbstractApplr0agent extends QActor {
 	    	}
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr0agent_"+myselfName,true,
-	          new StateFun[]{stateTab.get("checkMobileObstacle"), stateTab.get("robotAtSonar1"), stateTab.get("robotAtSonar2") }, 
+	          new StateFun[]{stateTab.get("checkMobileObstacle"), stateTab.get("robotAtSonar1"), stateTab.get("robotAtSonar2") },//new StateFun[]
 	          new String[]{"true","M","hopemobile", "true","M","atsonar1", "true","M","atsonar2" },
 	          600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handleSonarEvents){  
@@ -187,7 +186,7 @@ public abstract class AbstractApplr0agent extends QActor {
 	    	if( ! aar.getGoon() ) return ;
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr0agent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("fixedObstacle") }, 
+	          new StateFun[]{stateTab.get("fixedObstacle") },//new StateFun[]
 	          new String[]{"true","E","sonarSensor" },
 	          1000, "doWork" );//msgTransition
 	    }catch(Exception e_checkMobileObstacle){  
@@ -231,7 +230,7 @@ public abstract class AbstractApplr0agent extends QActor {
 	    	}
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr0agent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("doWaitAnswer"), stateTab.get("doWork") }, 
+	          new StateFun[]{stateTab.get("doWaitAnswer"), stateTab.get("doWork") },//new StateFun[]
 	          new String[]{"true","M","waitAnswer", "true","E","alarmev" },
 	          600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_fixedObstacle){  
@@ -297,7 +296,7 @@ public abstract class AbstractApplr0agent extends QActor {
 	    	}
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr0agent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("adjustRobotPosition"), stateTab.get("redoWork") }, 
+	          new StateFun[]{stateTab.get("adjustRobotPosition"), stateTab.get("redoWork") },//new StateFun[]
 	          new String[]{"true","M","updatePos", "true","M","redoWork" },
 	          600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_robotAtSonar2){  
@@ -314,7 +313,7 @@ public abstract class AbstractApplr0agent extends QActor {
 	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr0agent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("doWork") }, 
+	          new StateFun[]{stateTab.get("doWork") },//new StateFun[]
 	          new String[]{"true","E","alarmev" },
 	          600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_redoWork){  
@@ -345,7 +344,7 @@ public abstract class AbstractApplr0agent extends QActor {
 	    	emit( "mindcmd", temporaryStr );
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr0agent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("checkPos") }, 
+	          new StateFun[]{stateTab.get("checkPos") },//new StateFun[]
 	          new String[]{"true","E","sonarSensor" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_adjustRobotPosition){  
@@ -388,7 +387,7 @@ public abstract class AbstractApplr0agent extends QActor {
 	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr0agent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("checkTheAnswer") }, 
+	          new StateFun[]{stateTab.get("checkTheAnswer") },//new StateFun[]
 	          new String[]{"true","E","taskdone" },
 	          60000, "noAnswer" );//msgTransition
 	    }catch(Exception e_doWaitAnswer){  
@@ -431,7 +430,7 @@ public abstract class AbstractApplr0agent extends QActor {
 	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr0agent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("doWork") }, 
+	          new StateFun[]{stateTab.get("doWork") },//new StateFun[]
 	          new String[]{"true","E","alarmev" },
 	          600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_noAnswer){  

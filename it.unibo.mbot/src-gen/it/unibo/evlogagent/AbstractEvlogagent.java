@@ -30,7 +30,7 @@ public abstract class AbstractEvlogagent extends QActor implements IActivity{
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "";
+	 
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			EnvFrame env = new EnvFrame( "Env_evlogagent", java.awt.Color.yellow  , java.awt.Color.black );

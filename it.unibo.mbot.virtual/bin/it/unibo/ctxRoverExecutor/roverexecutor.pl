@@ -1,9 +1,6 @@
 %====================================================================================
 % Context ctxRoverExecutor  SYSTEM-configuration: file it.unibo.ctxRoverExecutor.roverExecutor.pl 
 %====================================================================================
-pubsubserveraddr("tcp://localhost:1883").
-pubsubsystopic("unibo/qasys").
-%%% -------------------------------------------
 context(ctxroverexecutor, "localhost",  "TCP", "8032" ).  		 
 %%% -------------------------------------------
 qactor( mindtobody , ctxroverexecutor, "it.unibo.mindtobody.MsgHandle_Mindtobody"   ). %%store msgs 

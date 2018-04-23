@@ -26,7 +26,7 @@ public abstract class AbstractSonardetector extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "";
+	 
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;

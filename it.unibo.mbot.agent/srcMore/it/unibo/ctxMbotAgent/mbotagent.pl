@@ -1,9 +1,6 @@
 %====================================================================================
 % Context ctxMbotAgent  SYSTEM-configuration: file it.unibo.ctxMbotAgent.mbotAgent.pl 
 %====================================================================================
-pubsubserveraddr("tcp://localhost:1883").
-pubsubsystopic("unibo/qasys").
-%%% -------------------------------------------
 context(ctxmbotagent, "localhost",  "TCP", "8039" ).  		 
 %%% -------------------------------------------
 qactor( roveragent , ctxmbotagent, "it.unibo.roveragent.MsgHandle_Roveragent"   ). %%store msgs 

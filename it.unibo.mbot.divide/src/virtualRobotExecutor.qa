@@ -10,13 +10,13 @@ Event sonarDetect : sonarDetect(X)					//From (virtual robot) sonar
 Event realSonar   : sonar( DISTANCE )				//From real sonar on real robot
 Event    polar    : p( Distance, Angle )  
 Event mindcmd     : usercmd(CMD) 
-     
+      
 Dispatch moveRover : usercmd( CMD )   					   
-  
+   
 Context ctxVirtualRobotExecutor ip [ host="192.168.43.229"   port=8029 ] -g cyan -httpserver     
 EventHandler evh for usercmd, mindcmd -print {	//event-driven ; no Mqtt support yet
  	forwardEvent rover -m moveRover  	//from event to message
-};     
+}; 
 Context ctxRadarBase    ip [ host="192.168.43.229"   port=8033 ]  -standalone 	 
  
 /*     
@@ -36,7 +36,7 @@ QActor rover context ctxVirtualRobotExecutor {
   		whenMsg moveRover   -> execMove  	  
  	finally repeatPlan 
  	  
-  	Plan execMove resumeLastPlan[   
+  	Plan execMove resumeLastPlan[    
   		printCurrentMessage;    
     	onMsg moveRover : usercmd( robotgui(h(X)) )    -> stop 40 time(0) ;       
     	onMsg moveRover : usercmd( robotgui(w(X)) )    -> onward 40 time(0) ;  //0 means asynch
@@ -89,4 +89,12 @@ QActor sonardetector context ctxVirtualRobotExecutor{
 		println( "found obstacle" );		
 		emit polar : p(30,90)  
 	]
+}
+
+//Useful for testing
+QActor polarlogagent context ctxVirtualRobotExecutor  {       
+	Plan init normal [ 	] 
+	transition   stopAfter 600000 //10min         
+    	whenEvent  polar : p( Distance, Angle ) do addRule p( Distance, Angle ) //used in testing
+     finally repeatPlan
 }
