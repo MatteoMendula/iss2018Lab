@@ -142,6 +142,9 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %-------------------------------------------------
 %  User static rules about mbotled
 %------------------------------------------------- 
+ledHandle:-actorPrintln( ledHandle),handleLed,msg( EVID,"event",EMITTER,none,usercmd( robotgui( h( X))),NUM), ! ,actorPrintln( ledHandleturnOff),actorExec( customExecute( "sudo bash led25GpioTurnOff.sh")).
+ledHandle:-handleLed,msg( EVID,"event",EMITTER,none,usercmd( robotgui( _)),NUM), ! ,actorPrintln( ledHandleturnOn),actorExec( customExecute( "sudo bash led25GpioTurnOn.sh")).
+ledHandle:-actorPrintln( ledHandleDoNothing).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),
@@ -164,7 +167,8 @@ loadTheory(T):-
 opInfo( Op,F,A,L ):-
 	functor( Op, F, A ),
 	Op =.. L.
-		
+
+actorExec( Op ) :- actorOp( Op ).
 actorOp( Op )   :- actorobj(Actor),
 				   % actorPrintln( actorOp( Op  ) ),
 				   java_catch(

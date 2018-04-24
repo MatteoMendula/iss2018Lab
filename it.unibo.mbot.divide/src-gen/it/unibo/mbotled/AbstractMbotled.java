@@ -76,22 +76,6 @@ public abstract class AbstractMbotled extends QActor {
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
 	    	it.unibo.mbot.mbotConnArduino.initRasp( myself  );
-	    	customExecute ( "sudo bash led25GpioTurnOn.sh" );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(500,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
-	    	customExecute ( "sudo bash led25GpioTurnOff.sh" );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(500,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
-	    	customExecute ( "sudo bash led25GpioTurnOn.sh" );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(500,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
-	    	customExecute ( "sudo bash led25GpioTurnOff.sh" );
 	    	temporaryStr = "\"mbot START\"";
 	    	println( temporaryStr );  
 	    	//switchTo waitForCmd
@@ -123,7 +107,9 @@ public abstract class AbstractMbotled extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("execMove",-1);
 	    	String myselfName = "execMove";  
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?handleLed" )) != null ){
 	    	customExecute ( "sudo bash led25GpioTurnOn.sh" );
+	    	}
 	    	printCurrentMessage(false);
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
@@ -170,7 +156,6 @@ public abstract class AbstractMbotled extends QActor {
 	    		aar = delayReactive(680,"" , "");
 	    		if( aar.getInterrupted() ) curPlanInExec   = "execMove";
 	    		if( ! aar.getGoon() ) return ;
-	    		customExecute ( "sudo bash led25GpioTurnOff.sh" );
 	    		it.unibo.mbot.mbotConnArduino.mbotStop( myself  );
 	    		};//actionseq
 	    	}
@@ -187,7 +172,6 @@ public abstract class AbstractMbotled extends QActor {
 	    		aar = delayReactive(680,"" , "");
 	    		if( aar.getInterrupted() ) curPlanInExec   = "execMove";
 	    		if( ! aar.getGoon() ) return ;
-	    		customExecute ( "sudo bash led25GpioTurnOff.sh" );
 	    		it.unibo.mbot.mbotConnArduino.mbotStop( myself  );
 	    		};//actionseq
 	    	}

@@ -11,7 +11,7 @@ USAGE:
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'java-library-distribution'
-apply plugin: 'jacoco'
+ 
 
 /*
 --------------------------------------------------------------
@@ -33,11 +33,6 @@ sourceSets {
 		java {
 			srcDirs = ['src' , 'src-gen'  ]
 		}
-	}
-	test {
-		 java {
-		   srcDirs = ['test']
-		 }
 	}
 }
 /*
@@ -119,14 +114,10 @@ TO BE ADDED by the application designer for :
 
 /*
 --------------------------------------------------------------
-AFTER TEST
+AFTER TEST (REMOVED)
 --------------------------------------------------------------
 */
-test {
-    afterTest { desc, result -> 
-        println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
-    }
-}
+ 
 /*
 ---------------------------------------------------------------------
 JAR: incldes src-gen code (excluding Java) in the executable jar
@@ -178,35 +169,12 @@ task cleanDistDir(type: Delete) {
 	  delete 'src/dist'
       
   }
-jar.dependsOn cleanDistDir
+//jar.dependsOn cleanDistDir
 jar.dependsOn copyInfoForDist
+jar.finalizedBy cleanDistDir
 /*
 ---------------------------------------------------------
-TESTING
+TESTING (REMOVED)
 ---------------------------------------------------------
 */
-test {
-	testLogging {
-		outputs.upToDateWhen { false }		
-		showStandardStreams = true		
-		events 'failed' , 'passed' //,  'started', 'skipped', 		
-	}
-	
- 	include '**/Test*.class'
-	test.afterSuite { TestDescriptor suite, TestResult result -> //add closure to be notified
-	if( !suite.parent && result.getTestCount() > 0) { //there is at least one test
-		long elapsedTestTime = result.getEndTime() - result.getStartTime()
- 		System.out.println("""AFTERTEST Elapsed time for execution of ${result.getTestCount()} test(s):  $elapsedTestTime ms""");
-	}
-	}
-}
-
-test.finalizedBy jacocoTestReport
-
-jacocoTestReport {
-     reports {
-        xml.enabled false
-        csv.enabled false
-        html.destination "${buildDir}/jacocoHtml"
-    }
-}
+ 

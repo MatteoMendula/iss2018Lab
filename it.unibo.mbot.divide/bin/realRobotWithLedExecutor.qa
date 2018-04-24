@@ -9,28 +9,40 @@ Event sonar  	  : sonar(SONAR, TARGET, DISTANCE)	//From (virtual) sonar
 Event sonarDetect : sonarDetect(X)					//From (virtual robot) sonar
 Event realSonar   : sonar( DISTANCE )				//From real sonar on real robot
 Event    polar    : p( Distance, Angle )  
-Event mindcmd     : usercmd(CMD) 				//from the appl agent (the 'mind')
+Event mindcmd     : usercmd(CMD) 					//from the appl agent (the 'mind')
 Event mbotcmd     : usercmd(CMD)    
 
 Dispatch moveMbot : usercmd( CMD )
   
 Context ctxRealRobotWithLedExecutor ip [ host="192.168.43.68"   port=8019 ] -httpserver     
-EventHandler evh for usercmd , mindcmd -print {	//event-driven
- 	forwardEvent mbotled -m moveMbot  	//from event to message     
+EventHandler evh for usercmd , mindcmd  {	 
+    forwardEvent ledhandler -m moveMbot ;  //(1)  	this generates local traffic, but it is tolerable
+ 	forwardEvent mbotled -m moveMbot      //from event to message   	
 };
+EventHandler evh1 for usercmd , mindcmd -print {	//(6)
+	memoCurrentEvent -lastonly for mbotled ;	
+	demo ledHandle for mbotled
+};
+
 Context ctxRadarBase    ip [ host="192.168.43.229"   port=8033 ]  -standalone 	 
   
 QActor mbotled context ctxRealRobotWithLedExecutor {   
+Rules{
+// 	 	handleLed.			//(2)  should be commented if (3) is set => coordination among actors is needed
+/*
+ * The following rule is executed in event-driven way as consequance of EventHandler evh1  //(6)
+ */
+	ledHandle :- actorPrintln( ledHandle ), handleLed, msg(EVID,'event',EMITTER,none,usercmd( robotgui(h(X)) ),NUM), !,
+		actorPrintln( ledHandleturnOff ),
+		actorExec( customExecute ( "sudo bash led25GpioTurnOff.sh" ) ).
+	ledHandle :- handleLed, msg(EVID,'event',EMITTER,none,usercmd( robotgui(_) ),NUM),!,
+		actorPrintln( ledHandleturnOn ),
+		actorExec( customExecute ( "sudo bash led25GpioTurnOn.sh" ) ).
+	ledHandle :- actorPrintln( ledHandleDoNothing ).
+ }
 	Plan init normal [       
  	    javaRun it.unibo.mbot.mbotConnArduino.initRasp();
- 	    javaOp  "customExecute ( \"sudo bash led25GpioTurnOn.sh\" )" ;
- 	    delay 500;
-	    javaOp  "customExecute ( \"sudo bash led25GpioTurnOff.sh\" )" ;
- 	    delay 500;
-	    javaOp  "customExecute ( \"sudo bash led25GpioTurnOn.sh\" )" ;
- 	    delay 500;
-	    javaOp  "customExecute ( \"sudo bash led25GpioTurnOff.sh\" )" ;
-	    println("mbot START")    
+ 	    println("mbot START")    
   	]   
     switchTo waitForCmd             
 		
@@ -40,10 +52,10 @@ QActor mbotled context ctxRealRobotWithLedExecutor {
    	finally repeatPlan      
 	   
   	Plan execMove resumeLastPlan[     
-   		javaOp  "customExecute ( \"sudo bash led25GpioTurnOn.sh\" )" ;			
+    	[ !? handleLed] javaOp  "customExecute ( \"sudo bash led25GpioTurnOn.sh\" )" ;	//(2c)		
   		printCurrentMessage;
      	onMsg moveMbot : usercmd( robotgui(h(X)) )  -> {
-      		javaOp  "customExecute ( \"sudo bash led25GpioTurnOff.sh\" )" ;
+       		javaOp  "customExecute ( \"sudo bash led25GpioTurnOff.sh\" )" ;	//(2b) GUARD NOT IMPLEMENETD
      		javaRun it.unibo.mbot.mbotConnArduino.mbotStop()  
      	};
   		onMsg moveMbot : usercmd( robotgui(w(X)) )  -> javaRun it.unibo.mbot.mbotConnArduino.mbotForward();    
@@ -51,13 +63,11 @@ QActor mbotled context ctxRealRobotWithLedExecutor {
   		onMsg moveMbot : usercmd( robotgui(a(X)) )   -> {
   			javaRun it.unibo.mbot.mbotConnArduino.mbotLeft();
 			delay 680;	//TODO: use some configuration parameter
-       		javaOp  "customExecute ( \"sudo bash led25GpioTurnOff.sh\" )" ;
  			javaRun it.unibo.mbot.mbotConnArduino.mbotStop()				
   		};    
    		onMsg moveMbot : usercmd( robotgui(d(X)) )  -> {
 			javaRun it.unibo.mbot.mbotConnArduino.mbotRight();
 			delay 680;//TODO: use some configuration parameter
-      		javaOp  "customExecute ( \"sudo bash led25GpioTurnOff.sh\" )" ;
 	 		javaRun it.unibo.mbot.mbotConnArduino.mbotStop()   			
    		}  ;   
     	onMsg moveMbot : usercmd( robotgui(f(X)) )  -> javaRun it.unibo.mbot.mbotConnArduino.mbotLinefollow()     
@@ -70,10 +80,54 @@ QActor mbotled context ctxRealRobotWithLedExecutor {
  * -----------------------------------------------------
  */
 QActor sonardetector context ctxRealRobotWithLedExecutor{
-	Plan init normal [
-//		println("sonardetector WAITS ")
-	]
+	Plan init normal [	]
   	transition stopAfter 3600000   	//1h     
   		whenEvent realSonar   : sonar( DISTANCE ) do emit polar : p(DISTANCE, 0) 
   	finally repeatPlan  
 }
+
+/*
+ * -----------------------------------------------------
+ * Led-handling actor
+ * -----------------------------------------------------
+ */
+ QActor ledhandler context ctxRealRobotWithLedExecutor{  //(0)
+ Rules{
+ 	 	handleLed.			//(3)   should be commented if (2) is set
+ }
+ 	Plan init normal [   
+ 		delay 200;  	//give the time to  initRasp
+ 		println("ledhandler STARTS");
+ 		//Blink a Led just to show the starting phase 
+  	    [ !? handleLed ] javaOp  "customExecute ( \"sudo bash led25GpioTurnOn.sh\" )" ;
+ 	    delay 500;
+	    javaOp  "customExecute ( \"sudo bash led25GpioTurnOff.sh\" )" ;
+ 	    delay 500;
+	    [ !? handleLed ] javaOp  "customExecute ( \"sudo bash led25GpioTurnOn.sh\" )" ;
+ 	    delay 500;
+	    [ !? handleLed ] javaOp  "customExecute ( \"sudo bash led25GpioTurnOff.sh\" )" ;
+	    println("mbot START")    
+  	]   
+    switchTo waitForCmd             
+		
+   	Plan waitForCmd[  ]  
+  	transition stopAfter 3600000   	//1h 
+    		whenMsg [ !? handleLed ] moveMbot  -> execMove   	//(4)
+	//Events can be lost, but Led handling is not critical
+//   		whenEvent [ !? handleLed ]  usercmd   -> execMove ,			//(5)
+//   		whenEvent [ !? handleLed ]  mindcmd   -> execMove 			//(5)
+    	finally repeatPlan      
+	    
+  	Plan execMove resumeLastPlan[     
+//  		printCurrentEvent;  	
+  		printCurrentMessage;	
+        onMsg  moveMbot : usercmd( robotgui(w(X)) )  ->  
+			javaOp  "customExecute(\"sudo bash led25GpioTurnOn.sh\")"   ;   	 
+        onMsg  moveMbot : usercmd( robotgui(s(X)) )  ->  
+			javaOp  "customExecute(\"sudo bash led25GpioTurnOn.sh\")"   ;   	 
+        onMsg  moveMbot : usercmd( robotgui(h(X)) )  ->  
+			javaOp  "customExecute(\"sudo bash led25GpioTurnOff.sh\")"      	 
+//       	onEvent usercmd:usercmd( robotgui(h(X)) )  ->  
+//			javaOp  "customExecute(\"sudo bash led25GpioTurnOff.sh\")"      	 
+    ]           
+ }

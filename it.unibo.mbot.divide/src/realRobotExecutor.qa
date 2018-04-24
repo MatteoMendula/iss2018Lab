@@ -63,7 +63,7 @@ QActor sonardetector context ctxRealRobotExecutor{
   	transition stopAfter 3600000   	//1h     
   		whenEvent realSonar   : sonar( DISTANCE ) do emit polar : p(DISTANCE, 0) 
   	finally repeatPlan  
-}
+} 
 
 //Useful for testing
 QActor polarlogagent context ctxRealRobotExecutor -g yellow {       

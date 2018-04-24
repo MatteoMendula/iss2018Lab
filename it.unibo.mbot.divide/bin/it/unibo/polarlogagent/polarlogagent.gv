@@ -10,8 +10,11 @@ digraph finite_state_machine {
 	size="8,5"
 	
 	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	doWork [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	logEvent [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
-	init -> handleToutBuiltIn [ label = "timeout(600000)" ][ color = green ][ fontcolor = green ]
-	init -> action [ label = "polar" ][ color = red ][ fontcolor = red ][ dir = both ]
-	init -> init [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
+	init -> doWork [ label = "switch" ][ color = black ][ fontcolor = black ]
+	doWork -> logEvent [ label = "polar" ][ color = red ][ fontcolor = red ][ dir = both ]
+	doWork -> doWork [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
+	doWork -> handleToutBuiltIn [ label = "timeout(600000)" ][ color = green ][ fontcolor = green ]
 }

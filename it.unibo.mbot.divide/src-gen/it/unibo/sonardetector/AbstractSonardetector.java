@@ -56,10 +56,6 @@ public abstract class AbstractSonardetector extends QActor {
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
-	    	stateTab.put("waitForEvents",waitForEvents);
-	    	stateTab.put("sendToRadar",sendToRadar);
-	    	stateTab.put("handleRealSonar",handleRealSonar);
-	    	stateTab.put("showObstcle",showObstcle);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -75,109 +71,38 @@ public abstract class AbstractSonardetector extends QActor {
 	    
 	    StateFun init = () -> {	
 	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
+	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_init",0);
+	     pr.incNumIter(); 	
 	    	String myselfName = "init";  
-	    	temporaryStr = "\"sonardetector STARTS \"";
+	    	temporaryStr = "\"sonardetector WAITS \"";
 	    	println( temporaryStr );  
-	    	//switchTo waitForEvents
-	        switchToPlanAsNextState(pr, myselfName, "sonardetector_"+myselfName, 
-	              "waitForEvents",false, false, null); 
+	    	//bbb
+	     msgTransition( pr,myselfName,"sonardetector_"+myselfName,false,
+	          new StateFun[]{() -> {	//AD HOC state to execute an action and resumeLastPlan
+	          try{
+	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
+	            //ActionSwitch for a message or event
+	             if( currentEvent.getMsg().startsWith("sonar") ){
+	            	String parg="p(DISTANCE,0)";
+	            	/* RaiseEvent */
+	            	parg = updateVars(Term.createTerm("sonar(DISTANCE)"),  Term.createTerm("sonar(DISTANCE)"), 
+	            		    		  					Term.createTerm(currentEvent.getMsg()), parg);
+	            	if( parg != null ) emit( "polar", parg );
+	             }
+	            repeatPlanNoTransition(pr1,"adhocstate","adhocstate",false,true);
+	          }catch(Exception e ){  
+	             println( getName() + " plan=init WARNING:" + e.getMessage() );
+	             //QActorContext.terminateQActorSystem(this); 
+	          }
+	          }
+	          }, 
+	          new String[]{"true","E","realSonar" },
+	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//init
-	    
-	    StateFun waitForEvents = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_waitForEvents",0);
-	     pr.incNumIter(); 	
-	    	String myselfName = "waitForEvents";  
-	    	//bbb
-	     msgTransition( pr,myselfName,"sonardetector_"+myselfName,false,
-	          new StateFun[]{stateTab.get("sendToRadar"), stateTab.get("showObstcle"), stateTab.get("handleRealSonar") }, 
-	          new String[]{"true","E","sonar", "true","E","sonarDetect", "true","E","realSonar" },
-	          3600000, "handleToutBuiltIn" );//msgTransition
-	    }catch(Exception e_waitForEvents){  
-	    	 println( getName() + " plan=waitForEvents WARNING:" + e_waitForEvents.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//waitForEvents
-	    
-	    StateFun sendToRadar = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("sendToRadar",-1);
-	    	String myselfName = "sendToRadar";  
-	    	printCurrentEvent(false);
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("sonar(sonar1,TARGET,DISTANCE)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("sonar") && 
-	    		pengine.unify(curT, Term.createTerm("sonar(SONAR,TARGET,DISTANCE)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg="p(DISTANCE,30)";
-	    			/* RaiseEvent */
-	    			parg = updateVars(Term.createTerm("sonar(SONAR,TARGET,DISTANCE)"),  Term.createTerm("sonar(sonar1,TARGET,DISTANCE)"), 
-	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
-	    			if( parg != null ) emit( "polar", parg );
-	    	}
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("sonar(sonar2,TARGET,DISTANCE)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("sonar") && 
-	    		pengine.unify(curT, Term.createTerm("sonar(SONAR,TARGET,DISTANCE)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg="p(DISTANCE,120)";
-	    			/* RaiseEvent */
-	    			parg = updateVars(Term.createTerm("sonar(SONAR,TARGET,DISTANCE)"),  Term.createTerm("sonar(sonar2,TARGET,DISTANCE)"), 
-	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
-	    			if( parg != null ) emit( "polar", parg );
-	    	}
-	    	repeatPlanNoTransition(pr,myselfName,"sonardetector_"+myselfName,false,true);
-	    }catch(Exception e_sendToRadar){  
-	    	 println( getName() + " plan=sendToRadar WARNING:" + e_sendToRadar.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//sendToRadar
-	    
-	    StateFun handleRealSonar = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("handleRealSonar",-1);
-	    	String myselfName = "handleRealSonar";  
-	    	printCurrentEvent(false);
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("sonar(DISTANCE)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("realSonar") && 
-	    		pengine.unify(curT, Term.createTerm("sonar(DISTANCE)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg="p(DISTANCE,0)";
-	    			/* RaiseEvent */
-	    			parg = updateVars(Term.createTerm("sonar(DISTANCE)"),  Term.createTerm("sonar(DISTANCE)"), 
-	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
-	    			if( parg != null ) emit( "polar", parg );
-	    	}
-	    	repeatPlanNoTransition(pr,myselfName,"sonardetector_"+myselfName,false,true);
-	    }catch(Exception e_handleRealSonar){  
-	    	 println( getName() + " plan=handleRealSonar WARNING:" + e_handleRealSonar.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//handleRealSonar
-	    
-	    StateFun showObstcle = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("showObstcle",-1);
-	    	String myselfName = "showObstcle";  
-	    	temporaryStr = "\"found obstacle\"";
-	    	println( temporaryStr );  
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "p(Distance,Angle)","p(30,90)", guardVars ).toString();
-	    	emit( "polar", temporaryStr );
-	    	repeatPlanNoTransition(pr,myselfName,"sonardetector_"+myselfName,false,true);
-	    }catch(Exception e_showObstcle){  
-	    	 println( getName() + " plan=showObstcle WARNING:" + e_showObstcle.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//showObstcle
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

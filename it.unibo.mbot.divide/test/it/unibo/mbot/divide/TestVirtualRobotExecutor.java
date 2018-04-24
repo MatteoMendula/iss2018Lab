@@ -8,21 +8,22 @@ import alice.tuprolog.SolveInfo;
 import it.unibo.ctxVirtualRobotExecutor.MainCtxVirtualRobotExecutor;
 import it.unibo.qactors.QActorUtils;
 import it.unibo.qactors.akka.QActor;
-
+ 
 public class TestVirtualRobotExecutor {
+	/*
 private QActor rover     =  null;
 private QActor polarlogagent = null;
-   	
-  	@Before
+   	 
+//  	@Before
 	public void systemSetUp() throws Exception  {
   		System.out.println("systemSetUp starts "   ); 	
-//		activateRadar();		(1)
-//  	activateUnity();		(2)  //here the user must click on Play
+// 		activateRadar();		//(1)
+// 		activateUnity();		//(2)  //here the user must click on Play
   		MainCtxVirtualRobotExecutor.initTheContext(); //(3)
   		waitForRoverAndPolarLogRunning();  //(4)
   		createRoverWithoutUser();          //(5)
   	} 
-	 @After
+//	 @After
 	 public void terminate(){
 	  	System.out.println("====== terminate  "   );
  	 }
@@ -66,7 +67,7 @@ private QActor polarlogagent = null;
   	}
   	
  
-	@Test
+//	@Test
 	public void aTest() {  
  		System.out.println("====== aTest ==============="  );
 		try {
@@ -82,4 +83,5 @@ private QActor polarlogagent = null;
 			fail("actorTest " + e.getMessage() );
 		}		
  	}
+ 	*/
 }

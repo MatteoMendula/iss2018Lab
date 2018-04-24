@@ -78,6 +78,7 @@ public abstract class AbstractApplr1agent extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
+	     connectToMqttServer("tcp://localhost:1883");
 	    	//switchTo waitFortask
 	        switchToPlanAsNextState(pr, myselfName, "applr1agent_"+myselfName, 
 	              "waitFortask",false, false, null); 
@@ -99,7 +100,7 @@ public abstract class AbstractApplr1agent extends QActor {
 	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr1agent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("checkForPassage") },//new StateFun[]
+	          new StateFun[]{stateTab.get("checkForPassage") }, 
 	          new String[]{"true","M","taskmsg" },
 	          360000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitFortask){  
@@ -124,7 +125,7 @@ public abstract class AbstractApplr1agent extends QActor {
 	    	emit( "mindcmd", temporaryStr );
 	    	//bbb
 	     msgTransition( pr,myselfName,"applr1agent_"+myselfName,false,
-	          new StateFun[]{stateTab.get("yetObstacle") },//new StateFun[]
+	          new StateFun[]{stateTab.get("yetObstacle") }, 
 	          new String[]{"true","E","sonarSensor" },
 	          1000, "passageFound" );//msgTransition
 	    }catch(Exception e_checkForPassage){  

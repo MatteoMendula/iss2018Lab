@@ -2,7 +2,7 @@
  * ==============================================================
  * mindOfRobot.qa
  * ==============================================================
- */         
+ */          
 System mindOfRobot                     
 Event usercmd      : usercmd(CMD)          
 Event sonar  	   : sonar(SONAR, TARGET, DISTANCE)	//From (virtual) sonar
