@@ -169,7 +169,8 @@ loadTheory(T):-
 opInfo( Op,F,A,L ):-
 	functor( Op, F, A ),
 	Op =.. L.
-		
+
+actorExec( Op ) :- actorOp( Op ).
 actorOp( Op )   :- actorobj(Actor),
 				   % actorPrintln( actorOp( Op  ) ),
 				   java_catch(

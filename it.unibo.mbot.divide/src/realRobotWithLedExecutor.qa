@@ -52,7 +52,6 @@ Rules{
    	finally repeatPlan      
 	   
   	Plan execMove resumeLastPlan[     
-    	[ !? handleLed] javaOp  "customExecute ( \"sudo bash led25GpioTurnOn.sh\" )" ;	//(2c)		
   		printCurrentMessage;
      	onMsg moveMbot : usercmd( robotgui(h(X)) )  -> {
        		javaOp  "customExecute ( \"sudo bash led25GpioTurnOff.sh\" )" ;	//(2b) GUARD NOT IMPLEMENETD
@@ -70,7 +69,8 @@ Rules{
 			delay 680;//TODO: use some configuration parameter
 	 		javaRun it.unibo.mbot.mbotConnArduino.mbotStop()   			
    		}  ;   
-    	onMsg moveMbot : usercmd( robotgui(f(X)) )  -> javaRun it.unibo.mbot.mbotConnArduino.mbotLinefollow()     
+    	onMsg moveMbot : usercmd( robotgui(f(X)) )  -> javaRun it.unibo.mbot.mbotConnArduino.mbotLinefollow()  ;   
+    	[ !? handleLed] javaOp  "customExecute ( \"sudo bash led25GpioTurnOn.sh\" )" 	//(2c)		
    	]           
 }  
 

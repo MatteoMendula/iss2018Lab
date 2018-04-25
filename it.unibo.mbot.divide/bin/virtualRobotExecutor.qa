@@ -16,7 +16,7 @@ Dispatch moveRover : usercmd( CMD )
 Context ctxVirtualRobotExecutor ip [ host="192.168.43.229"   port=8029 ] -g cyan -httpserver     
 EventHandler evh for usercmd, mindcmd -print {	//event-driven ; no Mqtt support yet
  	forwardEvent rover -m moveRover  	//from event to message
-}; 
+};  
 Context ctxRadarBase    ip [ host="192.168.43.229"   port=8033 ]  -standalone 	 
  
 /*       

@@ -10,20 +10,19 @@ import it.unibo.qactors.QActorUtils;
 import it.unibo.qactors.akka.QActor;
  
 public class TestVirtualRobotExecutor {
-	/*
-private QActor rover     =  null;
+private QActor rover         = null;
 private QActor polarlogagent = null;
    	 
-//  	@Before
+   	@Before
 	public void systemSetUp() throws Exception  {
   		System.out.println("systemSetUp starts "   ); 	
-// 		activateRadar();		//(1)
-// 		activateUnity();		//(2)  //here the user must click on Play
+//  		activateRadar();		//(1)
+//  		activateUnity();		//(2)  //here the user must click on Play
   		MainCtxVirtualRobotExecutor.initTheContext(); //(3)
   		waitForRoverAndPolarLogRunning();  //(4)
   		createRoverWithoutUser();          //(5)
   	} 
-//	 @After
+ 	 @After
 	 public void terminate(){
 	  	System.out.println("====== terminate  "   );
  	 }
@@ -49,12 +48,12 @@ private QActor polarlogagent = null;
   	protected void waitForRoverAndPolarLogRunning() {
   		try {
 			System.out.println("waitForRoverAndLogRunning ... "    );
-	 		while( rover == null && polarlogagent == null) {
+	 		while( rover == null || polarlogagent == null) {
 	  			Thread.sleep(250);
-	  			rover = QActorUtils.getQActor("rover_ctrl");
+	  			rover         = QActorUtils.getQActor("rover_ctrl");
 	  			polarlogagent = QActorUtils.getQActor("polarlogagent_ctrl");
 	  		}  
-	  		System.out.println("rover RUNNING: "  + rover );
+	  		System.out.println("polarlogagent RUNNING: "  + polarlogagent );
   		}catch( Exception e) {
   			System.out.println("waitForRoverRunning fails "  + e.getMessage() );
   		}		
@@ -67,21 +66,24 @@ private QActor polarlogagent = null;
   	}
   	
  
-//	@Test
+ 	@Test
 	public void aTest() {  
  		System.out.println("====== aTest ==============="  );
 		try {
 	 		rover.emit("mindcmd", "usercmd( robotgui(w(X)) )");
 	 		Thread.sleep(3000);
 	 		rover.emit("mindcmd", "usercmd( robotgui(h(X)) )");
+	 		Thread.sleep(200);	//just to say another time ...
+	 		rover.emit("mindcmd", "usercmd( robotgui(h(X)) )");
 			SolveInfo sol = polarlogagent.solveGoal("p(X,30)");
 			System.out.println( "distance=" + sol.getVarValue("X") );
  			assertTrue("" , sol.isSuccess() );	 		
 			//Avoid to break the testing too early
-	  		Thread.sleep(5000);
+	  		Thread.sleep(10000);
 		} catch (Exception e) {
+			System.out.println( "ERROR=" + e.getMessage() );
 			fail("actorTest " + e.getMessage() );
 		}		
  	}
- 	*/
+ 	
 }

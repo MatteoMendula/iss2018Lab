@@ -107,9 +107,6 @@ public abstract class AbstractMbotled extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("execMove",-1);
 	    	String myselfName = "execMove";  
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?handleLed" )) != null ){
-	    	customExecute ( "sudo bash led25GpioTurnOn.sh" );
-	    	}
 	    	printCurrentMessage(false);
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
@@ -184,6 +181,9 @@ public abstract class AbstractMbotled extends QActor {
 	    		{/* JavaLikeMove */ 
 	    		it.unibo.mbot.mbotConnArduino.mbotLinefollow(this );
 	    		}
+	    	}
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?handleLed" )) != null ){
+	    	customExecute ( "sudo bash led25GpioTurnOn.sh" );
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mbotled_"+myselfName,false,true);
 	    }catch(Exception e_execMove){  
