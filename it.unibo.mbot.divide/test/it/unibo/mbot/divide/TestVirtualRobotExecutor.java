@@ -16,8 +16,8 @@ private QActor polarlogagent = null;
    	@Before
 	public void systemSetUp() throws Exception  {
   		System.out.println("systemSetUp starts "   ); 	
-//  		activateRadar();		//(1)
-//  		activateUnity();		//(2)  //here the user must click on Play
+   		activateRadar();		//(1)
+   		activateUnity();		//(2)  //here the user must click on Play
   		MainCtxVirtualRobotExecutor.initTheContext(); //(3)
   		waitForRoverAndPolarLogRunning();  //(4)
   		createRoverWithoutUser();          //(5)
@@ -79,7 +79,7 @@ private QActor polarlogagent = null;
 			System.out.println( "distance=" + sol.getVarValue("X") );
  			assertTrue("" , sol.isSuccess() );	 		
 			//Avoid to break the testing too early
-	  		Thread.sleep(10000);
+	  		Thread.sleep(300000);
 		} catch (Exception e) {
 			System.out.println( "ERROR=" + e.getMessage() );
 			fail("actorTest " + e.getMessage() );
