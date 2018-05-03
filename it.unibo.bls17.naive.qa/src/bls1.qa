@@ -2,43 +2,23 @@
  * This is A MODEL, result of problem analysis 
  * written in the CUSTOM meta-model/language qa
  */  
-System bls1  
+System bls0  
 Dispatch turn     : switch   
 Event local_click : clicked(N)  //N : natural
-Event usercmd     : usercmd(N)  //N : natural
 
-Event ledcmd : ledcmd( CMD )  	//CMD = on | off
+Context bls0Ctx ip [ host="localhost"  port=8029 ]    
 
-Context bls1Ctx ip [ host="localhost"  port=8029 ]    
-
-/*
- * LED subsystem
- */
-QActor ledimpl context bls1Ctx {
-Plan init normal  [        
-		javaRun it.unibo.custom.gui.customBlsGui.createCustomLedGui() 
-    ]	
-    switchTo waitForCmd   
-   	 
-  	Plan waitForCmd [ ]
-    transition stopAfter 3000000
-    	whenMsg ledcmd -> handleLedCmd
-    finally repeatPlan	
-    
-    Plan handleLedCmd resumeLastPlan[
-    	onEvent ledcmd : ledcmd( on )  -> javaRun it.unibo.custom.gui.customBlsGui.setLed("on");
-    	onEvent ledcmd : ledcmd( off ) -> javaRun it.unibo.custom.gui.customBlsGui.setLed("off")
-    ]
-}
-QActor  ledmodel context bls1Ctx {
+QActor qaled context bls0Ctx {
 Rules{
-	ledmodel( name(led1), value(off) ).	
+	ledmodel( name(led1), value(off) ).
+	
 	changeledValue( V ) :- 
 		replaceRule( ledmodel( NAME,VALUE ), ledmodel( NAME,value(V) ) ).
 }
-	Plan init normal  [     
-		delay 500;   //give to the implementation the time to start
- 		[ !? ledmodel( NAME, value(V) )] emit ledcmd : ledcmd( V ) //RLed1
+	Plan init normal  [        
+		javaRun it.unibo.custom.gui.customBlsGui.createCustomLedGui();
+ 		delay 100;
+		[ !? ledmodel( NAME, value(V) )] javaRun it.unibo.custom.gui.customBlsGui.setLed(V)
     ]
    	switchTo waitForCmd   
    	 
@@ -52,25 +32,19 @@ Rules{
     	[ !? ledmodel( NAME, value(off) )] addRule newLedValue( on );
     	[ !? ledmodel( NAME, value(on) )]  addRule newLedValue( off );
     	[ ?? newLedValue(V)] demo changeledValue( V ) ;
-    	[ !? ledmodel( NAME, value(V) )]   emit ledcmd : ledcmd( V )	//RLed2
-     ]
-}
-/*
- * BUTTON subsystem
- */
-QActor buttonimpl context bls1Ctx{
-	Plan init normal [         
-   		println( buttonimpl(starts)  )  ;
-   		javaRun it.unibo.custom.gui.customBlsGui.createCustomButtonGui()
-   	]
+    	[ !? ledmodel( NAME, value(V) )]   javaRun it.unibo.custom.gui.customBlsGui.setLed(V)
+    ]
 }
 
-QActor  control context bls1Ctx{
-	Plan init normal [  ]
+QActor qacontrol context bls0Ctx{
+	Plan init normal [         
+   		println( qacontrol(starts)  )  ;
+   		javaRun it.unibo.custom.gui.customBlsGui.createCustomButtonGui()
+   	]
    	switchTo waitForClick      
  
     Plan waitForClick[  ]  
     transition stopAfter 100000 
-     	whenEvent local_click : clicked(N) do forward ledmodel -m turn : switch	//RAppl1
+     	whenEvent local_click : clicked(N) do forward qaled -m turn : switch
     finally repeatPlan	
 }
