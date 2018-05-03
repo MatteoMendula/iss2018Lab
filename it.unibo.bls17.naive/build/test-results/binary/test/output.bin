@@ -1,0 +1,13 @@
+iactionPerformed CLICK id=0 from:it.unibo.bls17.naive.ButtonWithGui[button0,8,31,85x161,label=LEDSWITCH]
+%actionPerformed 01/01/1970 01:00:00
+iactionPerformed CLICK id=0 from:it.unibo.bls17.naive.ButtonWithGui[button0,8,31,85x161,label=LEDSWITCH]
+%actionPerformed 01/01/1970 01:00:00
+mactionPerformed LEDSWITCH id=0 from:it.unibo.bls17.naive.ButtonWithGui[button1,8,31,85x161,label=LEDSWITCH]
+%actionPerformed 01/01/1970 01:00:00
+.BlsApplicationLogic LEDSWITCH ledstate=false
+mactionPerformed LEDSWITCH id=0 from:it.unibo.bls17.naive.ButtonWithGui[button1,8,31,85x161,label=LEDSWITCH]
+%actionPerformed 01/01/1970 01:00:00
+-BlsApplicationLogic LEDSWITCH ledstate=true
+mactionPerformed LEDSWITCH id=0 from:it.unibo.bls17.naive.ButtonWithGui[button1,8,31,85x161,label=LEDSWITCH]
+%actionPerformed 01/01/1970 01:00:00
+.BlsApplicationLogic LEDSWITCH ledstate=false

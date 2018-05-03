@@ -1,6 +1,7 @@
 /* 
  * =======================================================================================
  * realRobotWithLedExecutor.qa
+ * WARNING: the hoyspot must be a private network to make nodes visibile
  * =======================================================================================
  */        
 System realRobotWithLedExecutor            
@@ -14,7 +15,7 @@ Event mbotcmd     : usercmd(CMD)
 
 Dispatch moveMbot : usercmd( CMD )
   
-Context ctxRealRobotWithLedExecutor ip [ host="192.168.43.68"   port=8019 ] -httpserver     
+Context ctxRealRobotWithLedExecutor ip [ host="192.168.43.67"   port=8019 ] -httpserver     
 EventHandler evh for usercmd , mindcmd  {	 
     forwardEvent ledhandler -m moveMbot ;  //(1)  	this generates local traffic, but it is tolerable
  	forwardEvent mbotled -m moveMbot      //from event to message   	

@@ -11,7 +11,7 @@ import it.unibo.qactors.akka.QActor;
  
 public class TestVirtualRobotExecutor {
 private QActor rover         = null;
-private QActor polarlogagent = null;
+private QActor polarlogagent = null; 
    	 
    	@Before
 	public void systemSetUp() throws Exception  {
@@ -71,18 +71,23 @@ private QActor polarlogagent = null;
  		System.out.println("====== aTest ==============="  );
 		try {
 	 		rover.emit("mindcmd", "usercmd( robotgui(w(X)) )");
-	 		Thread.sleep(3000);
+	 		Thread.sleep(4000);
 	 		rover.emit("mindcmd", "usercmd( robotgui(h(X)) )");
 	 		Thread.sleep(200);	//just to say another time ...
 	 		rover.emit("mindcmd", "usercmd( robotgui(h(X)) )");
 			SolveInfo sol = polarlogagent.solveGoal("p(X,30)");
-			System.out.println( "distance=" + sol.getVarValue("X") );
- 			assertTrue("" , sol.isSuccess() );	 		
+			if( sol.isSuccess() ) {
+				System.out.println( "distance=" + sol.getVarValue("X") );
+	 			assertTrue("" , sol.isSuccess() );	
+ 			}else {
+ 				System.out.println( "WARNING ... "  );
+ 				fail("aTest STRANGE BEHAVIOUR"   );
+ 			}
 			//Avoid to break the testing too early
 	  		Thread.sleep(300000);
 		} catch (Exception e) {
 			System.out.println( "ERROR=" + e.getMessage() );
-			fail("actorTest " + e.getMessage() );
+			fail("aTest " + e.getMessage() );
 		}		
  	}
  	
