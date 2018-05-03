@@ -10,10 +10,11 @@ digraph finite_state_machine {
 	size="8,5"
 	
 	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
-	waitForClick [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	waitForSensorEvent [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	handleSensorEvent [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
-	waitForClick -> handleToutBuiltIn [ label = "timeout(100000)" ][ color = green ][ fontcolor = green ]
-	init -> waitForClick [ label = "switch" ][ color = black ][ fontcolor = black ]
-	waitForClick -> waitForClick [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
-	waitForClick -> action [ label = "local_click" ][ color = red ][ fontcolor = red ][ dir = both ]
+	waitForSensorEvent -> waitForSensorEvent [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
+	init -> waitForSensorEvent [ label = "switch" ][ color = black ][ fontcolor = black ]
+	waitForSensorEvent -> handleSensorEvent [ label = "sensorEvent" ][ color = red ][ fontcolor = red ][ dir = both ]
+	waitForSensorEvent -> handleToutBuiltIn [ label = "timeout(100000)" ][ color = green ][ fontcolor = green ]
 }

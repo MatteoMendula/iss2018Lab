@@ -56,7 +56,8 @@ public abstract class AbstractQacontrol extends QActor {
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
-	    	stateTab.put("waitForClick",waitForClick);
+	    	stateTab.put("waitForSensorEvent",waitForSensorEvent);
+	    	stateTab.put("handleSensorEvent",handleSensorEvent);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -76,48 +77,64 @@ public abstract class AbstractQacontrol extends QActor {
 	    	String myselfName = "init";  
 	    	temporaryStr = "qacontrol(starts)";
 	    	println( temporaryStr );  
-	    	it.unibo.custom.gui.customBlsGui.createCustomButtonGui( myself  );
-	    	//switchTo waitForClick
+	    	//switchTo waitForSensorEvent
 	        switchToPlanAsNextState(pr, myselfName, "qacontrol_"+myselfName, 
-	              "waitForClick",false, false, null); 
+	              "waitForSensorEvent",false, false, null); 
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//init
 	    
-	    StateFun waitForClick = () -> {	
+	    StateFun waitForSensorEvent = () -> {	
 	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_waitForClick",0);
+	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_waitForSensorEvent",0);
 	     pr.incNumIter(); 	
-	    	String myselfName = "waitForClick";  
+	    	String myselfName = "waitForSensorEvent";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"qacontrol_"+myselfName,false,
-	          new StateFun[]{() -> {	//AD HOC state to execute an action and resumeLastPlan
-	          try{
-	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
-	            //ActionSwitch for a message or event
-	             if( currentEvent.getMsg().startsWith("clicked") ){
-	            	String parg="switch";
-	            	/* SendDispatch */
-	            	parg = updateVars(Term.createTerm("clicked(N)"),  Term.createTerm("clicked(N)"), 
-	            		    		  					Term.createTerm(currentEvent.getMsg()), parg);
-	            	if( parg != null ) sendMsg("turn","qaled", QActorContext.dispatch, parg ); 
-	             }
-	            repeatPlanNoTransition(pr1,"adhocstate","adhocstate",false,true);
-	          }catch(Exception e ){  
-	             println( getName() + " plan=waitForClick WARNING:" + e.getMessage() );
-	             //QActorContext.terminateQActorSystem(this); 
-	          }
-	          }
-	          }, 
-	          new String[]{"true","E","local_click" },
+	          new StateFun[]{stateTab.get("handleSensorEvent") }, 
+	          new String[]{"true","E","sensorEvent" },
 	          100000, "handleToutBuiltIn" );//msgTransition
-	    }catch(Exception e_waitForClick){  
-	    	 println( getName() + " plan=waitForClick WARNING:" + e_waitForClick.getMessage() );
+	    }catch(Exception e_waitForSensorEvent){  
+	    	 println( getName() + " plan=waitForSensorEvent WARNING:" + e_waitForSensorEvent.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
-	    };//waitForClick
+	    };//waitForSensorEvent
+	    
+	    StateFun handleSensorEvent = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("handleSensorEvent",-1);
+	    	String myselfName = "handleSensorEvent";  
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("sensorEvent(V)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("sensorEvent") && 
+	    		pengine.unify(curT, Term.createTerm("sensorEvent(DATA)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			String parg  ="curTemperatureValue(X)";
+	    			String parg1 ="curTemperatureValue(V)";
+	    			/* ReplaceRule */
+	    			parg = updateVars(Term.createTerm("sensorEvent(DATA)"),  Term.createTerm("sensorEvent(V)"), 
+	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
+	    			parg1 = updateVars(Term.createTerm("sensorEvent(DATA)"),  Term.createTerm("sensorEvent(V)"), 
+	    				    		  					Term.createTerm(currentEvent.getMsg()), parg1);
+	    			if( parg != null && parg1 != null  ) replaceRule(parg, parg1);	    		  					
+	    	}
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?evalTemperature(hot)" )) != null ){
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "ctrlEvent(CMD)","ctrlEvent(on)", guardVars ).toString();
+	    	emit( "ctrlEvent", temporaryStr );
+	    	}
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?evalTemperature(cold)" )) != null ){
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "ctrlEvent(CMD)","ctrlEvent(off)", guardVars ).toString();
+	    	emit( "ctrlEvent", temporaryStr );
+	    	}
+	    	repeatPlanNoTransition(pr,myselfName,"qacontrol_"+myselfName,false,true);
+	    }catch(Exception e_handleSensorEvent){  
+	    	 println( getName() + " plan=handleSensorEvent WARNING:" + e_handleSensorEvent.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//handleSensorEvent
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

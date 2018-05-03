@@ -1,2 +1,5 @@
 plan(1,init, sentence(true,move(print(qacontrol( starts))),'','' ))
-plan(2,init, sentence(true,not here StateMoveNormal,'','' ))
+plan(1,handleSensorEvent, sentence(true,eventswitch(sensorEvent, »sensorEvent( V), not here  GuardMove ),'','' ))
+plan(2,handleSensorEvent, sentence( evalTemperature( hot),raise( ctrlEvent , ctrlEvent( on) )'),'','' ))
+plan(3,handleSensorEvent, sentence( evalTemperature( cold),raise( ctrlEvent , ctrlEvent( off) )'),'','' ))
+plan(4,handleSensorEvent, sentence(true,move(resumeplan),'','' ))

@@ -1,16 +1,14 @@
 %====================================================================================
 % Context bls1Ctx  SYSTEM-configuration: file it.unibo.bls1Ctx.bls1.pl 
 %====================================================================================
-context(bls1ctx, "localhost",  "TCP", "8029" ).  		 
+context(bls1ctx, "localhost",  "TCP", "8019" ).  		 
 %%% -------------------------------------------
-qactor( ledimpl , bls1ctx, "it.unibo.ledimpl.MsgHandle_Ledimpl"   ). %%store msgs 
-qactor( ledimpl_ctrl , bls1ctx, "it.unibo.ledimpl.Ledimpl"   ). %%control-driven 
-qactor( ledmodel , bls1ctx, "it.unibo.ledmodel.MsgHandle_Ledmodel"   ). %%store msgs 
-qactor( ledmodel_ctrl , bls1ctx, "it.unibo.ledmodel.Ledmodel"   ). %%control-driven 
-qactor( buttonimpl , bls1ctx, "it.unibo.buttonimpl.MsgHandle_Buttonimpl"   ). %%store msgs 
-qactor( buttonimpl_ctrl , bls1ctx, "it.unibo.buttonimpl.Buttonimpl"   ). %%control-driven 
-qactor( control , bls1ctx, "it.unibo.control.MsgHandle_Control"   ). %%store msgs 
-qactor( control_ctrl , bls1ctx, "it.unibo.control.Control"   ). %%control-driven 
+qactor( qasensor , bls1ctx, "it.unibo.qasensor.MsgHandle_Qasensor"   ). %%store msgs 
+qactor( qasensor_ctrl , bls1ctx, "it.unibo.qasensor.Qasensor"   ). %%control-driven 
+qactor( qacontrol , bls1ctx, "it.unibo.qacontrol.MsgHandle_Qacontrol"   ). %%store msgs 
+qactor( qacontrol_ctrl , bls1ctx, "it.unibo.qacontrol.Qacontrol"   ). %%control-driven 
+qactor( qaactuator , bls1ctx, "it.unibo.qaactuator.MsgHandle_Qaactuator"   ). %%store msgs 
+qactor( qaactuator_ctrl , bls1ctx, "it.unibo.qaactuator.Qaactuator"   ). %%control-driven 
 %%% -------------------------------------------
 %%% -------------------------------------------
 
