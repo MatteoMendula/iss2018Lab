@@ -106,6 +106,7 @@ public abstract class AbstractQacontrol extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("handleSensorEvent",-1);
 	    	String myselfName = "handleSensorEvent";  
+	    	printCurrentEvent(false);
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("sensorEvent(V)");
@@ -125,8 +126,7 @@ public abstract class AbstractQacontrol extends QActor {
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "ctrlEvent(CMD)","ctrlEvent(on)", guardVars ).toString();
 	    	emit( "ctrlEvent", temporaryStr );
 	    	}
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?evalTemperature(cold)" )) != null ){
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "ctrlEvent(CMD)","ctrlEvent(off)", guardVars ).toString();
+	    	else{ temporaryStr = QActorUtils.unifyMsgContent(pengine, "ctrlEvent(CMD)","ctrlEvent(off)", guardVars ).toString();
 	    	emit( "ctrlEvent", temporaryStr );
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"qacontrol_"+myselfName,false,true);

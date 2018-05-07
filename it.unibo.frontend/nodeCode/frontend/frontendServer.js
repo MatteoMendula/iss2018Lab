@@ -21,6 +21,10 @@ var createServer = function (port ) {
 function initPlugins() {
 	ledsPlugin  = require('./plugins/internal/ledsPlugin');	//global variable;
 	ledsPlugin.start( {'simulate': true, 'frequency': 5000} );
+	
+ 	dhtPlugin = require('./plugins/internal/DHT22SensorPlugin');	//global variable;
+	dhtPlugin.start({'simulate': true, 'frequency': 2000});
+//	  dht22Plugin.start();
 }
 
 createServer(3000);
@@ -56,6 +60,7 @@ function onError(error) {
 //Handle CRTL-C;
 process.on('SIGINT', function () {
   ledsPlugin.stop();
+  dhtPlugin.stop();
   console.log('frontendServer Bye, bye!');
   process.exit();
 });

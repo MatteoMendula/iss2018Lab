@@ -1,6 +1,7 @@
 /*
- * This is A MODEL, result of problem analysis 
- * written in the CUSTOM meta-model/language qa
+ * This is A MODEL, discussed  3 April 2018
+ *  sensor   = temperature
+ *  actuator = led
  */  
 System bls1  
   
@@ -9,34 +10,42 @@ Event ctrlEvent   : ctrlEvent( CMD )  	//CMD = on | off
 
 Context bls1Ctx ip [ host="localhost"  port=8019 ]    
 
+/*
+ * SENSOR as event emitter
+ */
 QActor qasensor context bls1Ctx {
 	Plan init normal  [   
 		println( qasensor(starts)  );   
-		delay 200;
+		delay 1000;
 		emit  sensorEvent :  sensorEvent( 20 ) ; 
-		delay 200;
+		delay 1000;
 		emit  sensorEvent :  sensorEvent( 30 ) ; 
-		delay 200;
+		delay 1000;
+		emit  sensorEvent :  sensorEvent( 28 ) ; 
+		delay 1000;
 		emit  sensorEvent :  sensorEvent( 35 ) ; 
-		delay 200;
-		emit  sensorEvent :  sensorEvent( 25 )   
+		delay 1000
     ]
 }
 
+/*
+ * CONTROL rule-based
+ * turns a led on when the sensor value is higher than 30
+ * by emitting a ctrlEvent
+ */
 QActor qacontrol context bls1Ctx{
 Rules{
-	evalTemperature( hot ) :- 		
-		//output(evalTemperature1),
-		curTemperatureValue(30), !.
-	evalTemperature( hot ) :- 		
-		//output(evalTemperature2),
+	eval( ge, X, X ).
+	eval( ge, X, V ):- eval( gt, X , V ) .
+ 	evalTemperature( cold ) :- 		
 		curTemperatureValue(V),
-		eval( gt, V , 30 ), !.
-	evalTemperature( cold ) :- 	
-		//output(evalTemperature3), 
+		//output(evalTemperature(V)),
+		eval( lt, V , 30 ).
+ 	evalTemperature( hot ) :-
 		curTemperatureValue(V),
-		eval( lt, V , 30 ). 
-}
+		//output(evalTemperature(V)),
+		eval( ge, V , 30 ), !.	
+ }
 	Plan init normal [         
    		println( qacontrol(starts)  )   
    	]
@@ -48,16 +57,20 @@ Rules{
     finally repeatPlan	
       
     Plan handleSensorEvent resumeLastPlan [   
-    	//printCurrentEvent;  
-    	onEvent sensorEvent : sensorEvent( V ) -> ReplaceRule curTemperatureValue(X)  with curTemperatureValue(V); 
-    	[ !? evalTemperature(hot)  ] emit ctrlEvent : ctrlEvent(on);
-    	[ !? evalTemperature(cold) ] emit ctrlEvent : ctrlEvent(off)
+     	printCurrentEvent;  
+    	onEvent sensorEvent : sensorEvent( V ) -> 
+    				ReplaceRule curTemperatureValue(X)  with curTemperatureValue(V); 
+    	[ !? evalTemperature(hot)  ] emit ctrlEvent : ctrlEvent(on) else emit ctrlEvent : ctrlEvent(off) 
     ]
 }
-
+/*
+ * ACTUATOR
+ * manage a Led by USING a Led implementation
+ */
 QActor qaactuator context bls1Ctx{
 	Plan init normal [         
-   		println( qaactuator(starts)  )   
+   		println( qaactuator(starts)  ) ;
+   		javaRun it.unibo.custom.gui.customBlsGui.createCustomLedGui()   
    	]
    	switchTo waitForCommand     
   
@@ -67,7 +80,8 @@ QActor qaactuator context bls1Ctx{
     finally repeatPlan	
    	 
 	Plan handleCmd resumeLastPlan[
-		//printCurrentEvent;
-		onEvent ctrlEvent : ctrlEvent(CMD) -> println( ctrlEvent(CMD) )
+// 		printCurrentEvent;
+		onEvent ctrlEvent : ctrlEvent(on)  -> javaRun it.unibo.custom.gui.customBlsGui.setLed("on");
+		onEvent ctrlEvent : ctrlEvent(off) -> javaRun it.unibo.custom.gui.customBlsGui.setLed("off")
 	]
 }

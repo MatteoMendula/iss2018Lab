@@ -15,7 +15,7 @@ exports.start = function (params) {
   observe(ledModel); //#A
 
   if (localParams.simulate) {
-    simulate();		 
+//    simulate();		 
   } else {
     connectHardware();
   }
@@ -37,8 +37,13 @@ function observe(what) {
 const whatObservable = new observable(what);	
 observable           = whatObservable.data;
 whatObservable.observe('value', () => {
+	var val =  "off";
+	if( observable.value === "true" ) val = "on";
+	var eventstr = "msg(ctrlEvent,event,js,none,ctrlEvent(leds, led1, " +val + "),1)"
 		console.log("	ledPlugin LED observed> "+ observable.value);
- 		mqttUtils.publish("LED1 value=" +  observable.value );
+//		console.log("	ledPlugin LED emits> "+ eventstr);
+// 		mqttUtils.publish( eventstr );
+// 		mqttUtils.publish("LED1 value=" +  observable.value );
 // 		sendMsg("msg(jsdata,event,jsSource,none,jsdata(led1, " + observable.value + "),1)");
   	});
 };

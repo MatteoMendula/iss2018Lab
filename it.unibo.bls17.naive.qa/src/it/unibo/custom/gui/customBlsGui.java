@@ -111,6 +111,7 @@ private static customBlsGui curLBtnGui = null;	//singleton
     }
     
     public void setLedGui(boolean on) {
+//    	System.out.println("setLedGui " + on);
      	if(on) ledGui.setSize(largeGui);
     	else ledGui.setSize(smallGui);
     	ledGui.repaint();

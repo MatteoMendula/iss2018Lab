@@ -4,10 +4,9 @@
 * =====================================
 */
 const mqtt   = require ('mqtt');
-const topic  = "unibo/actuators/led/1";
-
-//var client   = mqtt.connect('mqtt://iot.eclipse.org');
-var client     = mqtt.connect('mqtt://localhost');
+const topic  = "unibo/qasys";
+//var client = mqtt.connect('mqtt://iot.eclipse.org');
+var client   = mqtt.connect('mqtt://localhost');
 
 console.log("mqtt client= " + client );
 
@@ -22,6 +21,6 @@ client.on('message', function (topic, message){
 });
 
 exports.publish = function( msg ){
-	console.log('mqtt publish ' + client);
+	//console.log('mqtt publish ' + client);
 	client.publish(topic, msg);
 }

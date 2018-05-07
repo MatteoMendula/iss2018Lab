@@ -7,10 +7,7 @@ var express     = require('express'),
 
 router.route('/').get(function (req, res, next) {
     req.type = "defaultView" ;
-  	req.result = model.links.properties.resources;  
-//   console.log( "---------------" );
-// 	console.log( req.result );
-//  	res.end( "Please sepcify " + req.result );
+  	req.result = resourceModel.pi.sensors;  
     next();  
 });
 

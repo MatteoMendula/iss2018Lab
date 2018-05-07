@@ -74,6 +74,8 @@ public abstract class AbstractPolarlogagent extends QActor implements IActivity{
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
+	    	stateTab.put("doWork",doWork);
+	    	stateTab.put("logEvent",logEvent);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -89,37 +91,58 @@ public abstract class AbstractPolarlogagent extends QActor implements IActivity{
 	    
 	    StateFun init = () -> {	
 	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_init",0);
-	     pr.incNumIter(); 	
+	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
-	    	printCurrentEvent(false);
-	    	//bbb
-	     msgTransition( pr,myselfName,"polarlogagent_"+myselfName,false,
-	          new StateFun[]{() -> {	//AD HOC state to execute an action and resumeLastPlan
-	          try{
-	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
-	            //ActionSwitch for a message or event
-	             if( currentEvent.getMsg().startsWith("p") ){
-	            	String parg="p(Distance,Angle)";
-	            	/* AddRule */
-	            	parg = updateVars(Term.createTerm("p(Distance,Angle)"),  Term.createTerm("p(Distance,Angle)"), 
-	            		    		  					Term.createTerm(currentEvent.getMsg()), parg);
-	            	if( parg != null ) addRule(parg);	    		  					
-	             }
-	            repeatPlanNoTransition(pr1,"adhocstate","adhocstate",false,true);
-	          }catch(Exception e ){  
-	             println( getName() + " plan=init WARNING:" + e.getMessage() );
-	             //QActorContext.terminateQActorSystem(this); 
-	          }
-	          }
-	          }, 
-	          new String[]{"true","E","polar" },
-	          600000, "handleToutBuiltIn" );//msgTransition
+	    	temporaryStr = "\"evlogagent STARTS\"";
+	    	println( temporaryStr );  
+	    	//switchTo doWork
+	        switchToPlanAsNextState(pr, myselfName, "polarlogagent_"+myselfName, 
+	              "doWork",false, false, null); 
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//init
+	    
+	    StateFun doWork = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_doWork",0);
+	     pr.incNumIter(); 	
+	    	String myselfName = "doWork";  
+	    	//bbb
+	     msgTransition( pr,myselfName,"polarlogagent_"+myselfName,false,
+	          new StateFun[]{stateTab.get("logEvent") }, 
+	          new String[]{"true","E","polar" },
+	          600000, "handleToutBuiltIn" );//msgTransition
+	    }catch(Exception e_doWork){  
+	    	 println( getName() + " plan=doWork WARNING:" + e_doWork.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//doWork
+	    
+	    StateFun logEvent = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("logEvent",-1);
+	    	String myselfName = "logEvent";  
+	    	printCurrentEvent(false);
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("p(Distance,Angle)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("polar") && 
+	    		pengine.unify(curT, Term.createTerm("p(Distance,Angle)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			String parg="p(Distance,Angle)";
+	    			/* AddRule */
+	    			parg = updateVars(Term.createTerm("p(Distance,Angle)"),  Term.createTerm("p(Distance,Angle)"), 
+	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
+	    			if( parg != null ) addRule(parg);	    		  					
+	    	}
+	    	repeatPlanNoTransition(pr,myselfName,"polarlogagent_"+myselfName,false,true);
+	    }catch(Exception e_logEvent){  
+	    	 println( getName() + " plan=logEvent WARNING:" + e_logEvent.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//logEvent
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

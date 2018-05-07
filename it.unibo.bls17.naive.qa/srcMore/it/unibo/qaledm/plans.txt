@@ -1,0 +1,5 @@
+plan(1,init, sentence(true,not here StateMoveNormal,'','' ))
+plan(2,init, sentence(true,delay( 100) ,'','' ))
+plan(3,init, sentence( ledmodel( NAME,value( V)),not here StateMoveNormal,'','' ))
+plan(1,ledswitch, sentence( switchLedValue( V),not here StateMoveNormal,'','' ))
+plan(2,ledswitch, sentence(true,move(resumeplan),'','' ))

@@ -1,0 +1,61 @@
+/*
+ * This is A MODEL 
+ *  sensor   = button
+ *  actuator = led
+ */  
+System bls1m 
+Dispatch turn     : switch   
+Event local_click : clicked(N)  //N : natural
+
+Context bls1mCtx ip [ host="localhost"  port=8049 ]    
+
+/*
+ * ACTUATOR
+ * manage a Led by USING a Led model that handles a Led implementation
+ */
+QActor qaledm context bls1mCtx {
+Rules{
+	ledmodel( name(led1), value(off) ).
+	switchLedValue(on) :-
+		ledmodel( name(led1), value(off) ),
+		replaceRule( ledmodel( NAME,value(off) ), ledmodel( NAME,value(on) ) ), !.
+	switchLedValue(off) :-
+		ledmodel( name(led1), value(on) ),
+		replaceRule( ledmodel( NAME,value(on) ), ledmodel( NAME,value(off) ) ), !.
+}
+	Plan init normal  [        
+		javaRun it.unibo.custom.gui.customBlsGui.createCustomLedGui();
+ 		delay 100;
+		[ !? ledmodel( NAME, value(V) )] javaRun it.unibo.custom.gui.customBlsGui.setLed(V)
+    ]
+   	switchTo waitForCmd   
+   	 
+  	Plan waitForCmd [ ]
+    transition stopAfter 3000000
+    	whenMsg turn -> ledswitch
+    finally repeatPlan	
+   
+    //model-based behavior
+    Plan ledswitch resumeLastPlan[
+		[ !? switchLedValue(V) ] javaRun it.unibo.custom.gui.customBlsGui.setLed(V)
+    ]
+}
+
+/*
+ * CONTROL  
+ * embeds a button implementation made by a GUI
+ * turns a led on when the button emit a local_click
+ * by forwarding a dispatch to the qaledm 
+*/
+QActor qacontrolm context bls1mCtx{
+	Plan init normal [         
+   		println( qacontrol(starts)  )  ;
+   		javaRun it.unibo.custom.gui.customBlsGui.createCustomButtonGui()
+   	]
+   	switchTo waitForClick      
+ 
+    Plan waitForClick[  ]  
+    transition stopAfter 100000 
+     	whenEvent local_click : clicked(N) do forward qaledm -m turn : switch
+    finally repeatPlan	
+}

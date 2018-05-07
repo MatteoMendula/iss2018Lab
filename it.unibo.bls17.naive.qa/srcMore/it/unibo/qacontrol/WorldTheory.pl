@@ -142,9 +142,10 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %-------------------------------------------------
 %  User static rules about qacontrol
 %------------------------------------------------- 
-evalTemperature( hot):-curTemperatureValue( 30), ! .
-evalTemperature( hot):-curTemperatureValue( V),eval( gt,V,30), ! .
+eval( ge,X,X).
+eval( ge,X,V):-eval( gt,X,V).
 evalTemperature( cold):-curTemperatureValue( V),eval( lt,V,30).
+evalTemperature( hot):-curTemperatureValue( V),eval( ge,V,30), ! .
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),
