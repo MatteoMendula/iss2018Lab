@@ -26,14 +26,14 @@ QActor rover context ctxMbotControl {
 	
   	Plan execMove resumeLastPlan[     
   		printCurrentEvent; 
-    	onEvent usercmd :  usercmd( robotgui(w(X)) ) -> switchTo moveForward;    
-    	onEvent usercmd :  usercmd( robotgui(s(X)) ) -> switchTo moveBackward;  
-  		onEvent usercmd :  usercmd( robotgui(a(X)) ) -> switchTo turnLeft;   
-   		onEvent usercmd :  usercmd( robotgui(d(X)) ) -> switchTo turnRight ;   
-   		onEvent usercmd :  usercmd( robotgui(h(X)) ) -> switchTo stopTheRobot ; 
-   		onEvent usercmd :  usercmd( robotgui(f(X)) ) -> javaRun it.unibo.rover.mbotConnArduino.mbotLinefollow() ;    
-    	onEvent usercmd :  usercmd( robotgui(unityAddr(X)) ) -> switchTo connectToUnity;    //X=localhost at the moment
-   		onEvent usercmd :  usercmd( robotgui(x(X)) ) -> switchTo terminataAppl
+//    	onEvent usercmd :  usercmd( robotgui(w(X)) ) -> switchTo moveForward;    
+//    	onEvent usercmd :  usercmd( robotgui(s(X)) ) -> switchTo moveBackward;  
+//  		onEvent usercmd :  usercmd( robotgui(a(X)) ) -> switchTo turnLeft;   
+//   		onEvent usercmd :  usercmd( robotgui(d(X)) ) -> switchTo turnRight ;   
+//   		onEvent usercmd :  usercmd( robotgui(h(X)) ) -> switchTo stopTheRobot ; 
+   		onEvent usercmd :  usercmd( robotgui(f(X)) ) -> javaRun it.unibo.rover.mbotConnArduino.mbotLinefollow()    
+//    	onEvent usercmd :  usercmd( robotgui(unityAddr(X)) ) -> switchTo connectToUnity;    //X=localhost at the moment
+//   		onEvent usercmd :  usercmd( robotgui(x(X)) ) -> switchTo terminataAppl
    	]
   
   	Plan connectToUnity resumeLastPlan[ 
@@ -125,8 +125,8 @@ QActor sonardetector context ctxMbotControl{
 		printCurrentEvent; 
 		onEvent realSonar   : sonar( DISTANCE )                -> emit polar : p(DISTANCE, 0) ;
 		onEvent sonar       : sonar(sonar1, TARGET, DISTANCE ) -> emit polar : p(DISTANCE,30) ;
-		onEvent sonar       : sonar(sonar2, TARGET, DISTANCE ) -> emit polar : p(DISTANCE,120) ;
-		onEvent sonarDetect : sonarDetect(TARGET)              -> switchTo showObstcle			
+		onEvent sonar       : sonar(sonar2, TARGET, DISTANCE ) -> emit polar : p(DISTANCE,120) 
+//		onEvent sonarDetect : sonarDetect(TARGET)              -> switchTo showObstcle			
 	] 
  	
 	Plan showObstcle resumeLastPlan[

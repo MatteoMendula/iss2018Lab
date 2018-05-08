@@ -1,7 +1,7 @@
 /* 
  * =======================================================================================
  * realRobotWithLedExecutor.qa
- * WARNING: the hoyspot must be a private network to make nodes visibile
+ * WARNING: the hotspot must be a private network to make nodes visibile
  * =======================================================================================
  */        
 System realRobotWithLedExecutor            
@@ -31,7 +31,7 @@ QActor mbotled context ctxRealRobotWithLedExecutor {
 Rules{
 // 	 	handleLed.			//(2)  should be commented if (3) is set => coordination among actors is needed
 /*
- * The following rule is executed in event-driven way as consequance of EventHandler evh1  //(6)
+ * The following rule is executed in event-driven way as consequence of EventHandler evh1  //(6)
  */
 	ledHandle :- actorPrintln( ledHandle ), handleLed, msg(EVID,'event',EMITTER,none,usercmd( robotgui(h(X)) ),NUM), !,
 		actorPrintln( ledHandleturnOff ),

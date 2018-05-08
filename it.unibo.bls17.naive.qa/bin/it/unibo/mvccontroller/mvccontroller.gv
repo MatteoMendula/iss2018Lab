@@ -14,7 +14,7 @@ digraph finite_state_machine {
 	waitForInputEvent [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
 	waitForInputEvent -> handleInputEvent [ label = "inputCtrlEvent" ][ color = red ][ fontcolor = red ][ dir = both ]
+	waitForInputEvent -> handleToutBuiltIn [ label = "timeout(6000000)" ][ color = green ][ fontcolor = green ]
 	init -> waitForInputEvent [ label = "switch" ][ color = black ][ fontcolor = black ]
-	waitForInputEvent -> handleToutBuiltIn [ label = "timeout(100000)" ][ color = green ][ fontcolor = green ]
 	waitForInputEvent -> waitForInputEvent [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
 }

@@ -80,7 +80,7 @@ public abstract class AbstractMvccontroller extends QActor {
 	    	solveGoal( parg ); //sept2017
 	    	temporaryStr = "qacontrol(starts)";
 	    	println( temporaryStr );  
-	     connectToMqttServer("tcp://localhost:1883");
+	     connectToMqttServer("tcp://192.168.137.1:1883");
 	    	//switchTo waitForInputEvent
 	        switchToPlanAsNextState(pr, myselfName, "mvccontroller_"+myselfName, 
 	              "waitForInputEvent",false, false, null); 
@@ -99,7 +99,7 @@ public abstract class AbstractMvccontroller extends QActor {
 	     msgTransition( pr,myselfName,"mvccontroller_"+myselfName,false,
 	          new StateFun[]{stateTab.get("handleInputEvent") }, 
 	          new String[]{"true","E","inputCtrlEvent" },
-	          100000, "handleToutBuiltIn" );//msgTransition
+	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitForInputEvent){  
 	    	 println( getName() + " plan=waitForInputEvent WARNING:" + e_waitForInputEvent.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 

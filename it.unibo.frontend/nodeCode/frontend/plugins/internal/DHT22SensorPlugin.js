@@ -4,7 +4,6 @@
 var 
   resources = require('./../../appServer/models/model'),
   utils     = require('./../../utils.js');
-
 var interval, sensor;
 var model       = resources.pi.sensors;
 var pluginName  = 'Temperature & Humidity';
@@ -18,7 +17,6 @@ exports.start = function (params) {
     connectHardware();
   }
 };
-
 exports.stop = function () {
   if (localParams.simulate) {
     clearInterval(interval);
@@ -32,12 +30,12 @@ function connectHardware() {
  var sensorDriver = require('node-dht-sensor');
   var sensor = {
     initialize: function () {
-      return sensorDriver.initialize(22, model.temperature.gpio); //#A
+      return sensorDriver.initialize(22, model.temperature.gpio);  
     },
     read: function () {
-      var readout = sensorDriver.read(); //#B
+      var readout = sensorDriver.read();  
       model.temperature.value = parseFloat(readout.temperature.toFixed(2));
-      model.humidity.value    = parseFloat(readout.humidity.toFixed(2)); //#C
+      model.humidity.value    = parseFloat(readout.humidity.toFixed(2));  
       showValue();
       setTimeout(function () {
         sensor.read(); //#D
@@ -47,9 +45,7 @@ function connectHardware() {
   if (sensor.initialize()) {
     console.info('Hardware %s sensor started!', pluginName);
     sensor.read();
-  } else {
-    console.warn('Failed to initialize sensor!');
-  }
+  } else {    console.warn('Failed to initialize sensor!'); }
 };
 
 function simulate() {
@@ -77,12 +73,3 @@ var emitInfo = function( value ){
  		console.log("	DHT22Plugin emits> "+ eventstr);
  		mqttUtils.publish( eventstr );
 }
-
-
-//#A Initialize the driver for DHT22 on GPIO 12 (as specified in the model)
-//#B Fetch the values from the sensors
-//#C Update the model with the new temperature and humidity values; note that all observers will be notified
-//#D Because the driver doesn’t provide interrupts, you poll the sensors for new values on a regular basis with a regular timeout function and set sensor.read() as a callback
-
-
- 

@@ -78,7 +78,6 @@ public abstract class AbstractLedarduino extends QActor {
 	    	temporaryStr = "ledarduino(starts)";
 	    	println( temporaryStr );  
 	    	it.unibo.utils.arduino.connArduino.initPc( myself ,"COM9", "9600"  );
-	     connectToMqttServer("tcp://localhost:1883");
 	    	//switchTo waitForCommand
 	        switchToPlanAsNextState(pr, myselfName, "ledarduino_"+myselfName, 
 	              "waitForCommand",false, false, null); 

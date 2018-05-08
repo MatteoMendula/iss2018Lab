@@ -74,8 +74,6 @@ public abstract class AbstractSonardetector extends QActor {
 	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_init",0);
 	     pr.incNumIter(); 	
 	    	String myselfName = "init";  
-	    	temporaryStr = "\"sonardetector WAITS \"";
-	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"sonardetector_"+myselfName,false,
 	          new StateFun[]{() -> {	//AD HOC state to execute an action and resumeLastPlan
@@ -84,7 +82,6 @@ public abstract class AbstractSonardetector extends QActor {
 	            //ActionSwitch for a message or event
 	             if( currentEvent.getMsg().startsWith("sonar") ){
 	            	String parg="p(DISTANCE,0)";
-	            	/* RaiseEvent */
 	            	parg = updateVars(Term.createTerm("sonar(DISTANCE)"),  Term.createTerm("sonar(DISTANCE)"), 
 	            		    		  					Term.createTerm(currentEvent.getMsg()), parg);
 	            	if( parg != null ) emit( "polar", parg );
