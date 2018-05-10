@@ -56,6 +56,7 @@ public abstract class AbstractLedrasp extends QActor {
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
+	    	stateTab.put("doBlinckAtStart",doBlinckAtStart);
 	    	stateTab.put("waitForCommand",waitForCommand);
 	    	stateTab.put("handleCmd",handleCmd);
 	    }
@@ -75,17 +76,46 @@ public abstract class AbstractLedrasp extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
-	    	temporaryStr = "ledraspmqtt(starts)";
+	    	temporaryStr = "ledraspmqtt(started)";
 	    	println( temporaryStr );  
 	     connectToMqttServer("tcp://192.168.43.229:1883");
-	    	//switchTo waitForCommand
+	    	//switchTo doBlinckAtStart
 	        switchToPlanAsNextState(pr, myselfName, "ledrasp_"+myselfName, 
-	              "waitForCommand",false, false, null); 
+	              "doBlinckAtStart",false, false, null); 
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//init
+	    
+	    StateFun doBlinckAtStart = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("doBlinckAtStart",-1);
+	    	String myselfName = "doBlinckAtStart";  
+	    	customExecute("sudo bash led25GpioTurnOn.sh");
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(300,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "doBlinckAtStart";
+	    	if( ! aar.getGoon() ) return ;
+	    	customExecute("sudo bash led25GpioTurnOff.sh");
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(300,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "doBlinckAtStart";
+	    	if( ! aar.getGoon() ) return ;
+	    	customExecute("sudo bash led25GpioTurnOn.sh");
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(300,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "doBlinckAtStart";
+	    	if( ! aar.getGoon() ) return ;
+	    	customExecute("sudo bash led25GpioTurnOff.sh");
+	    	//switchTo waitForCommand
+	        switchToPlanAsNextState(pr, myselfName, "ledrasp_"+myselfName, 
+	              "waitForCommand",false, false, null); 
+	    }catch(Exception e_doBlinckAtStart){  
+	    	 println( getName() + " plan=doBlinckAtStart WARNING:" + e_doBlinckAtStart.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//doBlinckAtStart
 	    
 	    StateFun waitForCommand = () -> {	
 	    try{	
