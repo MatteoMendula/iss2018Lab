@@ -1,0 +1,4 @@
+plan(1,init, sentence(true,delay( 1000) ,'','' ))
+plan(2,init, sentence(true,raise( ctrlEvent , ctrlEvent( leds,led1,on) )'),'','' ))
+plan(3,init, sentence(true,delay( 1000) ,'','' ))
+plan(4,init, sentence(true,raise( ctrlEvent , ctrlEvent( leds,led1,off) )'),'','' ))

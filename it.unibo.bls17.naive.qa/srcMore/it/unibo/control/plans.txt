@@ -1,0 +1,5 @@
+plan(1,init, sentence(true,delay( 500) ,'','' ))
+plan(1,waitForFirstClick, sentence(true,forward(ledmodel, cmdToLed,cmdToLed( turnOff)),'','' ))
+plan(1,doBlink, sentence(true,forward(ledmodel, cmdToLed,cmdToLed( turnOn)),'','' ))
+plan(2,doBlink, sentence(true,delay( 300) ,'','' ))
+plan(3,doBlink, sentence(true,forward(ledmodel, cmdToLed,cmdToLed( turnOff)),'','' ))

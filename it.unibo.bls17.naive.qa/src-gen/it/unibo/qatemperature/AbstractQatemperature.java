@@ -97,6 +97,7 @@ public abstract class AbstractQatemperature extends QActor {
 	    	aar = delayReactive(1000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
+	     connectToMqttServer("tcp://localhost:1883");
 	    	repeatPlanNoTransition(pr,myselfName,"qatemperature_"+myselfName,false,false);
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );

@@ -19,12 +19,11 @@ var createServer = function (port ) {
 };
 
 function initPlugins() {
-	ledsPlugin  = require('./plugins/internal/ledsPlugin');	//global variable;
-	ledsPlugin.start( {'simulate': true, 'frequency': 5000} );
-	
- 	dhtPlugin = require('./plugins/internal/DHT22SensorPlugin');	//global variable;
-	dhtPlugin.start({'simulate': true, 'frequency': 2000});
-//	  dht22Plugin.start();
+//	ledsPlugin  = require('./plugins/internal/ledsPlugin');	//global variable;
+//	ledsPlugin.start( {'simulate': true, 'frequency': 5000} );
+//	
+// 	dhtPlugin = require('./plugins/internal/DHT22SensorPlugin');	//global variable;
+//	dhtPlugin.start({'simulate': true, 'frequency': 2000});
 }
 
 createServer(3000);

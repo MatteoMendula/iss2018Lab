@@ -1,0 +1,29 @@
+System ledMockGui
+Event ctrlEvent   : ctrlEvent( CATEG, NAME,CMD   ) 	//CMD depends on CATEG/NAME
+
+pubSubServer "tcp://192.168.137.1:1883"  
+
+Context ctxLedMockGui ip [ host="192.168.137.1"   port=8039 ]    
+
+QActor ledmockgui context ctxLedMockGui -pubsub{
+	Plan init normal [         
+   		println( ledmockgui(starts)  ) ;
+   		javaRun it.unibo.custom.gui.customBlsGui.createCustomLedGui()  ;
+   		delay 1000;
+   		javaRun it.unibo.custom.gui.customBlsGui.setLed("on");
+   		delay 1000;
+   		javaRun it.unibo.custom.gui.customBlsGui.setLed("off")
+   	]
+   	switchTo waitForCommand     
+  
+    Plan waitForCommand[  ]  
+    transition stopAfter 6000000 
+     	whenEvent ctrlEvent -> handleCmd
+    finally repeatPlan	
+   	 
+	Plan handleCmd resumeLastPlan[
+// 		printCurrentEvent;
+		onEvent ctrlEvent : ctrlEvent(leds, led1, on)  -> javaRun it.unibo.custom.gui.customBlsGui.setLed("on");
+		onEvent ctrlEvent : ctrlEvent(leds, led1, off) -> javaRun it.unibo.custom.gui.customBlsGui.setLed("off")
+	]
+}

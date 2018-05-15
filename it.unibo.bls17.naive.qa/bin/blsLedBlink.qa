@@ -1,0 +1,99 @@
+/*
+ * This is A MODEL, result of problem analysis 
+ * written in the CUSTOM meta-model/language qa
+ */  
+System blsLedBlink  
+Dispatch cmdToLed : cmdToLed( CMD )   //CND = turnOn | turnOff  
+Event local_click : clicked(N)        //N : natural
+Event ctrlEvent   : ctrlEvent( CATEG, NAME,CMD  )  	//CMD = on | off
+
+pubSubServer "tcp://192.168.43.229:1883"
+Context blsLedBlink ip [ host="localhost"  port=8029 ]    
+
+/*
+ * CONTROL
+ */
+QActor  control context blsLedBlink{
+	Plan init normal [ delay 500 ]
+   	switchTo waitForFirstClick      
+ 
+    Plan waitForFirstClick[ 
+    	forward ledmodel -m cmdToLed : cmdToLed( turnOff )
+    ]  
+    transition stopAfter 100000    	
+//     	whenEvent local_click : clicked(N) forward ledmodel -m cmdToLed : switch	//RAppl1
+		whenEvent local_click -> doBlink
+    finally repeatPlan	
+    
+    Plan doBlink[
+    	forward ledmodel -m cmdToLed : cmdToLed( turnOn );
+    	delay 300 ;
+    	forward ledmodel -m cmdToLed : cmdToLed( turnOff )
+    ]
+    transition whenTime 300 -> doBlink
+    	whenEvent local_click -> waitForFirstClick
+}
+
+/*
+ * LED model
+ * interacts with the led implementation by emitting ctrlEvent event
+ */
+QActor  ledmodel context blsLedBlink -pubsub{
+Rules{
+	model( type(actuator, leds), name(led1), value(off) ).	
+ 	changeledValue( V ) :- 
+		replaceRule( 
+			model( type(actuator, leds), name(led1), value(_) ), 
+			model( type(actuator, leds), name(led1), value(V) ) 
+		).		
+}
+	Plan init normal  [     
+		delay 500;   //give to the implementation the time to start
+ 		[ !? model( type(actuator, CATEG), name(LED), value(V) ) ] emit ctrlEvent : ctrlEvent( CATEG, LED, V ) //RLed1
+    ]
+   	switchTo waitForCmd   
+   	 
+  	Plan waitForCmd [ ]
+    transition stopAfter 3000000
+    	whenMsg cmdToLed -> handleLedcmd
+    finally repeatPlan	
+   
+    //model-based behavior
+    Plan handleLedcmd resumeLastPlan[
+    	onMsg cmdToLed :  cmdToLed( turnOn )  -> demo changeledValue( on );
+    	onMsg cmdToLed :  cmdToLed( turnOff ) -> demo changeledValue( off );
+    	[ !? model( type(actuator, CATEG), name(LED), value(V) ) ]   
+    		emit ctrlEvent : ctrlEvent( CATEG, LED, V )	//RLed2
+     ]
+}
+ 
+/*
+ * BUTTON implementation
+ * embeds a button made by a GUI
+ */
+QActor buttonimpl context blsLedBlink{
+	Plan init normal [         
+   		println( buttonimpl(starts)  )  ;
+   		javaRun it.unibo.custom.gui.customBlsGui.createCustomButtonGui()
+   	]
+}
+
+ /*
+ * LED Implementation
+ */
+QActor ledimpl context blsLedBlink {
+Plan init normal  [        
+		javaRun it.unibo.custom.gui.customBlsGui.createCustomLedGui() 
+    ]	
+    switchTo waitForCmd   
+   	 
+  	Plan waitForCmd [ ]
+    transition stopAfter 3000000
+    	whenMsg ctrlEvent -> handleLedCmd
+    finally repeatPlan	
+    
+    Plan handleLedCmd resumeLastPlan[
+    	onEvent ctrlEvent : ctrlEvent(leds, led1, on)  -> javaRun it.unibo.custom.gui.customBlsGui.setLed("on");
+    	onEvent ctrlEvent : ctrlEvent(leds, led1, off) -> javaRun it.unibo.custom.gui.customBlsGui.setLed("off")
+    ]
+}

@@ -80,7 +80,7 @@ public abstract class AbstractMvccontroller extends QActor {
 	    	solveGoal( parg ); //sept2017
 	    	temporaryStr = "qacontrol(starts)";
 	    	println( temporaryStr );  
-	     connectToMqttServer("tcp://192.168.137.1:1883");
+	     connectToMqttServer("tcp://localhost:1883");
 	    	//switchTo waitForInputEvent
 	        switchToPlanAsNextState(pr, myselfName, "mvccontroller_"+myselfName, 
 	              "waitForInputEvent",false, false, null); 
@@ -110,9 +110,6 @@ public abstract class AbstractMvccontroller extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("handleInputEvent",-1);
 	    	String myselfName = "handleInputEvent";  
-	    	parg = "a";
-	    	//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
-	    	solveGoal( parg ); //sept2017
 	    	printCurrentEvent(false);
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 

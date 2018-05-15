@@ -10,7 +10,7 @@ Event local_click : clicked(N)  //N : natural
 Context bls1mCtx ip [ host="localhost"  port=8049 ]    
 
 /*
- * ACTUATOR
+ * ACTUATOR 
  * manage a Led by USING a Led model that handles a Led implementation
  */
 QActor qaledm context bls1mCtx {

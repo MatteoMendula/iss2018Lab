@@ -1,22 +1,23 @@
  /*
 * =====================================
-* clientRest.js
+* it.unibo.frontend/nodeCode/frontend/clientRest.js
 * =====================================
 */
 
-//see https://www.npmjs.com/package/node-rest-client
-
+//see https://www.npmjs.com/package/node-rest-client;
 'use strict';
 var RestClient = require('node-rest-client').Client;
 var client = new RestClient();
 
-var url = 'http://localhost:3000/pi/actuators/leds/1';
+//var urlLed1 = 'http://localhost:3000/pi/actuators/leds/1';
+//var urlLed1 = 'http://192.168.43.229:3000/pi/actuators/leds/1';
+var urlLed1 = 'http://192.168.43.18:3000/pi/actuators/leds/1';
 
 var doGet = function(){
-	client.get("http://localhost:3000/pi/actuators/leds/1", function (data, response) {
-	    // parsed response body as js object
+	client.get(urlLed1, function (data, response) {
+	    // parsed response body as js object;
 	    console.log(data);
-	    // raw response
+	    // raw response;
 	//    console.log(response);
 	}); 
 }
@@ -28,11 +29,11 @@ var doPut = function(newvalue){
 	    headers: { "Content-Type": "application/json" }
 	};
 	 
-	client.put("http://localhost:3000/pi/actuators/leds/1", args, function (data, response) {
-	    // parsed response body as js object
+	client.put(urlLed1, args, function (data, response) {
+	    // parsed response body as js object;
 		console.log("PUT done");
 //	    console.log(data);
-	    // raw response
+	    // raw response;
 	//    console.log(response);
 });
 }

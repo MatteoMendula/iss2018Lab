@@ -78,6 +78,7 @@ public abstract class AbstractLedmockgui extends QActor {
 	    	temporaryStr = "ledmockgui(starts)";
 	    	println( temporaryStr );  
 	    	it.unibo.custom.gui.customBlsGui.createCustomLedGui( myself  );
+	     connectToMqttServer("tcp://localhost:1883");
 	    	//switchTo waitForCommand
 	        switchToPlanAsNextState(pr, myselfName, "ledmockgui_"+myselfName, 
 	              "waitForCommand",false, false, null); 

@@ -1,7 +1,7 @@
 %====================================================================================
 % Context blsMvcCtx  SYSTEM-configuration: file it.unibo.blsMvcCtx.blsMvc.pl 
 %====================================================================================
-context(blsmvcctx, "192.168.137.1",  "TCP", "8019" ).  		 
+context(blsmvcctx, "localhost",  "TCP", "8019" ).  		 
 %%% -------------------------------------------
 qactor( mvccontroller , blsmvcctx, "it.unibo.mvccontroller.MsgHandle_Mvccontroller"   ). %%store msgs 
 qactor( mvccontroller_ctrl , blsmvcctx, "it.unibo.mvccontroller.Mvccontroller"   ). %%control-driven 

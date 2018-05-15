@@ -75,7 +75,6 @@ public abstract class AbstractMindtobody extends QActor {
 	    	String myselfName = "init";  
 	    	temporaryStr = "\"mindtobody STARTS \"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("tcp://localhost:1883");
 	    	repeatPlanNoTransition(pr,myselfName,"mindtobody_"+myselfName,false,false);
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );

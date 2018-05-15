@@ -9,10 +9,11 @@ var actuator, interval;
 var ledModel      = resourceModel.pi.actuators.leds['1'];
 var pluginName    = ledModel.name;
 var localParams   = {'simulate': false, 'frequency': 2000};
+var counter       = 1;
 
 exports.start = function (params) {
   localParams = params;
-  observe(ledModel); //#A
+  observe(ledModel); 	//work as an observer;
 
   if (localParams.simulate) {
 //    simulate();		 
@@ -39,12 +40,9 @@ observable           = whatObservable.data;
 whatObservable.observe('value', () => {
 	var val =  "off";
 	if( observable.value === "true" ) val = "on";
-	var eventstr = "msg(ctrlEvent,event,js,none,ctrlEvent(leds, led1, " +val + "),1)"
-		console.log("	ledPlugin LED observed> "+ observable.value);
-//		console.log("	ledPlugin LED emits> "+ eventstr);
+	var eventstr = "msg(ctrlEvent,event,js,none,ctrlEvent(leds, led1, " +val + ")," +  counter++ + ")"
+		console.log("	ledPlugin LED emits> "+ eventstr);
 // 		mqttUtils.publish( eventstr );
-// 		mqttUtils.publish("LED1 value=" +  observable.value );
-// 		sendMsg("msg(jsdata,event,jsSource,none,jsdata(led1, " + observable.value + "),1)");
   	});
 };
 

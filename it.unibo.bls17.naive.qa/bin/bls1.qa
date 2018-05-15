@@ -12,7 +12,7 @@ Context bls1Ctx ip [ host="localhost"  port=8019 ]
 
 /*
  * SENSOR as event emitter
- */
+ */ 
 QActor qasensor context bls1Ctx {
 	Plan init normal  [   
 		println( qasensor(starts)  );   

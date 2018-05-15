@@ -41,7 +41,8 @@ private static QActor curActor ;
 					while(true) {
 						try {
 							dataArduino = conn.receiveALine();
-							if( dataArduino.startsWith("msg") ) curActor.println("connArduino received:" + dataArduino );
+							if( dataArduino.startsWith("msg") ) 
+								curActor.println("connArduino received:" + dataArduino );
 // 							double v = Double.parseDouble(curDataFromArduino);
 //							//handle too fast change
 // 							double delta =  Math.abs( v - dataFromArduino);

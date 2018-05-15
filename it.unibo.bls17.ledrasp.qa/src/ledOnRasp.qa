@@ -1,5 +1,5 @@
 /*
- * it.unibo.bls17.naive.qa/ledOnRasp.qa
+ * it.unibo.bls17.ledrasp.qa/src/ledOnRasp.qa
  * This code should run on a RaspberryPi
  */  
 System ledOnRasp
