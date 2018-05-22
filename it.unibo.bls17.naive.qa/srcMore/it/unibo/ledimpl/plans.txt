@@ -1,4 +1,4 @@
 plan(1,init, sentence(true,not here StateMoveNormal,'','' ))
-plan(1,handleLedCmd, sentence(true,eventswitch(ctrlEvent, »ctrlEvent( leds,led1,on), not here StateMoveNormal ),'','' ))
-plan(2,handleLedCmd, sentence(true,eventswitch(ctrlEvent, »ctrlEvent( leds,led1,off), not here StateMoveNormal ),'','' ))
+plan(1,handleLedCmd, sentence(true,eventswitch(ledcmd, »ledcmd( on), not here StateMoveNormal ),'','' ))
+plan(2,handleLedCmd, sentence(true,eventswitch(ledcmd, »ledcmd( off), not here StateMoveNormal ),'','' ))
 plan(3,handleLedCmd, sentence(true,move(resumeplan),'','' ))

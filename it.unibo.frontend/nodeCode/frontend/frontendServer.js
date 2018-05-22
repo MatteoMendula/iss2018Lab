@@ -58,8 +58,8 @@ function onError(error) {
 }
 //Handle CRTL-C;
 process.on('SIGINT', function () {
-  ledsPlugin.stop();
-  dhtPlugin.stop();
+//  ledsPlugin.stop();
+//  dhtPlugin.stop();
   console.log('frontendServer Bye, bye!');
   process.exit();
 });

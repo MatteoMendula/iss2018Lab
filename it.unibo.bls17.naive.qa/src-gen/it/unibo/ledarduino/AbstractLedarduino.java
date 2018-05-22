@@ -107,7 +107,6 @@ public abstract class AbstractLedarduino extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("handleCmd",-1);
 	    	String myselfName = "handleCmd";  
-	    	printCurrentEvent(false);
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("ctrlEvent(leds,led1,on)");

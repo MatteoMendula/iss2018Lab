@@ -142,8 +142,8 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %-------------------------------------------------
 %  User static rules about ledmodel
 %------------------------------------------------- 
-model( type( actuator,leds),name( led1),value( off)).
-changeledValue( V):-replaceRule( model( type( actuator,leds),name( led1),value( _)),model( type( actuator,leds),name( led1),value( V))).
+ledmodel( name( led1),value( off)).
+changeledValue( V):-replaceRule( ledmodel( NAME,VALUE),ledmodel( NAME,value( V))).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),

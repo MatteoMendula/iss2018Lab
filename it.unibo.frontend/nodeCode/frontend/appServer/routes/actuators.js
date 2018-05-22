@@ -5,6 +5,8 @@ var express     = require('express'),
   router        = express.Router(),
   resourceModel = require('../models/model');
 
+var serverWithSocket = require('../../socketIofrontendServer.js');
+ 
 router.route('/').get(function (req, res, next) {
 	  //console.info( resourceModel.pi.actuators );
 	  req.result = resourceModel.pi.actuators;
@@ -13,6 +15,7 @@ router.route('/').get(function (req, res, next) {
 
 router.route('/leds').get(function (req, res, next) {
   req.result = resourceModel.pi.actuators.leds;
+  //serverWithSocket.updateClient( JSON.stringify(resourceModel.pi.actuators.leds) );
   next();
 });
 
@@ -27,7 +30,8 @@ router.route('/leds/:id').get(function (req, res, next) {
   selectedLed.value = req.body.value;   	//CHANGE THE MODEL;
   console.info('route LED  Changed LED %s value to %s', req.params.id, selectedLed.value);
   req.result = selectedLed;
-  emitInfo(selectedLed.value); 		//EMIT STATE CHANGE EVENT;
+  serverWithSocket.updateClient( JSON.stringify(selectedLed.value) );
+//  emitInfo(selectedLed.value); 		//EMIT STATE CHANGE EVENT;
   next();
 });
 

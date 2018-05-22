@@ -19,7 +19,7 @@ pubSubServer "tcp://localhost:1883"
 
 Context blsMvcCtx ip [ host="localhost"  port=8019 ]    
 EventHandler evadapter for sensorEvent  { //maps a sensorEvent from t1 into a inputCtrlEvent
-	emit inputCtrlEvent fromContent sensorEvent( t1, DATA ) to inputEvent( temperature, t1, DATA )
+emit inputCtrlEvent fromContent sensorEvent( t1, DATA ) to inputEvent( temperature, t1, DATA )
 };
 /*
  * CONTROL model-based
@@ -34,7 +34,7 @@ Rules{ //The model is in the theory resourceModel.
 	limitTemperatureValue( 25 ).
 	changedModelAction( temperature, t1, V  ):-
 			limitTemperatureValue( MAX ), 
- 		    eval( ge, V , MAX ), !,  
+ 		    eval( ge, V , MAX ), !,   
  		    changeModelItem( leds, led1, on).		     
  	changedModelAction( temperature, t1, V  ):-	 
  			changeModelItem( leds, led1, off).     			 		
@@ -79,7 +79,7 @@ QActor ledmockgui context blsMvcCtx -pubsub{
     finally repeatPlan	
    	 
 	Plan handleCmd resumeLastPlan[
-// 		printCurrentEvent;
+//  		printCurrentEvent;
 		onEvent ctrlEvent : ctrlEvent(leds, led1, on)  -> javaRun it.unibo.custom.gui.customBlsGui.setLed("on");
 		onEvent ctrlEvent : ctrlEvent(leds, led1, off) -> javaRun it.unibo.custom.gui.customBlsGui.setLed("off")
 	]
@@ -94,11 +94,11 @@ QActor ledarduino context blsMvcCtx  {
   
     Plan waitForCommand[  ]   
     transition stopAfter 6000000 
-     	whenEvent ctrlEvent -> handleCmd
+     	whenEvent ctrlEvent -> handleCmd 
     finally repeatPlan	
    	 
 	Plan handleCmd resumeLastPlan[
-  		printCurrentEvent;
+//  		printCurrentEvent;
 		onEvent ctrlEvent : ctrlEvent(leds, led1, on)  -> 
 			javaRun it.unibo.utils.arduino.connArduino.sendToArduino("1");
 		onEvent ctrlEvent : ctrlEvent(leds, led1, off) -> 
@@ -106,20 +106,43 @@ QActor ledarduino context blsMvcCtx  {
 	]
 }
  
+ 
+/*
+ * INTERACTION WITH RESTFUL  frontend server
+ */
+QActor tofronted context blsMvcCtx  {
+	Plan init normal  [
+   		println( sendertofronted(starts)  ) 		
+	]
+ 	switchTo  waitForCommand
+ 	      
+    Plan waitForCommand[  ]   
+    transition stopAfter 6000000 
+     	whenEvent ctrlEvent -> handleCtrlEvent 
+    finally repeatPlan	
+
+    Plan handleCtrlEvent resumeLastPlan [   
+    	printCurrentEvent;
+     	onEvent ctrlEvent : ctrlEvent(leds, led1, on)  -> 
+    		javaRun it.unibo.frontend.restClientHttp.sendPutLed( "true", "http://localhost:3000/pi/actuators/leds/1" );
+    	onEvent ctrlEvent : ctrlEvent(leds, led1, off)  -> 
+    		javaRun it.unibo.frontend.restClientHttp.sendPutLed( "false", "http://localhost:3000/pi/actuators/leds/1" )
+    ]
+}  
  /* 
  * SENSOR as event emitter FOR TESTING
  */
-QActor qatemperature context blsMvcCtx -pubsub{
+QActor qatemperature context blsMvcCtx  {
 	Plan init normal  [    
- 		println( qasensor(starts)  ) ; 
-		delay 2000;
+ 		println( qatemperature(starts)  ) ; 
+		delay 3000;
 		emit  sensorEvent :  sensorEvent(  t1, 20 ) ; 
 		delay 1000;
 		emit  sensorEvent :  sensorEvent(  t1, 30 ) ; 
 		delay 1000;
 		emit  sensorEvent :  sensorEvent(  t1, 23 ) ; 
-//		delay 1000;
-//		emit  sensorEvent :  sensorEvent(  t1, 35 ) ; 
+		delay 1000;
+		emit  sensorEvent :  sensorEvent(  t1, 35 ) ; 
  		delay 1000
     ]
 }

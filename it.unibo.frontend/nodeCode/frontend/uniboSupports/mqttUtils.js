@@ -16,7 +16,7 @@ client.on('connect', function () {
 	  console.log('client has subscribed successfully ');
 });
 
-//The message usually arrives as buffer, so I had to convert it to string data type.
+//The message usually arrives as buffer, so I had to convert it to string data type;
 client.on('message', function (topic, message){
   console.log("mqtt RECEIVES:"+ message.toString()); //if toString is not given, the message comes as buffer
 });

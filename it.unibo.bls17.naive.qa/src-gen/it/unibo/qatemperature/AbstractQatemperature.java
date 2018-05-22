@@ -73,10 +73,10 @@ public abstract class AbstractQatemperature extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
-	    	temporaryStr = "qasensor(starts)";
+	    	temporaryStr = "qatemperature(starts)";
 	    	println( temporaryStr );  
 	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(2000,"" , "");
+	    	aar = delayReactive(3000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "sensorEvent(NAME,DATA)","sensorEvent(t1,20)", guardVars ).toString();
@@ -97,7 +97,12 @@ public abstract class AbstractQatemperature extends QActor {
 	    	aar = delayReactive(1000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
-	     connectToMqttServer("tcp://localhost:1883");
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "sensorEvent(NAME,DATA)","sensorEvent(t1,35)", guardVars ).toString();
+	    	emit( "sensorEvent", temporaryStr );
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(1000,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
+	    	if( ! aar.getGoon() ) return ;
 	    	repeatPlanNoTransition(pr,myselfName,"qatemperature_"+myselfName,false,false);
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );

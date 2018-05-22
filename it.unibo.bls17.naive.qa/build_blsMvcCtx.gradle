@@ -69,6 +69,12 @@ UNIBO SUPPORTS
 	  compile fileTree(dir: '../it.unibo.libs2018/libs/http',  include: 'nanoHTTPD.jar')
 
 /*
+ADDED FOR HTTP CLIENT
+*/
+// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5'
+
+/*
 ADDED FOR ARDUINO
 */
 	// https://mvnrepository.com/artifact/org.scream3r/jssc

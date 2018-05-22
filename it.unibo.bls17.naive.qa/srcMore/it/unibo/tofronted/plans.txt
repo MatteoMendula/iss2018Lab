@@ -1,0 +1,5 @@
+plan(1,init, sentence(true,move(print(sendertofronted( starts))),'','' ))
+plan(1,handleCtrlEvent, sentence(true,printCurrentEvent(false),'','' ))
+plan(2,handleCtrlEvent, sentence(true,eventswitch(ctrlEvent, »ctrlEvent( leds,led1,on), not here StateMoveNormal ),'','' ))
+plan(3,handleCtrlEvent, sentence(true,eventswitch(ctrlEvent, »ctrlEvent( leds,led1,off), not here StateMoveNormal ),'','' ))
+plan(4,handleCtrlEvent, sentence(true,move(resumeplan),'','' ))

@@ -16,17 +16,23 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+
+import it.unibo.qactors.akka.QActor;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 
-public class RestClientHttp {
+public class restClientHttp {
 //private static String hostAddr = "localhost";
 //private static String hostAddr = "192.168.43.18";
 private static String hostAddr = "192.168.137.2";
 
+	public static int sendPutLed(QActor qa, String data, String url) {
+		return sendPut( qa, "{\"value\": \"VVV\" }".replace("VVV", data), url );
+	}
 
 
-	public static int sendPut(String data, String url) {
+	public static int sendPut(QActor qa, String data, String url) {
 	    int responseCode = -1;
 	    CloseableHttpClient httpclient = HttpClients.createDefault();
 	    try {
@@ -47,7 +53,7 @@ private static String hostAddr = "192.168.137.2";
 	    		while ((output = br.readLine()) != null) {
 	    			info = info + output;
 	    		}
-	    		System.out.println(info);
+	    		System.out.println("sendPut ANSWER="+ info + " responseCode=" + responseCode);
 	        }
 	        else{  throw new RuntimeException("Failed : HTTP error code : "
 	                    + response.getStatusLine().getStatusCode());
@@ -59,7 +65,7 @@ private static String hostAddr = "192.168.137.2";
 	    return responseCode;
 	}
 	
-	public static void connectPost(){
+	public static void connectPost(QActor qa ){
  		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost("http://"+hostAddr+":3000");
 		List <NameValuePair> nvps = new ArrayList <NameValuePair>();
@@ -75,7 +81,7 @@ private static String hostAddr = "192.168.137.2";
 	 			e.printStackTrace();	 			
 	 	}
  	}
-	public static void connectGet(String url){
+	public static void connectGet(QActor qa, String url){
 	 try {
  		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(url);		
@@ -97,12 +103,12 @@ private static String hostAddr = "192.168.137.2";
 	public static void work() throws InterruptedException {
 		for( int i=1; i<=3; i++) {
 			//curl http://192.168.43.229:3000/pi/actuators/leds/1;
-	  		connectGet("http://"+hostAddr+":3000/pi/actuators/leds/1");	
-			sendPut("{\"value\": \"true\" }", "http://"+hostAddr+":3000/pi/actuators/leds/1");
+	  		connectGet(null,"http://"+hostAddr+":3000/pi/actuators/leds/1");	
+			sendPut(null,"{\"value\": \"true\" }", "http://"+hostAddr+":3000/pi/actuators/leds/1");
 			Thread.sleep(700);
- 			sendPut("{\"value\": \"false\" }", "http://"+hostAddr+":3000/pi/actuators/leds/1");
+ 			sendPut(null,"{\"value\": \"false\" }", "http://"+hostAddr+":3000/pi/actuators/leds/1");
 			//curl -H "Content-Type: application/json" -X PUT -d "{\"value\": \"false\" }" http://localhost:3000/pi/actuators/leds/1;
-	  		connectGet("http://"+hostAddr+":3000/pi/actuators/leds/1");		
+	  		connectGet(null,"http://"+hostAddr+":3000/pi/actuators/leds/1");		
 			Thread.sleep(700);
 		}
 	}

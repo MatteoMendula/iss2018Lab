@@ -44,6 +44,7 @@ app.get('/pi', function (req, res) {
 
 //REPRESENTATION;
 app.use( function(req,res){
+	console.info("SENDING THE ANSWER");
 	res.send(req.result); } 
 );
 //app.use(converter());
