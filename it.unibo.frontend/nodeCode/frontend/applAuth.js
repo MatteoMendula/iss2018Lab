@@ -9,32 +9,67 @@ var index           = require('./appServer/routes/index');
 var actuatorsRoutes = require('./appServer/routes/actuators');
 var sensorsRoutes   = require('./appServer/routes/sensors');
 
+var session         = require("express-session");	//npm install express-session --save
+var authRoutes      = require('./appServer/routes/auth');
+var serverWithSocket= require('./socketIofrontendServer');
+var parseurl        = require('parseurl');
+
 var app = express();
 
 // view engine setup;
-app.set('views', path.join(__dirname, 'appServer', 'views'));	 
+app.set('views', path.join(__dirname, 'appServer', 'viewsSocket'));	 
 app.set('view engine', 'jade');
 
 //create a write stream (in append mode) ;
 var accessLogStream = fs.createWriteStream(path.join(__dirname, 'morganLog.log'), {flags: 'a'})
 app.use(logger("short", {stream: accessLogStream}));
 
-//Creates a default route. Overloads app.use('/', index);
-//app.get("/", function(req,res){ res.send("Welcome to frontend Server"); } );
-
+ 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));				//shows commands, e.g. GET /pi 304 23.123 ms - -;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+
+//use sessions for tracking logins ;
+/* 
+//NO Express
+app.use( session() );
+app.use(function(req, res, next){
+	var sess = req.session;
+	console.log("ssssssssssssssssssssssssss " + sess );
+	if (sess.views) {
+		res.setHeader('Content-Type', 'text/html');
+		res.write('<p>views: ' + sess.views + '</p>');
+		res.end();
+		sess.views++;
+	} else {
+		sess.views = 1;
+		res.end('welcome to the session demo. refresh!');
+	}
+	});
+*/
+app.use(session({
+  secret: 'work hard',
+  resave: true,
+  saveUninitialized: false,
+//  store: new MongoStore({
+//    mongooseConnection: db
+//  })
+}));
+
+console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx " + __dirname );	//
+app.use(express.static( __dirname+"/appServer/templateLogReg/index.html" ));
+
 
 //DEFINE THE ROUTES ;
-app.use('/', index);		 
+app.use('/', authRoutes);	
+app.use('/index', index);	
 app.use('/pi/actuators', actuatorsRoutes);
-app.use('/pi/sensors',   sensorsRoutes);
+app.use('/pi/sensors', sensorsRoutes);
 
+	
 //Creates a default route for /pi;
 app.get('/pi', function (req, res) {
   //for( i in req.body ){ console.info('req body field %s   ',   i ); };
@@ -42,12 +77,39 @@ app.get('/pi', function (req, res) {
   res.send('This is the frontend-Pi!')
 });
 
+
+app.use(function (req, res, next) {
+	  if (!req.session.views) {
+	    req.session.views = {}
+	  }
+	 
+	  // get the url pathname
+	  var pathname = parseurl(req).pathname
+	  console.log( " pathname=" + pathname);  
+
+	  // count the views
+	  req.session.views[pathname] = (req.session.views[pathname] || 0) + 1 ;
+	 
+	  next();
+	})
+	
+app.get('/foo', function (req, res, next) {
+	 res.send('you viewed this page ' + req.session.views['/foo'] + ' times')
+})
+
 //REPRESENTATION;
 app.use( function(req,res){
-	console.info("SEND THE ANSWER ...");
-	res.send(req.result); } 
+	console.info("SENDING THE ANSWER " + req.resul  );
+	try{
+		if( req.result != undefined)
+			serverWithSocket.updateClient( JSON.stringify(req.result ) );
+		res.send(req.result);
+	}catch(e){console.info("SORRY ...");}
+	} 
 );
 //app.use(converter());
+
+
 
 // catch 404 and forward to error handler;
 app.use(function(req, res, next) {

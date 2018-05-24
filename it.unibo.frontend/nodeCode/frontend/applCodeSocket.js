@@ -9,32 +9,35 @@ var index           = require('./appServer/routes/index');
 var actuatorsRoutes = require('./appServer/routes/actuators');
 var sensorsRoutes   = require('./appServer/routes/sensors');
 
+var serverWithSocket= require('./socketIofrontendServer');
+ 
 var app = express();
 
 // view engine setup;
-app.set('views', path.join(__dirname, 'appServer', 'views'));	 
+app.set('views', path.join(__dirname, 'appServer', 'viewsSocket'));	 
 app.set('view engine', 'jade');
 
 //create a write stream (in append mode) ;
 var accessLogStream = fs.createWriteStream(path.join(__dirname, 'morganLog.log'), {flags: 'a'})
 app.use(logger("short", {stream: accessLogStream}));
 
-//Creates a default route. Overloads app.use('/', index);
-//app.get("/", function(req,res){ res.send("Welcome to frontend Server"); } );
-
+ 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));				//shows commands, e.g. GET /pi 304 23.123 ms - -;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-//DEFINE THE ROUTES ;
-app.use('/', index);		 
-app.use('/pi/actuators', actuatorsRoutes);
-app.use('/pi/sensors',   sensorsRoutes);
 
+//DEFINE THE ROUTES ;
+app.use('/', index);	
+app.use('/pi/actuators', actuatorsRoutes);
+app.use('/pi/sensors', sensorsRoutes);
+
+	
 //Creates a default route for /pi;
 app.get('/pi', function (req, res) {
   //for( i in req.body ){ console.info('req body field %s   ',   i ); };
@@ -44,10 +47,17 @@ app.get('/pi', function (req, res) {
 
 //REPRESENTATION;
 app.use( function(req,res){
-	console.info("SEND THE ANSWER ...");
-	res.send(req.result); } 
+	console.info("SENDING THE ANSWER " + req.resul  );
+	try{
+		if( req.result != undefined)
+			serverWithSocket.updateClient( JSON.stringify(req.result ) );
+		res.send(req.result);
+	}catch(e){console.info("SORRY ...");}
+	} 
 );
 //app.use(converter());
+
+
 
 // catch 404 and forward to error handler;
 app.use(function(req, res, next) {

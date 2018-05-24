@@ -57,7 +57,7 @@ public abstract class AbstractLedmodel extends QActor {
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
 	    	stateTab.put("waitForCmd",waitForCmd);
-	    	stateTab.put("ledswitch",ledswitch);
+	    	stateTab.put("handleLedcmd",handleLedcmd);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -79,10 +79,11 @@ public abstract class AbstractLedmodel extends QActor {
 	    	aar = delayReactive(500,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?ledmodel(NAME,value(V))" )) != null ){
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "ledcmd(CMD)","ledcmd(V)", guardVars ).toString();
-	    	emit( "ledcmd", temporaryStr );
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(actuator,CATEG),name(LED),value(V))" )) != null ){
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "ctrlEvent(CATEG,NAME,CMD)","ctrlEvent(CATEG,LED,V)", guardVars ).toString();
+	    	emit( "ctrlEvent", temporaryStr );
 	    	}
+	     connectToMqttServer("tcp://192.168.43.229:1883");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "ledmodel_"+myselfName, 
 	              "waitForCmd",false, false, null); 
@@ -99,8 +100,8 @@ public abstract class AbstractLedmodel extends QActor {
 	    	String myselfName = "waitForCmd";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"ledmodel_"+myselfName,false,
-	          new StateFun[]{stateTab.get("ledswitch") }, 
-	          new String[]{"true","M","turn" },
+	          new StateFun[]{stateTab.get("handleLedcmd") }, 
+	          new String[]{"true","M","cmdToLed" },
 	          3000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitForCmd){  
 	    	 println( getName() + " plan=waitForCmd WARNING:" + e_waitForCmd.getMessage() );
@@ -108,36 +109,68 @@ public abstract class AbstractLedmodel extends QActor {
 	    }
 	    };//waitForCmd
 	    
-	    StateFun ledswitch = () -> {	
+	    StateFun handleLedcmd = () -> {	
 	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("ledswitch",-1);
-	    	String myselfName = "ledswitch";  
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?ledmodel(NAME,value(off))" )) != null ){
-	    	temporaryStr = "newLedValue(on)";
-	    	temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
-	    	addRule( temporaryStr );  
+	     PlanRepeat pr = PlanRepeat.setUp("handleLedcmd",-1);
+	    	String myselfName = "handleLedcmd";  
+	    	//onMsg 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("cmdToLed(turnOn)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("cmdToLed") && 
+	    		pengine.unify(curT, Term.createTerm("cmdToLed(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		String parg="changeledValue(on)";
+	    		/* PHead */
+	    		parg =  updateVars( Term.createTerm("cmdToLed(CMD)"), 
+	    		                    Term.createTerm("cmdToLed(turnOn)"), 
+	    			    		  	Term.createTerm(currentMessage.msgContent()), parg);
+	    			if( parg != null ) {
+	    			    aar = QActorUtils.solveGoal(this,myCtx,pengine,parg,"",outEnvView,86400000);
+	    				//println(getName() + " plan " + curPlanInExec  +  " interrupted=" + aar.getInterrupted() + " action goon="+aar.getGoon());
+	    				if( aar.getInterrupted() ){
+	    					curPlanInExec   = "handleLedcmd";
+	    					if( aar.getTimeRemained() <= 0 ) addRule("tout(demo,"+getName()+")");
+	    					if( ! aar.getGoon() ) return ;
+	    				} 			
+	    				if( aar.getResult().equals("failure")){
+	    					if( ! aar.getGoon() ) return ;
+	    				}else if( ! aar.getGoon() ) return ;
+	    			}
 	    	}
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?ledmodel(NAME,value(on))" )) != null ){
-	    	temporaryStr = "newLedValue(off)";
-	    	temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
-	    	addRule( temporaryStr );  
+	    	//onMsg 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("cmdToLed(turnOff)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("cmdToLed") && 
+	    		pengine.unify(curT, Term.createTerm("cmdToLed(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		String parg="changeledValue(off)";
+	    		/* PHead */
+	    		parg =  updateVars( Term.createTerm("cmdToLed(CMD)"), 
+	    		                    Term.createTerm("cmdToLed(turnOff)"), 
+	    			    		  	Term.createTerm(currentMessage.msgContent()), parg);
+	    			if( parg != null ) {
+	    			    aar = QActorUtils.solveGoal(this,myCtx,pengine,parg,"",outEnvView,86400000);
+	    				//println(getName() + " plan " + curPlanInExec  +  " interrupted=" + aar.getInterrupted() + " action goon="+aar.getGoon());
+	    				if( aar.getInterrupted() ){
+	    					curPlanInExec   = "handleLedcmd";
+	    					if( aar.getTimeRemained() <= 0 ) addRule("tout(demo,"+getName()+")");
+	    					if( ! aar.getGoon() ) return ;
+	    				} 			
+	    				if( aar.getResult().equals("failure")){
+	    					if( ! aar.getGoon() ) return ;
+	    				}else if( ! aar.getGoon() ) return ;
+	    			}
 	    	}
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??newLedValue(V)" )) != null ){
-	    	parg = "changeledValue(V)";
-	    	parg = QActorUtils.substituteVars(guardVars,parg);
-	    	//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
-	    	solveGoal( parg ); //sept2017
-	    	}
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?ledmodel(NAME,value(V))" )) != null ){
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "ledcmd(CMD)","ledcmd(V)", guardVars ).toString();
-	    	emit( "ledcmd", temporaryStr );
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(actuator,CATEG),name(LED),value(V))" )) != null ){
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "ctrlEvent(CATEG,NAME,CMD)","ctrlEvent(CATEG,LED,V)", guardVars ).toString();
+	    	emit( "ctrlEvent", temporaryStr );
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"ledmodel_"+myselfName,false,true);
-	    }catch(Exception e_ledswitch){  
-	    	 println( getName() + " plan=ledswitch WARNING:" + e_ledswitch.getMessage() );
+	    }catch(Exception e_handleLedcmd){  
+	    	 println( getName() + " plan=handleLedcmd WARNING:" + e_handleLedcmd.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
-	    };//ledswitch
+	    };//handleLedcmd
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

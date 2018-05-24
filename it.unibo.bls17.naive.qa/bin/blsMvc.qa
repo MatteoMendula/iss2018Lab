@@ -124,9 +124,11 @@ QActor tofronted context blsMvcCtx  {
     Plan handleCtrlEvent resumeLastPlan [   
     	printCurrentEvent;
      	onEvent ctrlEvent : ctrlEvent(leds, led1, on)  -> 
-    		javaRun it.unibo.frontend.restClientHttp.sendPutLed( "true", "http://localhost:3000/pi/actuators/leds/1" );
+    		javaRun it.unibo.frontend.restClientHttp.sendPutLed( 
+    			"true", "http://localhost:3000/pi/actuators/leds/1" );
     	onEvent ctrlEvent : ctrlEvent(leds, led1, off)  -> 
-    		javaRun it.unibo.frontend.restClientHttp.sendPutLed( "false", "http://localhost:3000/pi/actuators/leds/1" )
+    		javaRun it.unibo.frontend.restClientHttp.sendPutLed( 
+    			"false", "http://localhost:3000/pi/actuators/leds/1" )
     ]
 }  
  /* 
