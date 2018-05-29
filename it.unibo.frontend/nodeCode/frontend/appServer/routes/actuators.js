@@ -8,13 +8,11 @@ var express     = require('express'),
   resourceModel = require('../models/model');
 
 router.route('/').get(function (req, res, next) {
-	  //console.info( resourceModel.pi.actuators );
-	  req.result = resourceModel.pi.actuators;
-	  next();
-	});
+ 	  req.result = resourceModel.pi.actuators;
+ 	  next();
+});
 
 router.route('/leds').get(function (req, res, next) {
-	console.log("uuuuuuuuuuuuuuuuuuu " + req.session.userId );
   req.result = resourceModel.pi.actuators.leds;
   next();
 });

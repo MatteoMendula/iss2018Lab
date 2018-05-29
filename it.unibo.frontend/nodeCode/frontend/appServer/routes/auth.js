@@ -1,18 +1,31 @@
 /*
  *  
  */
-var express = require('express');
-var router  = express.Router();
-var User    = require('../models/user');
+var express  = require('express');
+var router   = express.Router();
+var User     = require('../models/user');
+var parseurl = require('parseurl');
 
 
 //var redis   = require('redis');	//npm install redis --save
 //var client = redis.createClient( 6379, '127.0.0.1');
 
+router.use(function (req, res, next) {
+	  if (!req.session.views) {
+	    req.session.views = {}
+	  }	 
+	  // get the url pathname
+	  var pathname = parseurl(req).pathname
+	  console.log( "%%%%%%% applAuth pathname=" + pathname + 
+			  " req.req.session.userId=" + req.session.userId );  
+	  // count the views
+	  req.session.views[pathname] = (req.session.views[pathname] || 0) + 1 ;	 
+	  next();
+})
+	
 // GET route for reading data ;
 router.get('/', function (req, res, next) {
-  //__dirname = C:\Didattica2018Work\iss2018Lab\it.unibo.frontend\nodeCode\frontend\appServer\routes	
- 	  
+  //__dirname = C:\Didattica2018Work\iss2018Lab\it.unibo.frontend\nodeCode\frontend\appServer\routes		  
    var path = require('path');
    console.log("auth __dirname= " +  __dirname + " path="  + path  );  
    console.log("auth      path= " + path.join( __dirname , '../templateLogReg/index.html') );  

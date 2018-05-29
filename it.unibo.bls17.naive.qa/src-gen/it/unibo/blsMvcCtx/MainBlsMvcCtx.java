@@ -8,7 +8,7 @@ public class MainBlsMvcCtx  {
 //MAIN
 public static QActorContext initTheContext() throws Exception{
 	IOutputEnvView outEnvView = SituatedSysKb.standardOutEnvView;
-	String webDir = null;
+	String webDir = "./srcMore/it/unibo/blsMvcCtx";
 	return QActorContext.initQActorSystem(
 		"blsmvcctx", "./srcMore/it/unibo/blsMvcCtx/blsmvc.pl", 
 		"./srcMore/it/unibo/blsMvcCtx/sysRules.pl", outEnvView,webDir,false);

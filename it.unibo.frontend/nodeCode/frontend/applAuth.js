@@ -10,9 +10,9 @@ var actuatorsRoutes = require('./appServer/routes/actuators');
 var sensorsRoutes   = require('./appServer/routes/sensors');
 
 var session         = require("express-session");	//npm install express-session --save
-var authRoutes      = require('./appServer/routes/auth');
-var serverWithSocket= require('./socketIofrontendServer');
-var parseurl        = require('parseurl');
+var authRoutes      = require('./appServer/routes/authBasic');
+var serverWithSocket= require('./authfrontendServer');
+//var parseurl        = require('parseurl');
 
 var app = express();
 
@@ -59,16 +59,30 @@ app.use(session({
 //  })
 }));
 
-console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx " + __dirname );	//
+console.log("__dirname=" + __dirname );	//
 app.use(express.static( __dirname+"/appServer/templateLogReg/index.html" ));
-
 
 //DEFINE THE ROUTES ;
 app.use('/', authRoutes);	
 app.use('/index', index);	
+
+//app.use(function (req, res, next) {
+//	  if (!req.session.views) {
+//	    req.session.views = {}
+//	  }	 
+//	  // get the url pathname
+//	  var pathname = parseurl(req).pathname
+//	  console.log( "%%%%%%% applAuth pathname=" + pathname + 
+//			  " req.req.session.userId=" + req.session.userId );  
+//	  // count the views
+//	  req.session.views[pathname] = (req.session.views[pathname] || 0) + 1 ;	 
+//	  next();
+//	})
+
+
+
 app.use('/pi/actuators', actuatorsRoutes);
 app.use('/pi/sensors', sensorsRoutes);
-
 	
 //Creates a default route for /pi;
 app.get('/pi', function (req, res) {
@@ -77,29 +91,14 @@ app.get('/pi', function (req, res) {
   res.send('This is the frontend-Pi!')
 });
 
-
-app.use(function (req, res, next) {
-	  if (!req.session.views) {
-	    req.session.views = {}
-	  }
-	 
-	  // get the url pathname
-	  var pathname = parseurl(req).pathname
-	  console.log( " pathname=" + pathname);  
-
-	  // count the views
-	  req.session.views[pathname] = (req.session.views[pathname] || 0) + 1 ;
-	 
-	  next();
-	})
-	
-app.get('/foo', function (req, res, next) {
-	 res.send('you viewed this page ' + req.session.views['/foo'] + ' times')
+app.get('/pi/actuators', function (req, res, next) {
+	 res.send( JSON.stringify(req.result ) + ' | ACCESS NUM= ' + 
+			 req.session.views['/pi/actuators']     );
 })
 
 //REPRESENTATION;
 app.use( function(req,res){
-	console.info("SENDING THE ANSWER " + req.resul  );
+	console.info("SENDING THE ANSWER " + req.resul + " " + req.session.views.length  );
 	try{
 		if( req.result != undefined)
 			serverWithSocket.updateClient( JSON.stringify(req.result ) );

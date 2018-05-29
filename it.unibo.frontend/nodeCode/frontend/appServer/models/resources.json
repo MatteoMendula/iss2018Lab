@@ -1,4 +1,17 @@
 {
+"@context": "http://schema.org/Product",
+"@id": "http://localhost:8484",
+"name": "My WoT Raspberry PI",
+"description": "A simple WoT-connected Raspberry PI for the WoT book.",
+"productID" : "asin:B00T2U7R7I",
+"manufacturer" : "Raspberry Pi",
+"model" : "100437",
+"image" : "http://devices.webofthings.io:9090/snapshot.cgi?user=snapshots&pwd=4MXfTSr0gH",
+"tags": [
+"raspberry",
+"pi",
+"WoT"
+],
   "pi": {
     "name": "WoT Pi",
     "description": "A simple WoT-connected Raspberry PI for the WoT book.",

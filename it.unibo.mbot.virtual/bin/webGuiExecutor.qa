@@ -61,7 +61,7 @@ QActor sonarguidetector context ctxWebGuiExecutor   {
 	  
 	Plan waitForEvents[ ]        
   	transition stopAfter 3600000   	//1h         
-  		whenEvent sonar  : sonar(NAME,   TARGET, DISTANCE )  do  println( sonar(NAME,   TARGET, DISTANCE ) ),
+//  		whenEvent sonar  : sonar(NAME,   TARGET, DISTANCE )  do  println( sonar(NAME,   TARGET, DISTANCE ) ),
   		whenEvent sonarDetect : sonarDetect( TARGET ) do  println( sonarDetect( TARGET ) ) 
   	finally repeatPlan  
 } 

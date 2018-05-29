@@ -1,7 +1,7 @@
 /*
- * frontend/socketIofrontendServer.js 
+ * frontend/authfrontendServer.js 
  */
-var appl            = require('./applCodeSocket');  //previously was applCode;
+var appl            = require('./applAuthBasic');  //previously was applCode;
 var resourceModel   = require('./appServer/models/model');
 var http            = require('http');
 var io              ; 	//Upgrade;
@@ -18,20 +18,10 @@ var createServer = function (port  ) {
   
   server.on('listening', onListening);
   server.on('error', onError);
-
-//  setInterval( tick,1000);
-  
+   
   server.listen( port );
-  
-  
-  
-};
-
-function tick(){
-	var now = new Date().toString();
-	console.log("sending ... " + io);
-	io.sockets.send("HELLO FROM SERVER time=" + now);
-}
+ };
+ 
 
 function initPlugins() {
 //	ledsPlugin  = require('./plugins/internal/ledsPlugin');	//global variable;

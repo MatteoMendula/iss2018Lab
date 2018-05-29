@@ -1,10 +1,11 @@
 /*
  * frontend/socketIofrontendServer.js 
  */
-var appl            = require('./applCodeSocket');  //previously was applCode;
+//var appl            = require('./applCodeSocket');  //previously was applCode;
+var appl            = require('./applCodeRobot');   //previously was applCode;
 var resourceModel   = require('./appServer/models/model');
 var http            = require('http');
-var io              ; 	//Upgrade;
+var io              ; 	//Upgrade ro socketIo;
 
 var createServer = function (port  ) {
   console.log("process.env.PORT=" + process.env.PORT + " port=" + port);
@@ -14,17 +15,14 @@ var createServer = function (port  ) {
   initPlugins();  
   
   server = http.createServer(appl );   
-  io = require('socket.io').listen(server); //Upgrade
+  io     = require('socket.io').listen(server); //Upgrade
   
   server.on('listening', onListening);
   server.on('error', onError);
 
-//  setInterval( tick,1000);
+  setInterval( tick, 5000 );
   
-  server.listen( port );
-  
-  
-  
+  server.listen( port ); 
 };
 
 function tick(){
@@ -32,6 +30,7 @@ function tick(){
 	console.log("sending ... " + io);
 	io.sockets.send("HELLO FROM SERVER time=" + now);
 }
+ 
 
 function initPlugins() {
 //	ledsPlugin  = require('./plugins/internal/ledsPlugin');	//global variable;

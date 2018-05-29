@@ -17,7 +17,7 @@ pubSubServer "tcp://localhost:1883"
 //pubSubServer  "tcp://m2m.eclipse.org:1883"  
 //pubSubServer  "tcp://test.mosquitto.org:1883"  
 
-Context blsMvcCtx ip [ host="localhost"  port=8019 ]    
+Context blsMvcCtx ip [ host="localhost"  port=8019 ]   -httpserver 
 EventHandler evadapter for sensorEvent  { //maps a sensorEvent from t1 into a inputCtrlEvent
 emit inputCtrlEvent fromContent sensorEvent( t1, DATA ) to inputEvent( temperature, t1, DATA )
 };

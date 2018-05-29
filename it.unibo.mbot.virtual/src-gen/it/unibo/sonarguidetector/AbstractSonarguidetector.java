@@ -96,24 +96,6 @@ public abstract class AbstractSonarguidetector extends QActor {
 	          try{
 	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
 	            //ActionSwitch for a message or event
-	             if( currentEvent.getMsg().startsWith("sonar") ){
-	            	String parg = "sonar(NAME,TARGET,DISTANCE)";
-	            	/* Print */
-	            	parg =  updateVars( Term.createTerm("sonar(SONAR,TARGET,DISTANCE)"), 
-	            	                    Term.createTerm("sonar(NAME,TARGET,DISTANCE)"), 
-	            		    		  	Term.createTerm(currentEvent.getMsg()), parg);
-	            	if( parg != null ) println( parg );
-	             }
-	            repeatPlanNoTransition(pr1,"adhocstate","adhocstate",false,true);
-	          }catch(Exception e ){  
-	             println( getName() + " plan=waitForEvents WARNING:" + e.getMessage() );
-	             //QActorContext.terminateQActorSystem(this); 
-	          }
-	          },
-	           () -> {	//AD HOC state to execute an action and resumeLastPlan
-	          try{
-	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
-	            //ActionSwitch for a message or event
 	             if( currentEvent.getMsg().startsWith("sonarDetect") ){
 	            	String parg = "sonarDetect(TARGET)";
 	            	/* Print */
@@ -129,7 +111,7 @@ public abstract class AbstractSonarguidetector extends QActor {
 	          }
 	          }
 	          }, 
-	          new String[]{"true","E","sonar", "true","E","sonarDetect" },
+	          new String[]{"true","E","sonarDetect" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitForEvents){  
 	    	 println( getName() + " plan=waitForEvents WARNING:" + e_waitForEvents.getMessage() );

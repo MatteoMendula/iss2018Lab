@@ -1,8 +1,7 @@
 %====================================================================================
 % Context ctxVirtualRobotExecutor  SYSTEM-configuration: file it.unibo.ctxVirtualRobotExecutor.virtualRobotExecutor.pl 
 %====================================================================================
-context(ctxvirtualrobotexecutor, "192.168.43.229",  "TCP", "8029" ).  		 
-context(ctxradarbase, "192.168.43.229",  "TCP", "8033" ).  		 
+context(ctxvirtualrobotexecutor, "localhost",  "TCP", "8029" ).  		 
 %%% -------------------------------------------
 qactor( rover , ctxvirtualrobotexecutor, "it.unibo.rover.MsgHandle_Rover"   ). %%store msgs 
 qactor( rover_ctrl , ctxvirtualrobotexecutor, "it.unibo.rover.Rover"   ). %%control-driven 

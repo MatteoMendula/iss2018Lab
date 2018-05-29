@@ -1,0 +1,14 @@
+{
+  "robot": {
+    "name": "WoT Pi",
+    "description": "A simple robot model",
+    "port": 8484,
+    "actions": {
+    	"commands": {
+    		"w": {
+          		"name": "Forward",
+          		"description": "Move forward",
+    	}
+     }
+    }
+}

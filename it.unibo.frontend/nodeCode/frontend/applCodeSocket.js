@@ -10,7 +10,9 @@ var actuatorsRoutes = require('./appServer/routes/actuators');
 var sensorsRoutes   = require('./appServer/routes/sensors');
 
 var serverWithSocket= require('./socketIofrontendServer');
- 
+var cors            = require('cors');
+var converter       = require('./converter');
+
 var app = express();
 
 // view engine setup;
@@ -21,11 +23,11 @@ app.set('view engine', 'jade');
 var accessLogStream = fs.createWriteStream(path.join(__dirname, 'morganLog.log'), {flags: 'a'})
 app.use(logger("short", {stream: accessLogStream}));
 
- 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));				//shows commands, e.g. GET /pi 304 23.123 ms - -;
 app.use(bodyParser.json());
+app.use( cors() );  //npm install cors --save 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
@@ -55,7 +57,8 @@ app.use( function(req,res){
 	}catch(e){console.info("SORRY ...");}
 	} 
 );
-//app.use(converter());
+
+//app.use( converter() );
 
 
 

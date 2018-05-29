@@ -13,11 +13,11 @@ Event mindcmd     : usercmd(CMD)
       
 Dispatch moveRover : usercmd( CMD )   					   
      
-Context ctxVirtualRobotExecutor ip [ host="192.168.43.229"   port=8029 ] -g cyan -httpserver     
+Context ctxVirtualRobotExecutor ip [ host="localhost"   port=8029 ] -g cyan -httpserver     
 EventHandler evh for usercmd, mindcmd -print {	//event-driven ; no Mqtt support yet
  	forwardEvent rover -m moveRover  	//from event to message
 };  
-Context ctxRadarBase    ip [ host="192.168.43.229"   port=8033 ]  -standalone 	 
+//Context ctxRadarBase    ip [ host="localhost"   port=8033 ]  -standalone 	 
  
 /*       
  * -----------------------------------------------------
@@ -92,9 +92,9 @@ QActor sonardetector context ctxVirtualRobotExecutor{
 }  
 
 //Useful for testing
-QActor polarlogagent context ctxVirtualRobotExecutor -g yellow {       
+QActor polarlogagent context ctxVirtualRobotExecutor  {      //-g yellow 
 	Plan init normal [ printCurrentEvent	] 
-	transition   stopAfter 600000 //10min         
-    	whenEvent  polar : p( Distance, Angle ) do  addRule p( Distance, Angle ) //used in testing
-    finally repeatPlan
+//	transition   stopAfter 600000 //10min         
+//    	whenEvent  polar : p( Distance, Angle ) do  addRule p( Distance, Angle ) //used in testing
+//    finally repeatPlan
 }
