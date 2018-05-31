@@ -8,18 +8,21 @@ Event usercmd      : usercmd(CMD)  					//from web gui
 Event sonar  	   : sonar(SONAR, TARGET, DISTANCE)	//From (virtual) sonar
 Event sonarDetect  : sonarDetect(X)					//From (virtual robot) sonar
 
-Dispatch moveRover : usercmd(CMD)       
+Dispatch moveRobot : usercmd(CMD)       
+Dispatch startAppl : startAppl(CMD) 
+
+pubSubServer  "tcp://localhost:1883"    		 
     
 Context ctxWebGuiExecutor ip [ host="localhost"   port=8032 ]   -httpserver  
-EventHandler evh for usercmd -print {	//event-driven ; no Mqtt support yet
- 	forwardEvent player -m moveRover  	//from event to message
+EventHandler evh for usercmd   {	//event-driven ; no Mqtt support yet
+ 	forwardEvent player -m moveRobot  	//from event to message
 };     
 /*  
  * -----------------------------------------------------
- * The player is a an interpreter of moveRover dispatch
+ * The player is a an interpreter of moveRobot dispatch
  * -----------------------------------------------------
  */  
-QActor player context ctxWebGuiExecutor   {         
+QActor player context ctxWebGuiExecutor -pubsub  {       //The name MUST be player   
 	Plan init normal [  
 		javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
 		delay 1000;
@@ -32,24 +35,69 @@ QActor player context ctxWebGuiExecutor   {
 		 
    	Plan waitForCmd[  ]  
   	transition stopAfter 3600000   	//1h 
- 		whenMsg moveRover   -> execMove  	  
+ 		whenMsg moveRobot   -> execMove  	  
  	finally repeatPlan 
  	  
   	Plan execMove resumeLastPlan[    
   		printCurrentMessage;    
-    	onMsg moveRover : usercmd( robotgui(h(X)) )    -> 
+    	onMsg moveRobot : usercmd( robotgui(h(X)) )    -> 
     		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'alarm' }");
-    	onMsg moveRover : usercmd( robotgui(w(X)) )    -> 
+    	onMsg moveRobot : usercmd( robotgui(w(X)) )    -> 
     		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': -1 }");
-     	onMsg moveRover : usercmd( robotgui(s(X)) )    -> 
+     	onMsg moveRobot : usercmd( robotgui(s(X)) )    -> 
     		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveBackward', 'arg': -1 }");
-   		onMsg moveRover : usercmd( robotgui(a(X)) )    -> 
+   		onMsg moveRobot : usercmd( robotgui(a(X)) )    -> 
   			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }");
-    		onMsg moveRover : usercmd( robotgui(d(X)) )    -> 
+    		onMsg moveRobot : usercmd( robotgui(d(X)) )    -> 
    			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }");
-   		onMsg moveRover : usercmd( robotgui(x(X)) )    -> { actorOp terminateSystem() } //r
+   		onMsg moveRobot : usercmd( robotgui(x(X)) )  ->   forward robotpfrs -m startAppl : startAppl(go)
    	]        
 }  
+
+QActor robotpfrs  context ctxWebGuiExecutor -pubsub  {
+	Plan init normal [ 
+		println("player starts")
+	]
+	transition stopAfter 600000
+		whenMsg startAppl -> applicationLogic
+   	
+   	Plan applicationLogic [
+   		println("player starts the applicationLogic")
+   	]
+   	switchTo goAhead
+   	
+    Plan goAhead [
+    	javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': -1 }")
+    ]
+	transition stopAfter 600000
+		whenEvent sonarDetect -> obstacle,
+		whenEvent sonar  	  -> sonarDetect 
+		
+	Plan obstacle [
+		printCurrentEvent;
+		onEvent sonarDetect : sonarDetect( wallUp ) -> {
+				javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }");
+				javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': 200 }");
+				javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }")
+ 		};
+		onEvent sonarDetect : sonarDetect( wallLeft ) -> {
+				javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }")
+ 		};
+		onEvent sonarDetect : sonarDetect( wallDown ) -> {
+				javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }");
+				javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': 200 }");
+				javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }")
+ 		}
+	]
+	switchTo goAhead
+	
+	
+	Plan sonarDetect  [
+		onEvent sonar  : sonar(sonar1, TARGET, DISTANCE) -> println( sonar(sonar1, TARGET, DISTANCE) );
+		onEvent sonar  : sonar(sonar2, TARGET, DISTANCE) -> println( sonar(sonar2, TARGET, DISTANCE) )
+	]
+	switchTo goAhead
+}
 /*
  * -----------------------------------------------------
  * Shows sonar events emitted by the GUI (it.unibo.utils.clientTcp)
@@ -57,11 +105,11 @@ QActor player context ctxWebGuiExecutor   {
  */
 QActor sonarguidetector context ctxWebGuiExecutor   {  
 	Plan init normal [	println("sonarguidetector STARTS ") ]
-	switchTo waitForEvents       
+	switchTo waitForEvents        
 	  
 	Plan waitForEvents[ ]        
   	transition stopAfter 3600000   	//1h         
-//  		whenEvent sonar  : sonar(NAME,   TARGET, DISTANCE )  do  println( sonar(NAME,   TARGET, DISTANCE ) ),
+//   		whenEvent sonar  : sonar(NAME,   TARGET, DISTANCE )  do  println( sonar(NAME,   TARGET, DISTANCE ) ),
   		whenEvent sonarDetect : sonarDetect( TARGET ) do  println( sonarDetect( TARGET ) ) 
   	finally repeatPlan  
 } 

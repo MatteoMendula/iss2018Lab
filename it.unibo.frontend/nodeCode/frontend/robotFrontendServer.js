@@ -1,43 +1,32 @@
 /*
- * frontend/socketIofrontendServer.js 
+ * frontend/robotFrontendServer.js 
  */
-var appl            = require('./applCodeSocket');  //previously was applCode;
-var resourceModel   = require('./appServer/models/model');
+var appl            = require('./applCodeRobot');   //previously was applCode;
+var resourceModel   = require('./appServer/models/robot');
 var http            = require('http');
 var io              ; 	//Upgrade ro socketIo;
 
 var createServer = function (port  ) {
-  console.log("process.env.PORT=" + process.env.PORT + " port=" + port);
-  if (process.env.PORT) port = process.env.PORT;
-  else if (port === undefined) port = resourceModel.customFields.port;
- 
   initPlugins();  
-  
   server = http.createServer(appl );   
-  io     = require('socket.io').listen(server); //Upgrade
-  
+  io     = require('socket.io').listen(server); //Upgrade  
   server.on('listening', onListening);
   server.on('error', onError);
-
-  setInterval( tick, 5000 );
-  
+  setInterval( tick, 500 ); 
   server.listen( port ); 
 };
 
 function tick(){
-	var now = new Date().toString();
-	console.log("sending ... " + io);
-	io.sockets.send("HELLO FROM SERVER time=" + now);
+	var now = new Date() ;
+	var info = "ROBOT state="+resourceModel.robot.state+"\n"+
+//		resourceModel.robot.sonar1.name+"="+resourceModel.robot.sonar1.value+"\n"+
+//		resourceModel.robot.sonar2.name+"="+resourceModel.robot.sonar2.value+"\n"+
+//		resourceModel.robot.sonarRobot.name+"="+resourceModel.robot.sonarRobot.value+"\n"+ //;
+		"time=" + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+	io.sockets.send( info );
 }
- 
 
-function initPlugins() {
-//	ledsPlugin  = require('./plugins/internal/ledsPlugin');	//global variable;
-//	ledsPlugin.start( {'simulate': true, 'frequency': 5000} );
-//	
-// 	dhtPlugin = require('./plugins/internal/DHT22SensorPlugin');	//global variable;
-//	dhtPlugin.start({'simulate': true, 'frequency': 2000});
-}
+function initPlugins() {}
 
 createServer(3000);
 
@@ -80,10 +69,9 @@ process.on('exit', function(code){
 	console.log("Exiting code= " + code );
 });
 process.on('uncaughtException', function (err) {
- 	console.error('got uncaught exception:', err.message);
+ 	console.error('robotFrontendServer uncaught exception:', err.message);
   	process.exit(1);		//MANDATORY!!!;
 });
-
 
 module.exports.updateClient = function (msg) { 
     console.log(msg);

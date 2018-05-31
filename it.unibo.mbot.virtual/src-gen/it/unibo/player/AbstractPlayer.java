@@ -88,6 +88,7 @@ public abstract class AbstractPlayer extends QActor {
 	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'moveBackward', 'arg': 800 }"  );
 	    	temporaryStr = "\"player START\"";
 	    	println( temporaryStr );  
+	     connectToMqttServer("tcp://localhost:1883");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "player_"+myselfName, 
 	              "waitForCmd",false, false, null); 
@@ -105,7 +106,7 @@ public abstract class AbstractPlayer extends QActor {
 	    	//bbb
 	     msgTransition( pr,myselfName,"player_"+myselfName,false,
 	          new StateFun[]{stateTab.get("execMove") }, 
-	          new String[]{"true","M","moveRover" },
+	          new String[]{"true","M","moveRobot" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitForCmd){  
 	    	 println( getName() + " plan=waitForCmd WARNING:" + e_waitForCmd.getMessage() );
@@ -121,7 +122,7 @@ public abstract class AbstractPlayer extends QActor {
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("usercmd(robotgui(h(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
@@ -133,7 +134,7 @@ public abstract class AbstractPlayer extends QActor {
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("usercmd(robotgui(w(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
@@ -145,7 +146,7 @@ public abstract class AbstractPlayer extends QActor {
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("usercmd(robotgui(s(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
@@ -157,7 +158,7 @@ public abstract class AbstractPlayer extends QActor {
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("usercmd(robotgui(a(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
@@ -169,7 +170,7 @@ public abstract class AbstractPlayer extends QActor {
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("usercmd(robotgui(d(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
@@ -181,14 +182,14 @@ public abstract class AbstractPlayer extends QActor {
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("usercmd(robotgui(x(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRover") && 
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		{//actionseq
-	    		parg = "terminateSystem()"; 
-	    		actorOpExecute(parg, false);	//OCT17		 
-	    		};//actionseq
+	    		String parg="startAppl(go)";
+	    		/* SendDispatch */
+	    		parg = updateVars(Term.createTerm("usercmd(CMD)"),  Term.createTerm("usercmd(robotgui(x(X)))"), 
+	    			    		  					Term.createTerm(currentMessage.msgContent()), parg);
+	    		if( parg != null ) sendMsg("startAppl","robotpfrs", QActorContext.dispatch, parg ); 
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"player_"+myselfName,false,true);
 	    }catch(Exception e_execMove){  

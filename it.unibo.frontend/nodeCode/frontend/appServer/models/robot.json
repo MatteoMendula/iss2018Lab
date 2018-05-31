@@ -1,14 +1,20 @@
 {
   "robot": {
-    "name": "WoT Pi",
-    "description": "A simple robot model",
-    "port": 8484,
-    "actions": {
-    	"commands": {
-    		"w": {
-          		"name": "Forward",
-          		"description": "Move forward",
-    	}
-     }
+	    "name": "WoT Robot",
+	    "description": "A simple robot model",
+	    "port": 8484,
+	    "state": "stopped",
+	    "sonar1": {
+	    	"name" : "sonar1",
+	    	"value": 0
+	    },
+	    "sonar2": {
+	    	"name" : "sonar1",
+	    	"value": 0
+	    },
+	    "sonarRobot": {
+	    	"name"  : "sonarRobot",
+	    	"value" :  0
+	    }
     }
 }

@@ -18,15 +18,12 @@ protected IEventItem event;
 	public void handleCurrentEvent() throws Exception {
 		event = this.currentEvent; //AKKA getEventItem();
 		if( event == null ) return;
-//showMsg( "---------------------------------------------------------------------" );	
-showMsg( event.getPrologRep()  );				 
-//showMsg( "---------------------------------------------------------------------" );	
 		{
 		Term msgt       = Term.createTerm(event.getMsg());
 		Term msgPattern = Term.createTerm("usercmd(CMD)");
 				boolean b = this.pengine.unify(msgt, msgPattern);
 				if( b ) {
-			  		sendMsg("moveRover","player", QActorContext.dispatch, msgt.toString() ); 
+			  		sendMsg("moveRobot","player", QActorContext.dispatch, msgt.toString() ); 
 				}else{
 					println("non unifiable");
 				}

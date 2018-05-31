@@ -1,28 +1,29 @@
-const net = require('net')
-
+/*
+ * it.unibo.frontend/nodeCode/frontend/jsCode/clientRobotVirtual.js
+ */
+const net       = require('net')
 const SEPARATOR = ";"
-
-const client = new Client({ip: "localhost", port: 8999})
+const client    = new Client({ip: "localhost", port: 8999})
 
 function Client({ port, ip }) {
     const self = this
-
     let clientSocket
     const outQueue = []
-
-    connectTo(port, ip)
-    
+    connectTo(port, ip)    
+    function flushOutQueue() {
+        while(outQueue.length !== 0) {
+            const data = outQueue.shift()
+            self.send(data)
+        }
+    }
     function connectTo(port, ip) {
-        const client = new net.Socket()
-        clientSocket = client
-
-        client.connect({ port, ip }, () => console.log(`\tConnecting...`) )
-
+	        const client = new net.Socket()
+	        clientSocket = client
+	        client.connect({ port, ip }, () => console.log(`\t clientRobotVirtual Connecting...`) )
         client.on('connect', () => {
-            console.log(`\tConnected`)
+            console.log(`\t clientRobotVirtual Connected`)
             flushOutQueue()
         })
-
         client.on('data', message => {
             String(message)
                     .split(SEPARATOR)
@@ -30,12 +31,10 @@ function Client({ port, ip }) {
                     .filter( string => string.length !== 0  )
                     .map( JSON.parse )
                     .forEach( message => console.log(message) )
-        })
-        
-        client.on('close', () =>  console.log(`\tConnection closed`) )
-        client.on('error', () => console.log(`\tConnection error`) )
+        })       
+        client.on('close', () =>  console.log(`\t clientRobotVirtual Connection closed`) )
+        client.on('error', () => console.log(`\t clientRobotVirtual Connection error`) )
     }
-
     this.send = function(message) {
         if(!clientSocket.connecting)
             clientSocket.write(SEPARATOR +message +SEPARATOR)
@@ -44,22 +43,20 @@ function Client({ port, ip }) {
             outQueue.push(message)
         }
     }
-
     this.finish = function() {
         if(clientSocket.connecting)
             clientSocket.on('connect', clientSocket.end )
         else
             clientSocket.end()
     }
-
-    function flushOutQueue() {
-        while(outQueue.length !== 0) {
-            const data = outQueue.shift()
-            self.send(data)
-        }
-    }
 }
 
-
+//TEST
+function test(){
+	var msg = "{\"type\": \"moveForward\", \"arg\": 800 }";
+	console.log("sending " + msg + " to " + client);
+	client.send(msg);
+}
+//test();
 
 module.exports=client;

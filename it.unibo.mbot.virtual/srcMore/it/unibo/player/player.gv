@@ -13,8 +13,8 @@ digraph finite_state_machine {
 	execMove [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	waitForCmd [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
-	waitForCmd -> execMove [ label = "moveRover" ][ color = red ][ fontcolor = red ][ dir = both ]
 	waitForCmd -> handleToutBuiltIn [ label = "timeout(3600000)" ][ color = green ][ fontcolor = green ]
+	waitForCmd -> execMove [ label = "moveRobot" ][ color = red ][ fontcolor = red ][ dir = both ]
 	init -> waitForCmd [ label = "switch" ][ color = black ][ fontcolor = black ]
 	waitForCmd -> waitForCmd [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
 }

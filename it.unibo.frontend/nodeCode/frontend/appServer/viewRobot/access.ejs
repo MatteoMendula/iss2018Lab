@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <meta charset="utf-8">
 <title>ResourceAccess</title>
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
@@ -13,7 +11,6 @@
        console.log("CONNECTED VIA SOCKET");
        socket.on('message', function(v){ document.getElementById('display').innerHTML=v; });
 </script>
-
 </head>
 
 <body>
@@ -23,7 +20,11 @@
 <center>
 			<table style="background-color: #d9f7f3">
 					<tr>
- 						<td align="center">   </td>
+ 						<td align="center">   
+ 							<form action="/robot/actions/commands/appl" method="post">
+							  	<input type="submit" value="appl">
+							</form>						
+ 						</td>
  						<td align="center">
 							<form action="/robot/actions/commands/w" method="post">
 							  	<input type="submit" value="forward" class="btn btn-primary btn-block">
