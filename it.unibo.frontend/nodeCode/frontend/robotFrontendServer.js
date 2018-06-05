@@ -8,15 +8,15 @@ var io              ; 	//Upgrade ro socketIo;
 
 var createServer = function (port  ) {
   initPlugins();  
-  server = http.createServer(appl );   
-  io     = require('socket.io').listen(server); //Upgrade  
+  server = http.createServer( appl );   
+  io     = require('socket.io').listen(server); //Upgrade fro socketio;  
   server.on('listening', onListening);
   server.on('error', onError);
-  setInterval( tick, 500 ); 
+  setInterval( showResourceState, 1000 ); //show the robot state;
   server.listen( port ); 
 };
 
-function tick(){
+function showResourceState(){
 	var now = new Date() ;
 	var info = "ROBOT state="+resourceModel.robot.state+"\n"+
 //		resourceModel.robot.sonar1.name+"="+resourceModel.robot.sonar1.value+"\n"+

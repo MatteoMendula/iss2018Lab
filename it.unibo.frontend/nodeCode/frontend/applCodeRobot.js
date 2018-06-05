@@ -12,7 +12,7 @@ var toRobot         = require("./jsCode/clientRobotVirtual");
 var serverWithSocket= require('./robotFrontendServer');
 var cors            = require('cors');
 var robotModel      = require('./appServer/models/robot');
-
+var User            = require("./appServer/models/user");
 var mqttUtils       ; 	//to be set later;
 var session         ; 	//to be set later for AUTH;
 var passport        ; 	//to be set later for AUTH;
@@ -21,9 +21,6 @@ var mongoose        ; 	//to be set later for AUTH;
 var flash           ; 	//to be set later for AUTH; 
 
 var app              = express();
-
-var externalActuator = false;	//when true, the application logic is external to the server;
-var withAuth         = false;
 
 // view engine setup;
 app.set('views', path.join(__dirname, 'appServer', 'viewRobot'));	 
@@ -42,6 +39,9 @@ app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'jsCode')))
 
+var externalActuator = false;	//when true, the application logic is external to the server;
+var withAuth         = true;
+
 if( externalActuator ) mqttUtils  = require('./uniboSupports/mqttUtils');
 if( withAuth ){
 	 session          = require("express-session");	 
@@ -58,50 +58,45 @@ if( withAuth ){
  */	
  	app.get('/', function(req, res) {
  		if( withAuth ) res.render("login");
- 		else res.render("access");
+ 		else 
+ 			res.render("access");
  	});	
 
 	app.get("/login", function(req, res) {
 		 res.render("login");
 	});
-if( passport  ){
+
 	app.post("/login", passport.authenticate("login", {
 		  successRedirect: "/access",			 
 		  failureRedirect: "/login",
 		  failureFlash: true
 	}));
-}
+
 	app.get("/access", ensureAuthenticated, function(req, res, next) {	 
-		//res.send("wait a moment ...");
 		res.render("access");		 
 	});
 	app.get("/logout", function(req, res) {
-	  req.logout();
+	  req.logout();	//a new function added by Passport;
 	  res.redirect("/");
 	});
 	app.get("/signup", function(req, res) {
 	  res.render("signup");
 	});
 
-if( passport )
-	app.post("/signup", function(req, res, next) {
+	app.post("/signup", function(req, res, next) {  
 	  var username = req.body.username;
 	  var password = req.body.password;
-
 	  User.findOne({ username: username }, function(err, user) {
-
 	    if (err) { return next(err); }
 	    if (user) {
 	      req.flash("error", "User already exists");
 	      return res.redirect("/signup");
 	    }
-
 	    var newUser = new User({
 	      username: username,
 	      password: password
 	    });
 	    newUser.save(next);
-
 	  });
 	}, passport.authenticate("login", {
 	  successRedirect: "/",
@@ -116,12 +111,10 @@ if( passport )
 	    res.render("profile", { user: user });
 	  });
 	});
-
 	app.get("/edit", ensureAuthenticated, function(req, res) {
 	  res.render("edit");
 	});
-
-	app.post("/edit", ensureAuthenticated, function(req, res, next) {
+	app.post("/edit", ensureAuthenticated, function(req, res, next) {console.log("edittttttttttttttttttttt " + req.body.displayName);
 	  req.user.displayName = req.body.displayname;
 	  req.user.bio = req.body.bio;
 	  req.user.save(function(err) {
@@ -190,8 +183,8 @@ if( passport )
 	  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
 	  // render the error page;
-	  res.status(err.status || 500);
-	  res.render('error');
+	  res.status(err.status || 500); 
+	  res.send("SORRY, ERROR=" + err.status );
 	});
 
 	

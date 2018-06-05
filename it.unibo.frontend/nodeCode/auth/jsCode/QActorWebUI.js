@@ -5,10 +5,8 @@ var curSpeed = "low";
  * WEBSOCKET
  */
     var connected = false;
-    console.log("QActorWebUI.js : server IP= "+document.location.host + " connected=" + connected  );
-    
-    var sock = new WebSocket("ws://"+document.location.host, "protocolOne");
-      
+    console.log("QActorWebUI.js : server IP= "+document.location.host + " connected=" + connected  );    
+    var sock = new WebSocket("ws://"+document.location.host, "protocolOne");      
     //var sock = new WebSocket("ws://localhost:8080", "protocolOne");
 	    sock.onopen = function (event) {
 	        console.log("QActorWebUI.js : I connected to server.....");

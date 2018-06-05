@@ -1,6 +1,5 @@
 var passport      = require("passport");
 var LocalStrategy = require("passport-local").Strategy;
-
 var User          = require("./models/user");
 
 module.exports = function() {
@@ -21,6 +20,7 @@ module.exports = function() {
       if (!user) {
         return done(null, false, { message: "Sorry, user not allowed!" });
       }
+      console.log("passport " + user);
       user.checkPassword(password, function(err, isMatch) {
         if (err) { return done(err); }
         if (isMatch) {

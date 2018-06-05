@@ -41,7 +41,7 @@ router.post("/login", passport.authenticate("login", {
 }));
 
 router.get("/access", ensureAuthenticated, function(req, res, next) {	//AN (3)
-	//res.send("wait a moment ...");
+	//console.log("auth routes access ");
 	res.render("access");		//AN (4)
 });
 

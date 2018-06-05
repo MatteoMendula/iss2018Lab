@@ -53,7 +53,7 @@ $(document).ready(function () {
       function (result) {
         console.log( location + " TEMP=" + result.query.results.channel.item.condition.temp );
         addDataPoint( parseInt( result.query.results.channel.item.condition.temp ) ); //#G
-        setTimeout(doPoll, 60000);
+        setTimeout(doPoll, 10000);
       });
     }
 
