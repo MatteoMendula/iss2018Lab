@@ -56,6 +56,6 @@ function test(){
 	console.log("sending " + msg + " to " + client);
 	client.send(msg);
 }
-test();
+//test();
 
 module.exports=client;

@@ -37,10 +37,10 @@ app.use( cors() );  //npm install cors --save ;
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use(express.static(path.join(__dirname, 'jsCode')))
+//app.use(express.static(path.join(__dirname, 'jsCode')))
 
 var externalActuator = false;	//when true, the application logic is external to the server;
-var withAuth         = true;
+var withAuth         = false	;
 
 if( externalActuator ) mqttUtils  = require('./uniboSupports/mqttUtils');
 if( withAuth ){
@@ -58,22 +58,24 @@ if( withAuth ){
  */	
  	app.get('/', function(req, res) {
  		if( withAuth ) res.render("login");
- 		else 
- 			res.render("access");
+ 		else{
+ 			res.locals.currentUser={name:"Guest", displayName:"UserAnonymous"};
+  			res.render("access");
+ 		}
  	});	
-
+ 
 	app.get("/login", function(req, res) {
 		 res.render("login");
 	});
-
+if( passport )
 	app.post("/login", passport.authenticate("login", {
 		  successRedirect: "/access",			 
 		  failureRedirect: "/login",
 		  failureFlash: true
 	}));
-
-	app.get("/access", ensureAuthenticated, function(req, res, next) {	 
-		res.render("access");		 
+	app.get("/access", ensureAuthenticated, function(req, res, next) {
+		if( ! passport ) res.locals.currentUser={name:"Guest", displayName:"UserAnonymous"};
+ 		res.render("access");		 
 	});
 	app.get("/logout", function(req, res) {
 	  req.logout();	//a new function added by Passport;
@@ -82,7 +84,7 @@ if( withAuth ){
 	app.get("/signup", function(req, res) {
 	  res.render("signup");
 	});
-
+if( passport ) 
 	app.post("/signup", function(req, res, next) {  
 	  var username = req.body.username;
 	  var password = req.body.password;
@@ -103,7 +105,7 @@ if( withAuth ){
 	  failureRedirect: "/signup",
 	  failureFlash: true
 	}));
-
+ 
 	app.get("/users/:username", function(req, res, next) {
 	  User.findOne({ username: req.params.username }, function(err, user) {
 	    if (err) { return next(err); }
@@ -114,7 +116,8 @@ if( withAuth ){
 	app.get("/edit", ensureAuthenticated, function(req, res) {
 	  res.render("edit");
 	});
-	app.post("/edit", ensureAuthenticated, function(req, res, next) {console.log("edittttttttttttttttttttt " + req.body.displayName);
+ 	
+	app.post("/edit", ensureAuthenticated, function(req, res, next) {  
 	  req.user.displayName = req.body.displayname;
 	  req.user.bio = req.body.bio;
 	  req.user.save(function(err) {
@@ -165,7 +168,7 @@ if( withAuth ){
 		try{
 			if( req.result != undefined)
 				serverWithSocket.updateClient( JSON.stringify(req.result ) );
-			res.send(req.result);
+ 			res.send(req.result);
 		}catch(e){console.info("SORRY ...");}
 		} 
 	);
@@ -187,11 +190,8 @@ if( withAuth ){
 	  res.send("SORRY, ERROR=" + err.status );
 	});
 
-	
-//=================== UTILITIES =========================
-
-
-function setUpAuth(){ //AUTH
+//=================== UTILITIES =========================;
+function setUpAuth(){  
 	try{	
 		console.log("\tWORKING WITH AUTH ... "  ) ;
 		mongoose.connect("mongodb://localhost:27017/test");
@@ -217,6 +217,7 @@ function setUpAuth(){ //AUTH
 
 
 function ensureAuthenticated(req, res, next) {
+	  if( ! passport ) next();  //always authenticated
 	  if (req.isAuthenticated()) {
 		  next();
 	  } else {
@@ -233,6 +234,7 @@ function delegate( hlcmd, newState, req, res ){
 function actuate(cmd, newState, req, res ){
 	toRobot.send( cmd );
 	robotModel.robot.state = newState;
+	if( ! passport ) res.locals.currentUser={name:"Guest", displayName:"UserAnonymous"};
 	res.render("access");
 }
 var emitRobotCmd = function( cmd ){ //called by delegate;

@@ -1,0 +1,6 @@
+plan(1,init, sentence(true,move(print("webguiclient STARTS ")),'','' ))
+plan(2,init, sentence(true,forward(player, "ctxWebGuiExecutor2, moveRobot,usercmd( robotgui( w( low)))),'','' ))
+plan(3,init, sentence(true,delay( 800) ,'','' ))
+plan(4,init, sentence(true,forward(player, "ctxWebGuiExecutor2, moveRobot,usercmd( robotgui( h( low)))),'','' ))
+plan(5,init, sentence(true,delay( 800) ,'','' ))
+plan(6,init, sentence(true,forward(player, "ctxWebGuiExecutor2, moveRobot,usercmd( robotgui( s( low)))),'','' ))

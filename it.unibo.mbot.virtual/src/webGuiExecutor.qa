@@ -11,9 +11,9 @@ Event sonarDetect  : sonarDetect(X)					//From (virtual robot) sonar
 Dispatch moveRobot : usercmd(CMD)       
 Dispatch startAppl : startAppl(CMD) 
 
-pubSubServer  "tcp://localhost:1883"    		 
+pubSubServer  "tcp://localhost:1883"    	 	 
     
-Context ctxWebGuiExecutor ip [ host="localhost"   port=8032 ]   -httpserver  
+Context ctxWebGuiExecutor ip [ host="localhost"   port=8032 ]  -g yellow -httpserver     
 EventHandler evh for usercmd   {	//event-driven ; no Mqtt support yet
  	forwardEvent player -m moveRobot  	//from event to message
 };     

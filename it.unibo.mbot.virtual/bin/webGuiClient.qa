@@ -1,0 +1,21 @@
+/* 
+ * =======================================================================================
+ * webGuiClient.qa
+ * =======================================================================================
+ */    
+System webGuiClient                
+Dispatch moveRobot : usercmd(CMD)       
+    
+Context ctxWebGuiClient   ip [ host="localhost"      port=8042 ]      
+Context ctxWebGuiExecutor ip [ host="82.49.115.40"   port=8032 ] -standalone 
+
+QActor webguiclient context ctxWebGuiClient   {    
+	Plan init normal [	
+		println("webguiclient STARTS ") ;
+		sendto  player in ctxWebGuiExecutor -m moveRobot : usercmd( robotgui(w(low)) ) ;
+		delay 800;
+		sendto  player in ctxWebGuiExecutor -m moveRobot : usercmd( robotgui(h(low)) ) ; 
+		delay 800;
+		sendto  player in ctxWebGuiExecutor -m moveRobot : usercmd( robotgui(s(low)) )  
+ 	]
+} 
