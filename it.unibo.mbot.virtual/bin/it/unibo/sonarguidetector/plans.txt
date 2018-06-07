@@ -1,1 +1,2 @@
 plan(1,init, sentence(true,move(print("sonarguidetector STARTS ")),'','' ))
+plan(1,waitForEvents, sentence(-  endreached ,forward(robotpfrs, moveRobot,usercmd( robotgui( h( low)))),'','' ))

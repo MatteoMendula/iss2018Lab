@@ -39,7 +39,7 @@ app.use(cookieParser());
 
 //app.use(express.static(path.join(__dirname, 'jsCode')))
 
-var externalActuator = false;	//when true, the application logic is external to the server;
+var externalActuator = true;	//when true, the application logic is external to the server;
 var withAuth         = false	;
 
 if( externalActuator ) mqttUtils  = require('./uniboSupports/mqttUtils');
@@ -225,10 +225,10 @@ function ensureAuthenticated(req, res, next) {
 		    res.redirect("/login");
 	  }
 }//
-
 function delegate( hlcmd, newState, req, res ){
 	robotModel.robot.state = newState;
 	emitRobotCmd(hlcmd);
+	if( ! passport ) res.locals.currentUser={name:"Guest", displayName:"UserAnonymous"};
     res.render("access");	
 }
 function actuate(cmd, newState, req, res ){

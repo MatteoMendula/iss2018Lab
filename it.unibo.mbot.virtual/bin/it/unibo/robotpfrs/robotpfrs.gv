@@ -11,7 +11,6 @@ digraph finite_state_machine {
 	
 	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
 	applicationLogic [ color = black ][ fontcolor = black ][ penwidth = 3 ]
-	sonarDetect [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	goAhead [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	obstacle [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
@@ -19,8 +18,7 @@ digraph finite_state_machine {
 	init -> handleToutBuiltIn [ label = "timeout(600000)" ][ color = green ][ fontcolor = green ]
 	applicationLogic -> goAhead [ label = "switch" ][ color = black ][ fontcolor = black ]
 	goAhead -> handleToutBuiltIn [ label = "timeout(600000)" ][ color = green ][ fontcolor = green ]
-	goAhead -> sonarDetect [ label = "sonar" ][ color = black ][ fontcolor = black ]
+	goAhead -> action [ label = "moveRobot" ][ color = red ][ fontcolor = red ][ dir = both ]
 	goAhead -> obstacle [ label = "sonarDetect" ][ color = black ][ fontcolor = black ]
-	sonarDetect -> goAhead [ label = "switch" ][ color = black ][ fontcolor = black ]
 	obstacle -> goAhead [ label = "switch" ][ color = black ][ fontcolor = black ]
 }

@@ -142,6 +142,7 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %-------------------------------------------------
 %  User static rules about sonarguidetector
 %------------------------------------------------- 
+checkEnd( D):-eval( lt( D,5)),output( checkEndddddddddddddddddddddddddddddddddddddddddddddddd( D)),assert( endreached).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),

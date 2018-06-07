@@ -8,10 +8,6 @@ public class MainCtxWebGuiExecutor  {
 //MAIN
 public static QActorContext initTheContext() throws Exception{
 	IOutputEnvView outEnvView = SituatedSysKb.standardOutEnvView;
-	it.unibo.is.interfaces.IBasicEnvAwt env=new it.unibo.baseEnv.basicFrame.EnvFrame( 
-		"Env_ctxWebGuiExecutor",java.awt.Color.yellow , java.awt.Color.black );
-	env.init();
-	outEnvView = env.getOutputEnvView();
 	String webDir = "./srcMore/it/unibo/ctxWebGuiExecutor";
 	return QActorContext.initQActorSystem(
 		"ctxwebguiexecutor", "./srcMore/it/unibo/ctxWebGuiExecutor/webguiexecutor.pl", 

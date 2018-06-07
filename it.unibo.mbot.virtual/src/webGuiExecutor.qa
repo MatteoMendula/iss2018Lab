@@ -13,7 +13,7 @@ Dispatch startAppl : startAppl(CMD)
 
 pubSubServer  "tcp://localhost:1883"    	 	 
     
-Context ctxWebGuiExecutor ip [ host="localhost"   port=8032 ]  -g yellow -httpserver     
+Context ctxWebGuiExecutor ip [ host="localhost"   port=8032 ]  -httpserver     
 EventHandler evh for usercmd   {	//event-driven ; no Mqtt support yet
  	forwardEvent player -m moveRobot  	//from event to message
 };     
@@ -70,10 +70,11 @@ QActor robotpfrs  context ctxWebGuiExecutor -pubsub  {
     	javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': -1 }")
     ]
 	transition stopAfter 600000
-		whenEvent sonarDetect -> obstacle,
-		whenEvent sonar  	  -> sonarDetect 
+		whenMsg moveRobot : usercmd( robotgui(h(X)) ) do endPlan "robotpfrs ENDS",
+		whenEvent sonarDetect -> obstacle
+//		whenEvent sonar  	  -> sonarHandle 
 		
-	Plan obstacle [
+	Plan obstacle [ 
 		printCurrentEvent;
 		onEvent sonarDetect : sonarDetect( wallUp ) -> {
 				javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }");
@@ -91,12 +92,11 @@ QActor robotpfrs  context ctxWebGuiExecutor -pubsub  {
 	]
 	switchTo goAhead
 	
-	
-	Plan sonarDetect  [
-		onEvent sonar  : sonar(sonar1, TARGET, DISTANCE) -> println( sonar(sonar1, TARGET, DISTANCE) );
-		onEvent sonar  : sonar(sonar2, TARGET, DISTANCE) -> println( sonar(sonar2, TARGET, DISTANCE) )
-	]
-	switchTo goAhead
+//	Plan sonarHandle  [
+//		onEvent sonar  : sonar(sonar1, TARGET, DISTANCE) -> println( sonar(sonar1, TARGET, DISTANCE) );
+//		onEvent sonar  : sonar(sonar2, TARGET, DISTANCE) -> println( sonar(sonar2, TARGET, DISTANCE) )
+//	]
+//	switchTo goAhead
 }
 /*
  * -----------------------------------------------------
@@ -104,12 +104,20 @@ QActor robotpfrs  context ctxWebGuiExecutor -pubsub  {
  * -----------------------------------------------------
  */
 QActor sonarguidetector context ctxWebGuiExecutor   {  
+Rules{   
+	checkEnd( D ) :-
+		eval( lt(D,5) ),
+		output( checkEndddddddddddddddddddddddddddddddddddddddddddddddd( D ) ),
+		assert( endreached ).
+ }
 	Plan init normal [	println("sonarguidetector STARTS ") ]
 	switchTo waitForEvents        
 	  
-	Plan waitForEvents[ ]        
+	Plan waitForEvents[ 
+		[ ?? endreached ] forward robotpfrs -m moveRobot : usercmd( robotgui(h(low)) )       
+		]
   	transition stopAfter 3600000   	//1h         
-//   		whenEvent sonar  : sonar(NAME,   TARGET, DISTANCE )  do  println( sonar(NAME,   TARGET, DISTANCE ) ),
-  		whenEvent sonarDetect : sonarDetect( TARGET ) do  println( sonarDetect( TARGET ) ) 
+    	whenEvent sonar  : sonar(sonar2,   TARGET, DISTANCE )  do demo checkEnd(DISTANCE), // println( sonar(NAME,   TARGET, DISTANCE ) ),
+  		whenEvent sonarDetect : sonarDetect( TARGET ) do  println( sonarguidetector( TARGET ) ) 
   	finally repeatPlan  
 } 

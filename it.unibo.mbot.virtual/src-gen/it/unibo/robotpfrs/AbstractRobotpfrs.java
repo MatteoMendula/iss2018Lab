@@ -59,7 +59,6 @@ public abstract class AbstractRobotpfrs extends QActor {
 	    	stateTab.put("applicationLogic",applicationLogic);
 	    	stateTab.put("goAhead",goAhead);
 	    	stateTab.put("obstacle",obstacle);
-	    	stateTab.put("sonarDetect",sonarDetect);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -113,8 +112,30 @@ public abstract class AbstractRobotpfrs extends QActor {
 	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'moveForward', 'arg': -1 }"  );
 	    	//bbb
 	     msgTransition( pr,myselfName,"robotpfrs_"+myselfName,false,
-	          new StateFun[]{stateTab.get("obstacle"), stateTab.get("sonarDetect") }, 
-	          new String[]{"true","E","sonarDetect", "true","E","sonar" },
+	          new StateFun[]{() -> {	//AD HOC state to execute an action and resumeLastPlan
+	          try{
+	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
+	            //ActionSwitch for a message or event
+	             if( currentMessage.msgContent().startsWith("usercmd") ){
+	            	String parg="robotpfrs ENDS";
+	            	/* EndPlan */
+	            	parg =  updateVars( Term.createTerm("usercmd(CMD)"),  
+	            	                    Term.createTerm("usercmd(robotgui(h(X)))"), 
+	            		    		  	Term.createTerm(currentMessage.msgContent()), parg);
+	            	if( parg != null ){  
+	            		println( parg);
+	            		return ; //JULY2017
+	            		//break
+	            	}					
+	             }
+	            repeatPlanNoTransition(pr1,"adhocstate","adhocstate",false,true);
+	          }catch(Exception e ){  
+	             println( getName() + " plan=goAhead WARNING:" + e.getMessage() );
+	             //QActorContext.terminateQActorSystem(this); 
+	          }
+	          },
+	           stateTab.get("obstacle") }, 
+	          new String[]{"true","M","moveRobot", "true","E","sonarDetect" },
 	          600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_goAhead){  
 	    	 println( getName() + " plan=goAhead WARNING:" + e_goAhead.getMessage() );
@@ -172,45 +193,6 @@ public abstract class AbstractRobotpfrs extends QActor {
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//obstacle
-	    
-	    StateFun sonarDetect = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("sonarDetect",-1);
-	    	String myselfName = "sonarDetect";  
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("sonar(sonar1,TARGET,DISTANCE)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("sonar") && 
-	    		pengine.unify(curT, Term.createTerm("sonar(SONAR,TARGET,DISTANCE)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg = "sonar(sonar1,TARGET,DISTANCE)";
-	    			/* Print */
-	    			parg =  updateVars( Term.createTerm("sonar(SONAR,TARGET,DISTANCE)"), 
-	    			                    Term.createTerm("sonar(sonar1,TARGET,DISTANCE)"), 
-	    				    		  	Term.createTerm(currentEvent.getMsg()), parg);
-	    			if( parg != null ) println( parg );
-	    	}
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("sonar(sonar2,TARGET,DISTANCE)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("sonar") && 
-	    		pengine.unify(curT, Term.createTerm("sonar(SONAR,TARGET,DISTANCE)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg = "sonar(sonar2,TARGET,DISTANCE)";
-	    			/* Print */
-	    			parg =  updateVars( Term.createTerm("sonar(SONAR,TARGET,DISTANCE)"), 
-	    			                    Term.createTerm("sonar(sonar2,TARGET,DISTANCE)"), 
-	    				    		  	Term.createTerm(currentEvent.getMsg()), parg);
-	    			if( parg != null ) println( parg );
-	    	}
-	    	//switchTo goAhead
-	        switchToPlanAsNextState(pr, myselfName, "robotpfrs_"+myselfName, 
-	              "goAhead",false, false, null); 
-	    }catch(Exception e_sonarDetect){  
-	    	 println( getName() + " plan=sonarDetect WARNING:" + e_sonarDetect.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//sonarDetect
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor
