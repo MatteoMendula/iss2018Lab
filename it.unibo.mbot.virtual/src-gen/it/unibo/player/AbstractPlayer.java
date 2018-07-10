@@ -88,7 +88,7 @@ public abstract class AbstractPlayer extends QActor {
 	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'moveBackward', 'arg': 800 }"  );
 	    	temporaryStr = "\"player START\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("tcp://localhost:1883");
+	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "player_"+myselfName, 
 	              "waitForCmd",false, false, null); 

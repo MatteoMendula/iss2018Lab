@@ -1,0 +1,58 @@
+/* 
+ * =======================================================================================
+ * qacoapServer.qa
+ * =======================================================================================
+ */    
+System qacoapServer                
+
+//Dispatch info  : info(X)
+//Event coapInfo : info(X)
+Event coapServerStarted : info(X)
+
+Context ctxQaCoapServer ip [ host="localhost"   port=8042 ]  
+
+QActor qacoapserver context ctxQaCoapServer -g white  {      
+	Plan init normal [  
+		println("qacoapserver STARTS ")  ;
+		javaOp "createCoapServer()" ; 
+		emit coapServerStarted : info(started) ;
+		println("qacoapserver ENDS ") ;	   
+		delay 600000		  
+	]
+} 
+ 
+QActor globalkb context ctxQaCoapServer  {
+	Plan init normal [ 	
+		demo assign( a,0 )
+	]
+	transition stopAfter 600000
+	whenEvent coapServerStarted -> work
+ 	
+	Plan work  [  
+ 		println("globalkb CREATE RESOURCE ") ; 
+		javaOp 	"addQaAsResource()"	
+ 	]
+ 	switchTo updateKb
+ 	
+ 	Plan updateKb[
+ 		[ !? getVal(a,X) ] println( inc(a,X) ) ;   
+ 		demo inc( a,1, _ );
+ 		delay 300
+ 	]
+ 	finally repeatPlan 10
+} 
+
+QActor kbcaller context ctxQaCoapServer  {
+	Plan init normal [ 	
+ 	]
+	transition stopAfter 600000
+	whenEvent coapServerStarted -> work
+	Plan work  [  
+ 		println("kbcaller working ") ; 
+ 		delay 500;
+//		javaOp "doCoapQuery( \"globalkb\" ,  \"assign(a,200)\" )"; 
+		javaOp "doCoapQuery( \"globalkb\" ,  \"getVal(a,X)\" )"
+ 	]
+ 	finally repeatPlan 5
+
+}

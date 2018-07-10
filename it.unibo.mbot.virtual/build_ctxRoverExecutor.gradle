@@ -10,7 +10,7 @@ USAGE:
 */
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: 'java-library-distribution'
+apply plugin: 'java-library-distribution' //adds support for building a distribution ZIP for a Java library. 
 apply plugin: 'jacoco'
 
 /*

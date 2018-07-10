@@ -1,0 +1,4 @@
+plan(1,init, sentence(true,move(print("elabactor starts")),'','' ))
+plan(1,handleUpdatedInfo, sentence(true,move(print("handleUpdatedInfo ")),'','' ))
+plan(2,handleUpdatedInfo, sentence(true,printCurrentEvent(false),'','' ))
+plan(3,handleUpdatedInfo, sentence(true,move(resumeplan),'','' ))

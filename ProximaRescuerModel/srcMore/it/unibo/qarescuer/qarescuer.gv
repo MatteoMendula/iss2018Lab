@@ -1,0 +1,31 @@
+/*
+*
+* A GraphViz DOT FSM description 
+* Please use a GraphViz visualizer (like http://www.webgraphviz.com)
+*  
+*/
+
+digraph finite_state_machine {
+	rankdir=LR
+	size="8,5"
+	
+	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	waitStartEvent [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	showData [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	waitPatientID [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	abortState [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	waitRescuerID [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	
+	waitRescuerID -> waitPatientID [ label = "nfc" ][ color = black ][ fontcolor = black ]
+	waitRescuerID -> abortState [ label = "abort" ][ color = black ][ fontcolor = black ]
+	waitPatientID -> abortState [ label = "abort" ][ color = black ][ fontcolor = black ]
+	waitStartEvent -> waitStartEvent [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
+	init -> waitStartEvent [ label = "switch" ][ color = black ][ fontcolor = black ]
+	abortState -> waitStartEvent [ label = "switch" ][ color = black ][ fontcolor = black ]
+	waitPatientID -> handleToutBuiltIn [ label = "timeout(10000000)" ][ color = green ][ fontcolor = green ]
+	waitStartEvent -> waitRescuerID [ label = "startEvent" ][ color = black ][ fontcolor = black ]
+	waitPatientID -> showData [ label = "nfc" ][ color = black ][ fontcolor = black ]
+	showData -> waitStartEvent [ label = "switch" ][ color = black ][ fontcolor = black ]
+	waitStartEvent -> handleToutBuiltIn [ label = "timeout(10000000)" ][ color = green ][ fontcolor = green ]
+	waitRescuerID -> handleToutBuiltIn [ label = "timeout(10000000)" ][ color = green ][ fontcolor = green ]
+}

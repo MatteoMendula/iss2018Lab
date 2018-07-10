@@ -76,9 +76,21 @@ public abstract class AbstractRobotpfrs extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(3000,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
+	    	if( ! aar.getGoon() ) return ;
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(robotgui(a(low)))", guardVars ).toString();
+	    	sendMsg("moveRobot","player", QActorContext.dispatch, temporaryStr ); 
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(1000,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
+	    	if( ! aar.getGoon() ) return ;
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(robotgui(h(low)))", guardVars ).toString();
+	    	sendMsg("moveRobot","player", QActorContext.dispatch, temporaryStr ); 
 	    	temporaryStr = "\"player starts\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("tcp://localhost:1883");
+	     connectToMqttServer("ws://localhost:1884");
 	    	//bbb
 	     msgTransition( pr,myselfName,"robotpfrs_"+myselfName,false,
 	          new StateFun[]{stateTab.get("applicationLogic") }, 

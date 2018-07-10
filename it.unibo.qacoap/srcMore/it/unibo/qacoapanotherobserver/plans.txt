@@ -1,0 +1,6 @@
+plan(1,work, sentence(true,move(print("qacoapanotherobserver STARTS ")),'','' ))
+plan(2,work, sentence(true,delay( 700) ,'','' ))
+plan(3,work, sentence(true,not here StateMoveNormal,'','' ))
+plan(4,work, sentence(true,not here StateMoveNormal,'','' ))
+plan(5,work, sentence(true,not here StateMoveNormal,'','' ))
+plan(1,observe, sentence(true,move(print("qacoapoberver OBSERVING ... ")),'','' ))

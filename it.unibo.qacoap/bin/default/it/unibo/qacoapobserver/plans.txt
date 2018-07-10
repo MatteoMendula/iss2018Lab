@@ -1,0 +1,5 @@
+plan(1,work, sentence(true,move(print("qacoapoberver STARTS ")),'','' ))
+plan(2,work, sentence(true,not here StateMoveNormal,'','' ))
+plan(3,work, sentence(true,not here StateMoveNormal,'','' ))
+plan(4,work, sentence(true,not here StateMoveNormal,'','' ))
+plan(1,observe, sentence(true,move(print("qacoapoberver OBSERVING ... ")),'','' ))

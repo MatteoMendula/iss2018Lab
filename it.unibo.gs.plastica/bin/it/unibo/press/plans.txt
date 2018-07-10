@@ -1,0 +1,4 @@
+plan(1,init, sentence(true,move(print("press starts. INTERACTS via EUROMAP63 / 77 ")),'','' ))
+plan(1,handleEuromapMsg, sentence(true,move(print("handleEuromapMsg")),'','' ))
+plan(2,handleEuromapMsg, sentence(true,printCurrentMessage(''),'','' ))
+plan(3,handleEuromapMsg, sentence(true,move(resumeplan),'','' ))

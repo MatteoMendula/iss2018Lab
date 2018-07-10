@@ -11,7 +11,8 @@ Event sonarDetect  : sonarDetect(X)					//From (virtual robot) sonar
 Dispatch moveRobot : usercmd(CMD)       
 Dispatch startAppl : startAppl(CMD) 
 
-pubSubServer  "tcp://localhost:1883"    	 	 
+//pubSubServer  "tcp://localhost:1883"    	 	 
+pubSubServer  "ws://localhost:1884"    		//use websocket 	 
     
 Context ctxWebGuiExecutor ip [ host="localhost"   port=8032 ]  -httpserver     
 EventHandler evh for usercmd   {	//event-driven ; no Mqtt support yet
@@ -56,6 +57,10 @@ QActor player context ctxWebGuiExecutor -pubsub  {       //The name MUST be play
 
 QActor robotpfrs  context ctxWebGuiExecutor -pubsub  {
 	Plan init normal [ 
+		delay 3000;
+		forward player -m moveRobot : usercmd( robotgui(a(low)) ) ;
+		delay 1000;
+		forward player -m moveRobot : usercmd( robotgui(h(low)) ) ;
 		println("player starts")
 	]
 	transition stopAfter 600000

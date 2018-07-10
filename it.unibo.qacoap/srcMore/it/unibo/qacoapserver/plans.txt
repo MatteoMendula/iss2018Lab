@@ -1,0 +1,5 @@
+plan(1,init, sentence(true,move(print("qacoapserver STARTS ")),'','' ))
+plan(2,init, sentence(true,not here StateMoveNormal,'','' ))
+plan(3,init, sentence(true,raise( coapServerStarted , info( started) )'),'','' ))
+plan(4,init, sentence(true,move(print("qacoapserver ENDS ")),'','' ))
+plan(5,init, sentence(true,delay( 600000) ,'','' ))
