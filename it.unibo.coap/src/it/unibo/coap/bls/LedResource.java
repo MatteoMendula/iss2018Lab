@@ -6,12 +6,16 @@ import static org.eclipse.californium.core.coap.CoAP.ResponseCode.*;
 public  class LedResource extends CoapGofObservableResource {
 public static final String resourcePath = "led";
 
-	private String value = "false";
-//	private LedResourceGofObserver observer = new LedResourceGofObserver();
+private String value = "false";
 	
     public LedResource() {
         super(resourcePath);
-//        this.setObserver(new LedResourceGofObserver() );
+    }
+    
+    @Override
+    public void setValue(String v) {
+    	value = v ;
+    	update(value);	// notify the GOF observer
     }
 
     @Override
@@ -26,7 +30,7 @@ public static final String resourcePath = "led";
         try {
         	value = exchange.getRequestText();//new String(payload, "UTF-8"); 
             //System.out.println("LedResource PUT "+ value);
-            update(value);
+        	setValue(value);
             exchange.respond(CHANGED,  value);
         } catch (Exception e) {
 //            e.printStackTrace();

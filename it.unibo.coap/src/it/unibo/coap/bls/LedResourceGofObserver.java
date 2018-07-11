@@ -1,12 +1,10 @@
 package it.unibo.coap.bls;
-
 import java.awt.Frame;
 import it.unibo.bls.devices.LedAsGui;
 import it.unibo.bls.utils.Utils;
 import it.unibo.qactors.akka.QActor;
 
-
-public class LedResourceGofObserver  extends ResourceLocalObserver implements IResourceLocalObserver{
+public class LedResourceGofObserver  extends ResourceLocalObserver {
 	LedAsGui led ;
 	public LedResourceGofObserver(QActor qa) {
 		super(qa);

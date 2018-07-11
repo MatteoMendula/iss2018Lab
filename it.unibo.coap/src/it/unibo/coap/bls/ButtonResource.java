@@ -17,6 +17,12 @@ public static final String resourcePath = "button";
     }
 
     @Override
+    public void setValue(String v) {
+    	value = v ;
+    	update(v);	// notify the GOF observer
+    }
+    
+    @Override
     public void handleGET(CoapExchange exchange) {
     	exchange.setMaxAge( 600000 ); 
         exchange.respond(  value );
@@ -27,11 +33,10 @@ public static final String resourcePath = "button";
 //        byte[] payload = exchange.getRequestPayload();
         try {
             String v = exchange.getRequestText(); //new String(payload, "UTF-8"); 
-            value    = v ;
+            setValue( v ) ;
 //            System.out.println("ButtonResource PUT source="+exchange.getSourceAddress() + " value=" + value );
             exchange.respond(CHANGED,  value);
-            changed(); 	// notify all observers
-            update(v);	// notify the GOF observer
+            changed(); 	// notify all CoAP observers           
         } catch (Exception e) {
             exchange.respond(BAD_REQUEST, "Invalid String"); 
         }

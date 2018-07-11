@@ -140,5 +140,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/it.unibo.qactors"/>
+	<classpathentry kind="lib" path="libs/coapbls.jar"/>
+	<classpathentry kind="lib" path="libs/blsoo.jar"/>
 	<classpathentry kind="output" path="bin/default"/>
 </classpath>

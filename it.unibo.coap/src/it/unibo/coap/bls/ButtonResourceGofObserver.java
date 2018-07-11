@@ -2,7 +2,7 @@ package it.unibo.coap.bls;
 
 import it.unibo.qactors.akka.QActor;
 
-public class ButtonResourceGofObserver extends ResourceLocalObserver implements IResourceLocalObserver{
+public class ButtonResourceGofObserver extends ResourceLocalObserver  {
 
  	public ButtonResourceGofObserver(QActor qa) {
  		super(qa);

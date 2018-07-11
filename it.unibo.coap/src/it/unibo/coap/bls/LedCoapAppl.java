@@ -26,7 +26,7 @@ public class LedCoapAppl{
 		//CREATE a Led Thing and a Button Thing
 		LedThing.create(8010, null);
 		ButtonThing.create(8020, null);
-		//CREATE the clients for the things
+ 		//CREATE the clients for the things
 		ledClient     = new  CoapClient( LedThing.getPath(8010)    );
 		buttonClient  = new  CoapClient( ButtonThing.getPath(8020) );
 		//CREATE the button CoAP observer that embeds the application logic

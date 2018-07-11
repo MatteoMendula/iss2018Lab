@@ -1,8 +1,6 @@
 package it.unibo.coap.bls;
-
 import org.eclipse.californium.core.observe.ObserveRelation;
 import org.eclipse.californium.core.server.resources.Resource;
-
 import it.unibo.qactors.akka.QActor;
 
 public abstract class ResourceLocalObserver implements IResourceLocalObserver{
