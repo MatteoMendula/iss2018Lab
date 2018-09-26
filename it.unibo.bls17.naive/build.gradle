@@ -1,3 +1,11 @@
+/*
+================================================================================
+build.gradle
+ 
+USAGE:	 
+	gradle  eclipse		//to set the dependency on the library
+ ================================================================================
+*/
 apply plugin: 'java'
 apply plugin: 'eclipse' 
 apply plugin: 'jacoco'
@@ -17,6 +25,15 @@ repositories {
 }
 dependencies {
     testCompile 'junit:junit:4.12'
+/*
+UNIBO SUPPORTS
+*/		
+	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'uniboInterfaces.jar')
+	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'unibonoawtsupports.jar')
+	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'uniboEnvBaseAwt.jar')
+	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: '2p301.jar')
+	  //compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'qa18Akka.jar')
+	  //compile fileTree(dir: '../it.unibo.libs2018/libs/http',  include: 'nanoHTTPD.jar')
 }
 jar {
     manifest {
