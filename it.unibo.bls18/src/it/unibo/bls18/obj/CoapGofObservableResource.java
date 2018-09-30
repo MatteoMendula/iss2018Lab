@@ -21,7 +21,7 @@ protected IResourceLocalObserver observer  ;
 	public abstract void setValue(String v);
 	
 	protected void update(String v) {
-		System.out.println("	CoapGofObservableResource update " );
+		System.out.println("	CoapGofObservableResource update " + v );
 		if( observer != null ) observer.update(v);
 	}
 

@@ -6,14 +6,14 @@ import it.unibo.bls18.interfaces.IResourceLocalObserver;
 import it.unibo.bls18.obj.LedResourceGofObserver;
 import it.unibo.bls18.resources.LedResource;
 
-public class MainAsPojo {
-private static MainAsPojo appl=null; 	//SINGLETON
+public class MainLedAsPojo {
+private static MainLedAsPojo appl=null; 	//SINGLETON
 private IResourceIot led;
 private IResourceLocalObserver observerLed;
 
-	public static MainAsPojo createTheSystem() {
+	public static MainLedAsPojo createTheSystem() {
 		if( appl == null ) { 
-			appl = new MainAsPojo();
+			appl = new MainLedAsPojo();
 			appl.createComponents();
 			appl.configure();
 		}
@@ -34,7 +34,7 @@ private IResourceLocalObserver observerLed;
 		return led;
 	}
 	public static void main(String[] args) throws Exception {
-		MainAsPojo appl = MainAsPojo.createTheSystem();
+		MainLedAsPojo appl = MainLedAsPojo.createTheSystem();
 		appl.getLed().setValue("true");
 		Utils.delay(1000);
 		appl.getLed().setValue("false");

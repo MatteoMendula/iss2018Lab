@@ -34,8 +34,7 @@ public class LedThing {
 			server   = new CoapServer(port);
 			server.add( resource );
 			//Single thread executor
-			//server.add( ConcurrentCoapResource.createConcurrentCoapResource(1, resource   ) );
-			server.start();
+ 			server.start();
 			resource.setGofObserver(new LedResourceGofObserver());
 		}catch(Exception e) {
 			showMsg("ButtonThing ERROR " + e.getMessage()) ;
