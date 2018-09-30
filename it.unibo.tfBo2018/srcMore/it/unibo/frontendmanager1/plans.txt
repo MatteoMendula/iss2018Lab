@@ -1,0 +1,8 @@
+plan(1,init, sentence(true,move(print("FRONTEND starts...")),'','' ))
+plan(2,init, sentence(true,delay( 1000) ,'','' ))
+plan(1,userLogin, sentence(true,move(print("FRONTEND login page")),'','' ))
+plan(2,userLogin, sentence(true,delay( 2000) ,'','' ))
+plan(1,userGui, sentence(true,move(print("FRONTEND gui page")),'','' ))
+plan(2,userGui, sentence(true,delay( 2000) ,'','' ))
+plan(1,sendStart, sentence(true,move(print("FRONTEND send start")),'','' ))
+plan(2,sendStart, sentence(true,forward(mvccontroller1, "ctxConsole2, frontendCmdMsg,frontendCmd( x)),'','' ))

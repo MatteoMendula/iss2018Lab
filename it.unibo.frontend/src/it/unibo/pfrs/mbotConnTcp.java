@@ -4,6 +4,7 @@ import java.net.Socket;
 import org.json.JSONObject;
 
 public class mbotConnTcp {
+//	private static String hostName= "192.168.1.100";
 	private static String hostName= "localhost";
 	private static int port = 8999;
 	private static String sep=";";

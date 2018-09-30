@@ -1,0 +1,8 @@
+plan(1,init, sentence(true,move(print("MVCCONTROLLER starts...")),'','' ))
+plan(2,init, sentence(true,delay( 1000) ,'','' ))
+plan(1,sendStart, sentence(true,move(print("MVCCONTROLLER send start to robot...")),'','' ))
+plan(2,sendStart, sentence(true,forward(player, "ctxRobot2, consoleCmdMsg,consoleCmd( start)),'','' ))
+plan(3,sendStart, sentence(true,delay( 3000) ,'','' ))
+plan(1,sendStop, sentence(true,move(print("MVCCONTROLLER send stop to robot...")),'','' ))
+plan(2,sendStop, sentence(true,forward(player, "ctxRobot2, consoleCmdMsg,consoleCmd( halt)),'','' ))
+plan(1,end, sentence(true,move(print("MVCCONTROLLER ends...")),'','' ))

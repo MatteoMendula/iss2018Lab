@@ -1,0 +1,71 @@
+System console
+
+Dispatch consoleCmdMsg : consoleCmd ( X )
+Dispatch frontendCmdMsg : frontendCmd (X)
+Dispatch startTempMsg : startTemp (X)
+Dispatch tempStateMsg : tempState (X)
+
+Context ctxConsole ip [ host="localhost" port=8029 ] -g cyan
+Context ctxRobot ip [ host="localhost" port=8030 ] -standalone 
+
+
+QActor mvccontroller1 context ctxConsole {
+	
+	Plan init normal[ 
+		println("MVCCONTROLLER starts...")
+	] 
+	switchTo waitCommand
+	
+	Plan waitCommand[]
+	transition stopAfter 600000
+		whenMsg frontendCmdMsg -> checkConditions,
+		whenMsg tempStateMsg -> sendStop
+	
+	Plan checkConditions [
+		println("MVCCONTROLLER conditions valid and start from FRONTEND");
+		forward tempdetector1 -m startTempMsg : startTemp (x) //assuming that condition is already verified for the first time
+	]
+	switchTo sendStart
+	
+	Plan sendStart[
+		println("MVCCONTROLLER send start to robot...");
+		sendto player1 in ctxRobot -m consoleCmdMsg : consoleCmd(start); //by AN
+		delay 1000
+	]
+	switchTo waitCommand
+	
+	Plan sendStop[
+		println("MVCCONTROLLER send stop to robot...");
+		sendto player1 in ctxRobot -m consoleCmdMsg : consoleCmd(halt)	//by AN
+	]
+	switchTo end
+	
+	Plan end[
+		println("MVCCONTROLLER ends...")
+	]
+
+}
+
+QActor tempdetector1 context ctxConsole {
+	
+	Plan init normal[ 
+		println("TEMPDETECTOR starts...");
+		delay 20000
+	]
+	switchTo waitCommand
+	
+	Plan waitCommand[]
+	transition stopAfter 600000
+		whenMsg startTempMsg -> sendTempKO
+	
+	Plan sendTempKO[
+		println("TEMPDETECTOR temperature raises over the limit! Event!");
+		forward mvccontroller1 -m tempStateMsg : tempState(false)	//by AN
+	]
+	switchTo end
+	
+	Plan end[
+		println("TEMPDETECTOR ends...")
+	]
+	
+}

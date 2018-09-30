@@ -1,2 +1,5 @@
 bin/
 node_modules/
+nodeCode/frontend/morganLog.log
+build_ClientTcp.gradle
+build_HttpRest.gradle

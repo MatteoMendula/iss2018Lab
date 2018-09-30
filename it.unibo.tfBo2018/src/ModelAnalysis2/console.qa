@@ -1,0 +1,166 @@
+System console
+
+Dispatch consoleCmdMsg : consoleCmd ( X )
+Dispatch frontendCmdMsg : frontendCmd (X)
+Dispatch startTempMsg : startTemp (X)
+Dispatch tempStateMsg : tempState (X)
+Dispatch startTimeMsg : startTime (X)
+Dispatch timeStateMsg : timeState (X)
+Dispatch startMsg : start (X)
+Dispatch stopMsg : halt (X)
+
+Context ctxConsole ip [ host="localhost" port=8029 ]  
+Context ctxRobot ip   [ host="localhost" port=8030 ] -standalone 
+
+
+QActor mvccontroller context ctxConsole {
+	
+	Plan init normal[ 
+		println("MVCCONTROLLER starts...")
+	] 
+	switchTo waitCommand
+	
+	Plan waitCommand[]
+	transition stopAfter 600000
+		whenMsg frontendCmdMsg -> checkConditions,
+		whenMsg tempStateMsg -> sendStop,
+		whenMsg timeStateMsg -> sendStop
+		
+	Plan checkConditions [
+		println("MVCCONTROLLER conditions valid and start from FRONTEND");
+		forward tempdetector -m startTempMsg : startTemp (x);  //assuming that condition is already verified for the first time
+		forward timedetector -m startTimeMsg : startTime (x)   //assuming that condition is already verified for the first time
+	]
+	switchTo sendStart
+
+	Plan sendStart[
+		println("MVCCONTROLLER received start");
+		forward blinker -m consoleCmdMsg : consoleCmd(start);
+		forward mind -m consoleCmdMsg : consoleCmd(start);
+		delay 1000
+	]
+	switchTo waitCommand
+	
+	Plan sendStop[
+		println("MVCCONTROLLER received stop");
+		forward blinker -m consoleCmdMsg : consoleCmd(halt);
+		forward mind -m consoleCmdMsg : consoleCmd(halt)
+	]
+	switchTo end
+	
+	Plan end[
+		println("MVCCONTROLLER ends...")
+	]
+
+}
+
+QActor mind context ctxConsole {
+	Plan init normal[
+		println("MIND starts...")
+	]
+	switchTo waitCommand
+	
+	Plan waitCommand[]
+	transition stopAfter 600000
+		whenMsg consoleCmdMsg -> handleConsoleCmd,
+		whenMsg startMsg -> startMind,
+		whenMsg stopMsg -> stopMind
+		
+	Plan handleConsoleCmd[
+		onMsg consoleCmdMsg : consoleCmd(halt) -> selfMsg stopMsg : halt (x);
+		onMsg consoleCmdMsg : consoleCmd(start) -> selfMsg startMsg : start (x)
+	]
+	switchTo waitCommand
+	
+	Plan startMind[
+		println("MIND send start to robot...");
+		sendto player in ctxRobot -m consoleCmdMsg : consoleCmd(start)   
+	]
+	switchTo waitCommand
+	
+	Plan stopMind[
+		println("MIND send stop to robot...");
+		sendto player in ctxRobot -m consoleCmdMsg : consoleCmd(halt);
+		println("MIND ends...") ;
+		delay 600000 //by AN
+	]
+}
+
+QActor blinker context ctxConsole {
+	
+	Plan init normal[
+		println("BLINKER starts...")
+	]
+	switchTo waitCommand
+	
+	Plan waitCommand[]
+	transition stopAfter 600000
+		whenMsg consoleCmdMsg -> handleConsoleCmd,
+		whenMsg startMsg -> startBlink,
+		whenMsg stopMsg -> stopBlink
+		
+	Plan handleConsoleCmd[
+		onMsg consoleCmdMsg : consoleCmd(halt) -> selfMsg stopMsg : halt (x);
+		onMsg consoleCmdMsg : consoleCmd(start) -> selfMsg startMsg : start (x)
+	]
+	switchTo waitCommand
+		
+	Plan startBlink[
+		println("BLINKER start blinking")
+	]
+	switchTo waitCommand
+	
+	Plan stopBlink[
+		println("BLINKER stop blinking");
+		println("BLINKER ends...")
+	]
+}
+
+QActor tempdetector context ctxConsole {
+	
+	Plan init normal[ 
+		println("TEMPDETECTOR starts...");
+		delay 20000
+	]
+	switchTo waitCommand
+	
+	Plan waitCommand[]
+	transition stopAfter 600000
+		whenMsg startTempMsg -> sendTempKO
+	
+	Plan sendTempKO[
+		println("TEMPDETECTOR temperature raises over the limit! Event!");
+		forward mvccontroller -m tempStateMsg : tempState(false)
+	]
+	switchTo end
+	
+	Plan end[
+		println("TEMPDETECTOR ends...") ;
+		delay 60000 //by AN
+	]
+	
+}
+
+QActor timedetector context ctxConsole {
+	
+	Plan init normal[ 
+		println("TIMEDETECTOR starts...");
+		delay 20000
+	]
+	switchTo waitCommand
+	
+	Plan waitCommand[]
+	transition stopAfter 600000
+		whenMsg startTimeMsg -> sendTimeKO
+	
+	Plan sendTimeKO[
+		println("TIMEDETECTOR time is no more in range! Event!");
+		forward mvccontroller -m timeStateMsg : timeState(false)
+	]
+	switchTo end
+	
+	Plan end[
+		println("TIMEDETECTOR ends...")
+	]
+	
+}

@@ -93,7 +93,7 @@ public abstract class AbstractLedimpl extends QActor {
 	    	//bbb
 	     msgTransition( pr,myselfName,"ledimpl_"+myselfName,false,
 	          new StateFun[]{stateTab.get("handleLedCmd") }, 
-	          new String[]{"true","M","ctrlEvent" },
+	          new String[]{"true","M","ledcmd" },
 	          3000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitForCmd){  
 	    	 println( getName() + " plan=waitForCmd WARNING:" + e_waitForCmd.getMessage() );
@@ -107,9 +107,9 @@ public abstract class AbstractLedimpl extends QActor {
 	    	String myselfName = "handleLedCmd";  
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("ctrlEvent(leds,led1,on)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("ctrlEvent") && 
-	    		pengine.unify(curT, Term.createTerm("ctrlEvent(CATEG,NAME,CMD)")) && 
+	    	curT = Term.createTerm("ledcmd(on)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("ledcmd") && 
+	    		pengine.unify(curT, Term.createTerm("ledcmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
 	    			{/* JavaLikeMove */ 
 	    			String arg1 = "on" ;
@@ -119,9 +119,9 @@ public abstract class AbstractLedimpl extends QActor {
 	    	}
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("ctrlEvent(leds,led1,off)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("ctrlEvent") && 
-	    		pengine.unify(curT, Term.createTerm("ctrlEvent(CATEG,NAME,CMD)")) && 
+	    	curT = Term.createTerm("ledcmd(off)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("ledcmd") && 
+	    		pengine.unify(curT, Term.createTerm("ledcmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
 	    			{/* JavaLikeMove */ 
 	    			String arg1 = "off" ;

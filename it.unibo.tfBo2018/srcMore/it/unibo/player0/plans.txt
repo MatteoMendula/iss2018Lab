@@ -1,0 +1,7 @@
+plan(1,init, sentence(true,move(print("ROBOT starts...")),'','' ))
+plan(1,waitforMsg, sentence(true,msgswitch(consoleCmdMsg, consoleCmd( start) , not here StateMoveNormal),'','' ))
+plan(2,waitforMsg, sentence(true,msgswitch(consoleCmdMsg, consoleCmd( halt) , not here StateMoveNormal),'','' ))
+plan(1,starts, sentence(true,move(print("ROBOT execution started")),'','' ))
+plan(2,starts, sentence(true,move(resumeplan),'','' ))
+plan(1,end, sentence(true,move(print("ROBOT ends due to STOP message")),'','' ))
+plan(2,end, sentence(true,delay( 4000) ,'','' ))

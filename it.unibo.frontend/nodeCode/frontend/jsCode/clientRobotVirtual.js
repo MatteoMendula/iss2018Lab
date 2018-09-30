@@ -50,7 +50,7 @@ function Client({ port, ip }) {
             clientSocket.end()
     }
 }
-//TEST
+
 function test(){
 	var msg = "{\"type\": \"moveForward\", \"arg\": 800 }";
 	console.log("sending " + msg + " to " + client);

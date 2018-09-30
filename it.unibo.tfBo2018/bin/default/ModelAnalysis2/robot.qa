@@ -1,0 +1,43 @@
+System robot
+
+Dispatch consoleCmdMsg : consoleCmd ( X )
+Dispatch startMsg : start (X)
+Dispatch stopMsg : halt (X)
+
+Context ctxRobot ip [ host="localhost" port=8030] -g yellow
+
+QActor player context ctxRobot {
+	
+	Plan init normal[ 
+		println("ROBOT starts...")
+	]
+	switchTo waitCommand
+	
+	Plan waitCommand[]
+	transition stopAfter 60000
+		whenMsg consoleCmdMsg -> waitforMsg
+		
+	Plan waitforMsg[
+		onMsg consoleCmdMsg : consoleCmd ( start ) -> { 
+			println("ROBOT received START");
+			selfMsg startMsg : start (x)
+		};
+		onMsg consoleCmdMsg : consoleCmd ( halt ) -> { 
+			println("ROBOT received STOP");
+			selfMsg stopMsg : halt (x)
+		}
+	]
+	transition stopAfter 60000
+		whenMsg startMsg -> starts,
+		whenMsg stopMsg -> end
+	
+	Plan starts resumeLastPlan [
+		println("ROBOT execution started")
+	]
+	switchTo waitCommand
+	
+	Plan end [
+		println("ROBOT ends due to STOP message");
+		delay 600000 //by AN
+	]
+}

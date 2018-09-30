@@ -1,0 +1,8 @@
+plan(1,init, sentence(true,move(print("MIND starts...")),'','' ))
+plan(1,handleConsoleCmd, sentence(true,msgswitch(consoleCmdMsg, consoleCmd( halt) , notHere SendDispatch),'','' ))
+plan(2,handleConsoleCmd, sentence(true,msgswitch(consoleCmdMsg, consoleCmd( start) , notHere SendDispatch),'','' ))
+plan(1,startMind, sentence(true,move(print("MIND send start to robot...")),'','' ))
+plan(2,startMind, sentence(true,forward(player, "ctxRobot2, consoleCmdMsg,consoleCmd( start)),'','' ))
+plan(1,stopMind, sentence(true,move(print("MIND send stop to robot...")),'','' ))
+plan(2,stopMind, sentence(true,forward(player, "ctxRobot2, consoleCmdMsg,consoleCmd( halt)),'','' ))
+plan(3,stopMind, sentence(true,move(print("MIND ends...")),'','' ))

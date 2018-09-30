@@ -12,7 +12,7 @@ Context ctxQaBlsThings ip [ host="localhost"   port=8032 ]
 /*
  * Activates the ButtonThing
  */ 
-QActor qabuttonthing context ctxQaBlsThings  -g yellow {  
+QActor qabuttonthing context ctxQaBlsThings -pubsub -g yellow {  
 	Plan init normal [ 	
  		javaRun it.unibo.coap.platform.thingUtils.createButtonThing("8020")  ;
  		println("qabuttonthing STARTS")	 
@@ -33,6 +33,7 @@ QActor qaledthing context ctxQaBlsThings  -g cyan {
 /*
  * Application logic:
  *   	interact with the LedThing when a usercmd event is perceived
+ * TDODO: use MQTT and extend ButtonResourceGofObserver with some publish
  */
 QActor qablslogic context ctxQaBlsThings   { 
 	Plan init normal [ 	

@@ -1,0 +1,6 @@
+plan(1,init, sentence(true,move(print("BLINKER starts...")),'','' ))
+plan(1,handleConsoleCmd, sentence(true,msgswitch(consoleCmdMsg, consoleCmd( halt) , notHere SendDispatch),'','' ))
+plan(2,handleConsoleCmd, sentence(true,msgswitch(consoleCmdMsg, consoleCmd( start) , notHere SendDispatch),'','' ))
+plan(1,startBlink, sentence(true,move(print("BLINKER start blinking")),'','' ))
+plan(1,stopBlink, sentence(true,move(print("BLINKER stop blinking")),'','' ))
+plan(2,stopBlink, sentence(true,move(print("BLINKER ends...")),'','' ))

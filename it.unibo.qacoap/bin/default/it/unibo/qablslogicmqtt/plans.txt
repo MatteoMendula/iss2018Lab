@@ -1,0 +1,5 @@
+plan(1,init, sentence(true,move(print("qablslogic STARTS")),'','' ))
+plan(1,handleLedAsCoapClient, sentence(true,printCurrentEvent(false),'','' ))
+plan(2,handleLedAsCoapClient, sentence(true,eventswitch(usercmd, »usercmd( true), not here StateMoveNormal ),'','' ))
+plan(3,handleLedAsCoapClient, sentence(true,eventswitch(usercmd, »usercmd( false), not here StateMoveNormal ),'','' ))
+plan(4,handleLedAsCoapClient, sentence(true,move(resumeplan),'','' ))

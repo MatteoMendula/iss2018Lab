@@ -6,30 +6,39 @@ var resourceModel   = require('./appServer/models/robot');
 var http            = require('http');
 var io              ; 	//Upgrade ro socketIo;
 
-var createServer = function ( port  ) {
-	console.log("createServer " + port);
+var createServer = function (port  ) {
   initPlugins();  
   server = http.createServer( appl );   
   io     = require('socket.io').listen(server); //Upgrade fro socketio;  
   server.on('listening', onListening);
   server.on('error', onError);
   setInterval( showResourceState, 1000 ); //show the robot state;
-  server.listen( port ); 
+  server.listen( port );
+  io.sockets.on('connection', function(socket) {
+	    socket.on('room', function(room) {
+	        socket.join(room);
+	    });
+	});
 };
 
 function showResourceState(){
 	var now = new Date() ;
-	var info = "ROBOT state="+resourceModel.robot.state+"\n"+
+	var state = "ROBOT state="+resourceModel.robot.state;
+	var led =  "LED STATE= "+resourceModel.pi.actuators.leds.L1.value;
+	var temperature = "TEMPERATURE= "+resourceModel.pi.sensors.temperature.T1.value;
+	var time = "TIME=" + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
 //		resourceModel.robot.sonar1.name+"="+resourceModel.robot.sonar1.value+"\n"+
 //		resourceModel.robot.sonar2.name+"="+resourceModel.robot.sonar2.value+"\n"+
 //		resourceModel.robot.sonarRobot.name+"="+resourceModel.robot.sonarRobot.value+"\n"+ //;
-		"time=" + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
-	io.sockets.send( info );
+	io.sockets.in('state').emit('message', state );
+	io.sockets.in('led').emit('message', led );
+	io.sockets.in('temperature').emit('message', temperature );
+	io.sockets.in('time').emit('message', time );
 }
 
 function initPlugins() {}
 
-createServer( 3000 );
+createServer(3000);
 
 function onListening() {
 	  var addr = server.address();
@@ -76,6 +85,6 @@ process.on('uncaughtException', function (err) {
 
 module.exports.updateClient = function (msg) { 
     console.log(msg);
-    io.sockets.send(msg);
+    io.sockets.in('display').emit('message', msg);
 };
 

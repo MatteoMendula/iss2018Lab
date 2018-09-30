@@ -10,13 +10,10 @@ digraph finite_state_machine {
 	size="8,5"
 	
 	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
-	waitForFirstClick [ color = black ][ fontcolor = black ][ penwidth = 3 ]
-	doBlink [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	waitForClick [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
-	waitForFirstClick -> handleToutBuiltIn [ label = "timeout(100000)" ][ color = green ][ fontcolor = green ]
-	doBlink -> doBlink [ label = "timeout(300)" ][ color = green ][ fontcolor = green ]
-	init -> waitForFirstClick [ label = "switch" ][ color = black ][ fontcolor = black ]
-	waitForFirstClick -> waitForFirstClick [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
-	waitForFirstClick -> doBlink [ label = "local_click" ][ color = black ][ fontcolor = black ]
-	doBlink -> waitForFirstClick [ label = "local_click" ][ color = black ][ fontcolor = black ]
+	waitForClick -> handleToutBuiltIn [ label = "timeout(100000)" ][ color = green ][ fontcolor = green ]
+	init -> waitForClick [ label = "switch" ][ color = black ][ fontcolor = black ]
+	waitForClick -> waitForClick [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
+	waitForClick -> action [ label = "local_click" ][ color = red ][ fontcolor = red ][ dir = both ]
 }

@@ -5,7 +5,7 @@
  */
 var express     = require('express'),
   router        = express.Router(),
-  resourceModel = require('../models/model');
+  resourceModel = require('../models/robot');
 
 router.route('/').get(function (req, res, next) {
  	  req.result = resourceModel.pi.actuators;

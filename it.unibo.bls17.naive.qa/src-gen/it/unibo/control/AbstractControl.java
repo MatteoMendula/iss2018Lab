@@ -56,8 +56,7 @@ public abstract class AbstractControl extends QActor {
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
-	    	stateTab.put("waitForFirstClick",waitForFirstClick);
-	    	stateTab.put("doBlink",doBlink);
+	    	stateTab.put("waitForClick",waitForClick);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -75,59 +74,47 @@ public abstract class AbstractControl extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(500,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
-	    	//switchTo waitForFirstClick
+	    	//switchTo waitForClick
 	        switchToPlanAsNextState(pr, myselfName, "control_"+myselfName, 
-	              "waitForFirstClick",false, false, null); 
+	              "waitForClick",false, false, null); 
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//init
 	    
-	    StateFun waitForFirstClick = () -> {	
+	    StateFun waitForClick = () -> {	
 	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_waitForFirstClick",0);
+	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_waitForClick",0);
 	     pr.incNumIter(); 	
-	    	String myselfName = "waitForFirstClick";  
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdToLed(CMD)","cmdToLed(turnOff)", guardVars ).toString();
-	    	sendMsg("cmdToLed","ledmodel", QActorContext.dispatch, temporaryStr ); 
+	    	String myselfName = "waitForClick";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"control_"+myselfName,false,
-	          new StateFun[]{stateTab.get("doBlink") }, 
+	          new StateFun[]{() -> {	//AD HOC state to execute an action and resumeLastPlan
+	          try{
+	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
+	            //ActionSwitch for a message or event
+	             if( currentEvent.getMsg().startsWith("clicked") ){
+	            	String parg="switch";
+	            	/* SendDispatch */
+	            	parg = updateVars(Term.createTerm("clicked(N)"),  Term.createTerm("clicked(N)"), 
+	            		    		  					Term.createTerm(currentEvent.getMsg()), parg);
+	            	if( parg != null ) sendMsg("turn","ledmodel", QActorContext.dispatch, parg ); 
+	             }
+	            repeatPlanNoTransition(pr1,"adhocstate","adhocstate",false,true);
+	          }catch(Exception e ){  
+	             println( getName() + " plan=waitForClick WARNING:" + e.getMessage() );
+	             //QActorContext.terminateQActorSystem(this); 
+	          }
+	          }
+	          }, 
 	          new String[]{"true","E","local_click" },
 	          100000, "handleToutBuiltIn" );//msgTransition
-	    }catch(Exception e_waitForFirstClick){  
-	    	 println( getName() + " plan=waitForFirstClick WARNING:" + e_waitForFirstClick.getMessage() );
+	    }catch(Exception e_waitForClick){  
+	    	 println( getName() + " plan=waitForClick WARNING:" + e_waitForClick.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
-	    };//waitForFirstClick
-	    
-	    StateFun doBlink = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("doBlink",-1);
-	    	String myselfName = "doBlink";  
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdToLed(CMD)","cmdToLed(turnOn)", guardVars ).toString();
-	    	sendMsg("cmdToLed","ledmodel", QActorContext.dispatch, temporaryStr ); 
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(300,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "doBlink";
-	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdToLed(CMD)","cmdToLed(turnOff)", guardVars ).toString();
-	    	sendMsg("cmdToLed","ledmodel", QActorContext.dispatch, temporaryStr ); 
-	    	//bbb
-	     msgTransition( pr,myselfName,"control_"+myselfName,false,
-	          new StateFun[]{stateTab.get("waitForFirstClick") }, 
-	          new String[]{"true","E","local_click" },
-	          300, "doBlink" );//msgTransition
-	    }catch(Exception e_doBlink){  
-	    	 println( getName() + " plan=doBlink WARNING:" + e_doBlink.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//doBlink
+	    };//waitForClick
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

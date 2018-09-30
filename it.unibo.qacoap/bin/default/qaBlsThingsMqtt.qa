@@ -1,0 +1,63 @@
+/* 
+ * =======================================================================================
+ * qaBlsThingsMqtt.qa
+ * =======================================================================================
+ */    
+System qaBlsThingsMqtt                
+Event usercmd  : usercmd(X)
+
+//pubSubServer  "tcp://m2m.eclipse.org:1883"      
+//pubSubServer  "tcp://iot.eclipse.org:1883"       
+pubSubServer  "tcp://localhost:1883"     
+
+Context ctxQaBlsThingsMqtt ip [ host="localhost"   port=8052 ]  
+ 
+/*
+ * ASSUMPTION1: a ButtonThing is active on coap://127.0.0.1:8020/button
+ */ 
+ QActor qabuttonthingmqtt context ctxQaBlsThingsMqtt -pubsub  {  
+	Plan init normal [ 	
+		//connect with MQTT
+  	] 
+ 	switchTo work
+	Plan work  [ 	
+ 		javaRun it.unibo.coap.platform.thingUtils.createButtonThing("8020")  ;
+ 		println("qabuttonthingmqtt STARTS")	 ;
+ 		delay 600000
+ 	]
+  }
+/*
+ * ASSUMPTION2: a LedThing is active on coap:/localhost:8010/led
+ */ 
+/*
+ * Activates the LedThing NO MQTT
+ */ 
+QActor qaledthingmqtt context ctxQaBlsThingsMqtt  -g cyan {  
+	Plan init normal [ 	
+ 		javaRun it.unibo.coap.platform.thingUtils.createLedThing("8010")  ;
+ 		println("qaledthing STARTS") ;
+ 		delay 600000
+  	]  
+  } 
+
+/*
+ * Application logic:
+ *   	interact with the LedThing when a usercmd event is perceived
+ * TDODO: use MQTT and extend ButtonResourceGofObserver with some publish
+ */
+QActor qablslogicmqtt context ctxQaBlsThingsMqtt  -pubsub -g yellow { 
+	Plan init normal [ 	
+  		println("qablslogic STARTS")  	
+  	]   
+	transition stopAfter 6000000 
+	whenEvent usercmd -> handleLedAsCoapClient
+	finally repeatPlan
+	
+	Plan handleLedAsCoapClient resumeLastPlan [
+		printCurrentEvent;	
+		onEvent usercmd : usercmd(true)  -> javaOp "doCoapPost( \"localhost:8010/led\", \"true\" )";
+		onEvent usercmd : usercmd(false) -> javaOp "doCoapPost( \"localhost:8010/led\", \"false\" )"
+	]
+}
+
+ 

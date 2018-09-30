@@ -2,7 +2,7 @@
   "robot": {
 	    "name": "WoT Robot",
 	    "description": "A simple robot model",
-	    "port": 8484,
+	    "port": 8032,
 	    "state": "stopped",
 	    "sonar1": {
 	    	"name" : "sonar1",
@@ -16,5 +16,30 @@
 	    	"name"  : "sonarRobot",
 	    	"value" :  0
 	    }
+    },
+    "pi": {
+    "name": "WoT Pi",
+    "description": "A simple WoT-connected Raspberry PI for the WoT book.",
+    "port": 8484,
+    "sensors": {
+      "temperature": {
+      	"T1": {
+      		"name": "T1",
+        	"description": "An ambient temperature sensor.",
+        	"unit": "celsius",
+        	"value": 0,
+        	"gpio": 12
+      	}
+      }
+    },
+    "actuators": {
+      "leds": {
+        "L1": {
+          "name": "LED 1",
+          "value": false,
+          "gpio": 25
+        }
+      }
     }
+  }
 }

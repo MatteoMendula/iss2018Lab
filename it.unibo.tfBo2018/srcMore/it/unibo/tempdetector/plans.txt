@@ -1,0 +1,5 @@
+plan(1,init, sentence(true,move(print("TEMPDETECTOR starts...")),'','' ))
+plan(2,init, sentence(true,delay( 20000) ,'','' ))
+plan(1,sendTempKO, sentence(true,move(print("TEMPDETECTOR temperature raises over the limit! Event!")),'','' ))
+plan(2,sendTempKO, sentence(true,forward(mvccontroller, tempStateMsg,tempState( false)),'','' ))
+plan(1,end, sentence(true,move(print("TEMPDETECTOR ends...")),'','' ))

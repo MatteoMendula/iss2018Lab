@@ -1,0 +1,5 @@
+plan(1,init, sentence(true,move(print("TIMEDETECTOR starts...")),'','' ))
+plan(2,init, sentence(true,delay( 20000) ,'','' ))
+plan(1,sendTimeKO, sentence(true,move(print("TIMEDETECTOR time is no more in range! Event!")),'','' ))
+plan(2,sendTimeKO, sentence(true,forward(mvccontroller, timeStateMsg,timeState( false)),'','' ))
+plan(1,end, sentence(true,move(print("TIMEDETECTOR ends...")),'','' ))

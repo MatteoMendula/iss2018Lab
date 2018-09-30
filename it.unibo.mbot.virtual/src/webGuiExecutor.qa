@@ -23,7 +23,7 @@ EventHandler evh for usercmd   {	//event-driven ; no Mqtt support yet
  * The player is a an interpreter of moveRobot dispatch
  * -----------------------------------------------------
  */  
-QActor player context ctxWebGuiExecutor -pubsub  {       //The name MUST be player   
+QActor player context ctxWebGuiExecutor   {       //The name MUST be player   
 	Plan init normal [  
 		javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
 		delay 1000;
@@ -55,7 +55,7 @@ QActor player context ctxWebGuiExecutor -pubsub  {       //The name MUST be play
    	]        
 }  
 
-QActor robotpfrs  context ctxWebGuiExecutor -pubsub  {
+QActor robotpfrs  context ctxWebGuiExecutor   {
 	Plan init normal [ 
 		delay 3000;
 		forward player -m moveRobot : usercmd( robotgui(a(low)) ) ;

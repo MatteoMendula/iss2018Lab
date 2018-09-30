@@ -90,7 +90,6 @@ public abstract class AbstractRobotpfrs extends QActor {
 	    	sendMsg("moveRobot","player", QActorContext.dispatch, temporaryStr ); 
 	    	temporaryStr = "\"player starts\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://localhost:1884");
 	    	//bbb
 	     msgTransition( pr,myselfName,"robotpfrs_"+myselfName,false,
 	          new StateFun[]{stateTab.get("applicationLogic") }, 

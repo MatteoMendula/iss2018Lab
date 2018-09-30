@@ -94,6 +94,7 @@ public abstract class AbstractQabuttonthing extends QActor implements IActivity{
 	    	it.unibo.coap.platform.thingUtils.createButtonThing( myself ,"8020"  );
 	    	temporaryStr = "\"qabuttonthing STARTS\"";
 	    	println( temporaryStr );  
+	     connectToMqttServer("tcp://test.mosquitto.org:1883");
 	    	//bbb
 	     msgTransition( pr,myselfName,"qabuttonthing_"+myselfName,false,
 	          new StateFun[]{() -> {	//AD HOC state to execute an action and resumeLastPlan

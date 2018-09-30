@@ -1,0 +1,25 @@
+/*
+*
+* A GraphViz DOT FSM description 
+* Please use a GraphViz visualizer (like http://www.webgraphviz.com)
+*  
+*/
+
+digraph finite_state_machine {
+	rankdir=LR
+	size="8,5"
+	
+	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	handleConsoleCmd [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	startMind [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	waitCommand [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	stopMind [ color = blue ][ fontcolor = blue ][ penwidth = 3 ]
+	
+	waitCommand -> handleToutBuiltIn [ label = "timeout(600000)" ][ color = green ][ fontcolor = green ]
+	waitCommand -> stopMind [ label = "stopMsg" ][ color = black ][ fontcolor = black ]
+	waitCommand -> handleConsoleCmd [ label = "consoleCmdMsg" ][ color = black ][ fontcolor = black ]
+	waitCommand -> startMind [ label = "startMsg" ][ color = black ][ fontcolor = black ]
+	startMind -> waitCommand [ label = "switch" ][ color = black ][ fontcolor = black ]
+	init -> waitCommand [ label = "switch" ][ color = black ][ fontcolor = black ]
+	handleConsoleCmd -> waitCommand [ label = "switch" ][ color = black ][ fontcolor = black ]
+}
