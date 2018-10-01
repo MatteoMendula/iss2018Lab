@@ -1,4 +1,4 @@
-package it.unibo.bls18.mains;
+package it.unibo.bls18.mainAppl;
 
 import it.unibo.bls.utils.Utils;
 import it.unibo.bls18.interfaces.IResourceIot;

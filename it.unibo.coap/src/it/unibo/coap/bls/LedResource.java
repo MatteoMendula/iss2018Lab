@@ -15,12 +15,12 @@ private String value = "false";
     @Override
     public void setValue(String v) {
     	value = v ;
-    	update(value);	// notify the GOF observer
+     	update(value);	// notify the GOF observer
     }
 
     @Override
     public void handleGET(CoapExchange exchange) {
-   	System.out.println("	LedResource GET source="+exchange.getSourceAddress());
+    	System.out.println("	LedResource GET source="+exchange.getSourceAddress() + " value=" + value);
         exchange.respond( value );
     }
 

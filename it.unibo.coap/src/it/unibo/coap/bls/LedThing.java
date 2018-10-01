@@ -4,6 +4,9 @@ import java.util.Hashtable;
 
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapServer;
+import org.eclipse.californium.core.coap.MediaTypeRegistry;
+
+import it.unibo.bls.utils.Utils;
 import it.unibo.qactors.akka.QActor;
 
 
@@ -58,7 +61,10 @@ public static void main(String[] args) throws Exception {
 	create(8010, null);
 	CoapClient ledClient     = //new  CoapClient( LedThing.getPath(8010)    );
 			new  CoapClient("coap://localhost:8010/led" );
-	ledClient.get();
+ 	ledClient.get();
+	Utils.delay(500);
+	ledClient.put("true", MediaTypeRegistry.TEXT_PLAIN);
+ 	ledClient.get();
 }
 
 }
