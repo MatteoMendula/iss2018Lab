@@ -3,7 +3,6 @@ package it.unibo.bls18.resources;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 import it.unibo.bls18.obj.CoapGofObservableResource;
 import static org.eclipse.californium.core.coap.CoAP.ResponseCode.*;
-
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 

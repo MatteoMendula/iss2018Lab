@@ -2,7 +2,7 @@ package it.unibo.bls18.mainAppl;
 
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
-import it.unibo.bls.utils.Utils;
+import it.unibo.bls.utils.UtilsBls;
 import it.unibo.bls18.interfaces.IResourceIot;
 import it.unibo.bls18.things.LedThing;
 
@@ -35,10 +35,10 @@ private IResourceIot led;
 	public static void main(String[] args) throws Exception {
 		MainLedAsThing.createTheSystem();
 		CoapClient ledClient = new CoapClient("coap://localhost:8010/led" );
- 		Utils.delay(3000);
+ 		UtilsBls.delay(3000);
 		System.out.println("MainLedAsThing START");
 		ledClient.put("true", MediaTypeRegistry.TEXT_PLAIN);
-		Utils.delay(1000);
+		UtilsBls.delay(1000);
 		ledClient.put("false", MediaTypeRegistry.TEXT_PLAIN);
 		System.out.println("MainLedAsThing WAITS for Firefox");
 //		Utils.delay(60000);

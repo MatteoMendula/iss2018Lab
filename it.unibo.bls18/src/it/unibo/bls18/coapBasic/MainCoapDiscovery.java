@@ -12,6 +12,9 @@ import org.eclipse.californium.core.network.CoapEndpoint;
  * Dynamic resource discovery is useful when building a dynamic IoT application, 
  * where it’s not desired to hard-code or manually configure available
  * CoAP servers and their resources. 
+ * 
+ * multicast can only work within a LAN
+ * Use IPv6 (obliviating the use of a NAT) 
  */
 public class MainCoapDiscovery {
 private static CoapServer server;
@@ -61,7 +64,7 @@ private static CoapServer server;
 	public static void main(String[] args) throws Exception {
 //		String resourceName="led";
 		int port = 5683;
-		MainCoapDiscovery.startDiscoverableServer(port);
+//		MainCoapDiscovery.startDiscoverableServer(port);
 		MainCoapDiscovery.discovery(port);
 	}	
 }

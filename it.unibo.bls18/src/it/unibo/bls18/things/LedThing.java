@@ -35,7 +35,7 @@ public class LedThing {
 			server.add( resource );
 			//Single thread executor
  			server.start();
-			resource.setGofObserver(new LedResourceGofObserver());
+			resource.setGofObserver (new LedResourceGofObserver() );
 		}catch(Exception e) {
 			showMsg("ButtonThing ERROR " + e.getMessage()) ;
 		}		

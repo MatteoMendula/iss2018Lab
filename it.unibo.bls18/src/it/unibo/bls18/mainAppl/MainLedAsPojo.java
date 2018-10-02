@@ -1,6 +1,6 @@
 package it.unibo.bls18.mainAppl;
 
-import it.unibo.bls.utils.Utils;
+import it.unibo.bls.utils.UtilsBls;
 import it.unibo.bls18.interfaces.IResourceIot;
 import it.unibo.bls18.interfaces.IResourceLocalObserver;
 import it.unibo.bls18.obj.LedResourceGofObserver;
@@ -14,18 +14,15 @@ private IResourceLocalObserver observerLed;
 	public static MainLedAsPojo createTheSystem() {
 		if( appl == null ) { 
 			appl = new MainLedAsPojo();
-			appl.createComponents();
-			appl.configure();
+ 			appl.configure();
 		}
 		return appl;
 	}
 	
-	protected void createComponents() {
+ 	protected void configure() {
 		led         = new LedResource();
 		led.setValue("false");
 		observerLed = new LedResourceGofObserver();
-	}
-	protected void configure() {
 		led.setGofObserver(observerLed);		
 		//led.addObserver(observerLed);
 	}
@@ -36,7 +33,7 @@ private IResourceLocalObserver observerLed;
 	public static void main(String[] args) throws Exception {
 		MainLedAsPojo appl = MainLedAsPojo.createTheSystem();
 		appl.getLed().setValue("true");
-		Utils.delay(1000);
+		UtilsBls.delay(1000);
 		appl.getLed().setValue("false");
 	}
 	
