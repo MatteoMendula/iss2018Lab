@@ -54,6 +54,7 @@ private AsynchListener asynchListener = new AsynchListener();
 		ILedObservable led          = LedObservableModel.createLed(ledgui);
 		LedCoapResource ledResource = new LedCoapResource(name,led) ;
 		server.add( ledResource );
+		led.turnOff();
 		System.out.println("MainCoapBasicLed addResource done");
 	}
 	

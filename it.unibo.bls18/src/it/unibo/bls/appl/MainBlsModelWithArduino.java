@@ -38,6 +38,8 @@ private ILedObservable led;
 		led.turnOff();
 		UtilsBls.delay(1000);
 		led.turnOn(); 		
+		UtilsBls.delay(1000);
+		led.turnOff();
  	}
 public static void main(String[] args) {
    MainBlsModelWithArduino sys = createTheSystem();
