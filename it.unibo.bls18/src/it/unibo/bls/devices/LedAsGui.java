@@ -19,14 +19,14 @@ public class LedAsGui implements IObserver {
 private Panel p = new Panel(); 
 private final Dimension sizeOn  = new Dimension(100,100);
 private final Dimension sizeOff = new Dimension(30,30);
-
+//Factory method
 public static IObserver createLed( Frame frame){
 	LedAsGui led = new LedAsGui(frame);
 	led.turnOff();
 	return led;
 }
 	public LedAsGui( Frame frame ) {
-		super();
+//		super();
  		configure(frame); 
   	}	
 	protected void configure(Frame frame){

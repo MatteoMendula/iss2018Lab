@@ -12,7 +12,7 @@ import it.unibo.bls.utils.UtilsBls;
 
 public class ButtonAsGui extends Observable implements IObservable, ActionListener{
 //Factory method
-public static IObservable createButton( Frame frame, String cmd, BlsApplicationLogic obs ){
+public static IObservable createButton( Frame frame, String cmd, IObserver obs ){
 	ButtonAsGui button         = new ButtonAsGui();
 	java.awt.Button buttonBase = new java.awt.Button(cmd);
 	buttonBase.addActionListener(  button );
@@ -21,11 +21,11 @@ public static IObservable createButton( Frame frame, String cmd, BlsApplicationL
   	button.addObserver(obs);
 	return button;
 }
-	@Override
+	@Override //from IObservable
 	public void addObserver(IObserver observer) {
 		 super.addObserver(observer);
 	}
-	@Override
+ 	@Override //from ActionListener
 	public void actionPerformed(ActionEvent e) {
 		this.setChanged();
 		this.notifyObservers("pressed");

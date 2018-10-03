@@ -7,12 +7,13 @@ import it.unibo.bls.devices.LedAsGui;
 import it.unibo.bls.devices.arduino.LedOnArduino;
 import it.unibo.bls.interfaces.ILedObservable;
 import it.unibo.bls.interfaces.IObserver;
+import it.unibo.bls.oo.model.ButtonModel;
 import it.unibo.bls.oo.model.LedObservableModel;
 import it.unibo.bls.utils.UtilsBls;
  
 public class MainBlsModelWithArduino  {
 
-private ILedObservable led;
+private ILedObservable ledmodel;
 
 //Factory method   	
   	public static MainBlsModelWithArduino createTheSystem(){
@@ -22,24 +23,32 @@ private ILedObservable led;
  		configure();
  	}		
  	protected void configure(){
- 		Frame blsFrame = UtilsBls.initFrame(200,200);
+		//Create the frame
+		Frame blsFrame = UtilsBls.initFrame(200,200);
+		//Create the led on Arduino
 		IObserver ledOnArduino = LedOnArduino.createLed("COM9");
-		led                    = LedObservableModel.createLed(ledOnArduino);
-    	BlsApplicationLogic applLogic = new BlsApplicationLogic(led);
-   		ButtonAsGui.createButton( blsFrame, "press", applLogic);
-  		led.turnOff();
+		//Create the led model that refers the ledOnArduino as the observer
+		ledmodel       = LedObservableModel.createLed(ledOnArduino);		
+		//Create the Application logic that refers the led model (as ILed)
+		BlsApplicationLogic applLogic = new BlsApplicationLogic(ledmodel);
+		//Create the button model that refers the Application logic
+		IObserver buttonmodel = ButtonModel.createButton(applLogic);
+		//Create the button gui that refers the buttonmodel as observer
+  		ButtonAsGui.createButton( blsFrame, "press", buttonmodel);
+  		ledmodel.turnOff();
 		blink();
 	} 	
  	
+ 
  	protected void blink() {
 		UtilsBls.delay(1000);
-		led.turnOn(); 		
+		ledmodel.turnOn(); 		
 		UtilsBls.delay(1000);
-		led.turnOff();
+		ledmodel.turnOff();
 		UtilsBls.delay(1000);
-		led.turnOn(); 		
+		ledmodel.turnOn(); 		
 		UtilsBls.delay(1000);
-		led.turnOff();
+		ledmodel.turnOff();
  	}
 public static void main(String[] args) {
    MainBlsModelWithArduino sys = createTheSystem();

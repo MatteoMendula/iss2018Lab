@@ -4,32 +4,30 @@ import java.util.Observable;
 import it.unibo.bls.interfaces.IObservable;
 import it.unibo.bls.interfaces.IObserver;
 
-public class ButtonObserverModel extends Observable implements IObservable, IObserver{
+public class ButtonModel extends Observable implements IObservable, IObserver{
 private boolean buttonState = false;
 
 //Factory method
-public static ButtonObserverModel createButton( IObserver obs ){
-	 ButtonObserverModel button = new ButtonObserverModel();
+public static ButtonModel createButton( IObserver obs ){
+	 ButtonModel button = new ButtonModel();
 	 button.addObserver(obs);
 	 return button;
 }
 
-	@Override
+	@Override  //for IObservable
 	public void addObserver(IObserver observer) {
 		 super.addObserver(observer);		
 	}
 	
-	protected void switchThestate() {
-		buttonState = ! buttonState;
-		this.setChanged();
-		this.notifyObservers("pressed");		
-		
-	}
-
-
-	@Override
+	@Override //for IObserver (called by the lower layer)
 	public void update(Observable source, Object value) {
 		System.out.println("ButtonObserverModel updated"   );
 		switchThestate();
+	}
+
+	protected void switchThestate() {
+		buttonState = ! buttonState;
+		this.setChanged();
+		this.notifyObservers("pressed");				
 	}
 }
