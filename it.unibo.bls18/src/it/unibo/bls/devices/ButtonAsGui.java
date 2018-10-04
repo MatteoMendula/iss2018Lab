@@ -18,9 +18,13 @@ public static IObservable createButton( Frame frame, String cmd, IObserver obs )
 	buttonBase.addActionListener(  button );
 	frame.add(BorderLayout.WEST,buttonBase); 
 	frame.validate();
-  	button.addObserver(obs);
+  	if( obs != null ) button.addObserver(obs);
 	return button;
 }
+public static IObservable createButton( Frame frame, String cmd  ){
+	return createButton(frame,cmd,null);
+}
+
 	@Override //from IObservable
 	public void addObserver(IObserver observer) {
 		 super.addObserver(observer);

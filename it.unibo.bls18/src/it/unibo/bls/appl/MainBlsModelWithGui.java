@@ -13,6 +13,11 @@ import it.unibo.bls.utils.UtilsBls;
 public class MainBlsModelWithGui  {
 
 private ILedObservable ledmodel;
+private IObserver buttonmodel;
+private BlsApplicationLogic applLogic;
+
+private IObserver ledgui;
+private IObservable buttongui;
 
 //Factory method   	
   	public static MainBlsModelWithGui createTheSystem(){
@@ -21,7 +26,7 @@ private ILedObservable ledmodel;
  	protected MainBlsModelWithGui( ) {
  		configure();
  	}		
- 	protected void configure(){
+ 	protected void configureMud(){
  		//Create the frame
  		Frame blsFrame = UtilsBls.initFrame(200,200);
  		//Create the ledGui
@@ -37,6 +42,35 @@ private ILedObservable ledmodel;
   		ledmodel.turnOff();
 		blink();
 	} 	
+ 	
+ 	protected void configure(){
+ 		createLogicalComponents();
+ 		createConcreteComponents();
+ 		configureSystemArchitecture();
+  		ledmodel.turnOff();
+		blink();
+ 	}
+ 	protected void createLogicalComponents(){
+		//Create the led model t 
+ 		ledmodel    = LedObservableModel.createLed();
+		//Create the Application logic that refers the led model (as ILed)
+    	applLogic   = new BlsApplicationLogic(ledmodel);
+    	//Create the button model that refers the Application logic
+    	buttonmodel = ButtonModel.createButton(applLogic);
+ 	} 	
+ 	protected void createConcreteComponents(){
+ 		//Create the frame
+ 		Frame blsFrame = UtilsBls.initFrame(200,200);
+ 		//Create the LedAsGui
+		ledgui      = LedAsGui.createLed(blsFrame);
+ 		//Create the ButtonAsGui
+		buttongui   = ButtonAsGui.createButton( blsFrame, "press");
+ 	} 	
+ 	protected void configureSystemArchitecture(){
+ 		ledmodel.addObserver(ledgui);
+ 		buttongui.addObserver(buttonmodel);
+ 	}
+	
  	
  	protected void blink() {
 		UtilsBls.delay(1000);
