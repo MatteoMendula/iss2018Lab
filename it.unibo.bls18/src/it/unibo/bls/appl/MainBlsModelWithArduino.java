@@ -2,10 +2,8 @@ package it.unibo.bls.appl;
  
 
 import java.awt.Frame;
-
 import it.unibo.bls.applLogic.BlsApplicationLogic;
 import it.unibo.bls.devices.ButtonAsGui;
-import it.unibo.bls.devices.LedAsGui;
 import it.unibo.bls.devices.arduino.LedOnArduino;
 import it.unibo.bls.interfaces.ILedObservable;
 import it.unibo.bls.interfaces.IObservable;

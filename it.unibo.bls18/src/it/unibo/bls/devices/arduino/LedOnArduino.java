@@ -1,9 +1,6 @@
 package it.unibo.bls.devices.arduino;
 
-import java.awt.Frame;
 import java.util.Observable;
-
-import it.unibo.bls.devices.LedAsGui;
 import it.unibo.bls.interfaces.ILedObservable;
 import it.unibo.bls.interfaces.IObserver;
 import it.unibo.bls.oo.model.LedObservableModel;
@@ -64,7 +61,7 @@ public static IObserver createLed( String portName){
 	}
 	
  	public void blink() {
- 		for( int i=0; i<1; i++ ) {
+ 		for( int i=0; i<5; i++ ) {
 			UtilsBls.delay(1000);
 			turnOn(); 		
 			UtilsBls.delay(1000);

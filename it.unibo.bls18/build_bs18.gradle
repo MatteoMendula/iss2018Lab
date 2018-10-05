@@ -47,6 +47,14 @@ repositories {
       mavenCentral()
 }
 dependencies {
+/*
+BASIC SUPPORT (test, akka)
+*/	
+      testCompile 'junit:junit:4.12'
+     // https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
+	  compile group: 'com.typesafe.akka', name: 'akka-actor_2.11', version: '2.5.2'
+	 // https://mvnrepository.com/artifact/com.typesafe.akka/akka-remote_2.11
+	 //compile group: 'com.typesafe.akka', name: 'akka-remote_2.11', version: '2.5.1'	 
      
 /*
 UNIBO SUPPORTS
@@ -54,9 +62,9 @@ UNIBO SUPPORTS
 	  compile fileTree(dir: './libs', include: 'uniboInterfaces.jar')
 	  compile fileTree(dir: './libs', include: 'unibonoawtsupports.jar')
 	  compile fileTree(dir: './libs', include: 'uniboEnvBaseAwt.jar')
-	  //compile fileTree(dir: './libs', include: '2p301.jar')
-	  //compile fileTree(dir: './libs', include: 'qa18Akka.jar')
-	  //compile fileTree(dir: './libs', include: 'nanoHTTPD.jar')
+	  compile fileTree(dir: './libs', include: '2p301.jar')
+	  compile fileTree(dir: './libs', include: 'qa18Akka.jar')
+	  compile fileTree(dir: './libs', include: 'nanoHTTPD.jar')
 	  //compile fileTree(dir: './libs', include: 'blsoo.jar')
 
 /*
