@@ -6,7 +6,6 @@ import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.Utils;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
-
 import it.unibo.bls.applLogic.BlsApplicationLogic;
 import it.unibo.bls.devices.ButtonAsGui;
 import it.unibo.bls.devices.LedAsGui;
@@ -49,19 +48,27 @@ private AsynchListener asynchListener = new AsynchListener();
 		return coapClient;
 	}
 	
-	protected   void addResource(String name) {
+	protected IObserver createConcreteComponent( Frame blsFrame ) {
 		//Create a ledGui as concrete device
- 		Frame blsFrame    = UtilsBls.initFrame(200,200);
 		IObserver ledgui  = LedAsGui.createLed(blsFrame);
-		//Create a LedObservableModel that makes reference to the ledgui
- 		ILedObservable led = LedObservableModel.createLed(ledgui);
+		return ledgui;
+	}
+	
+ 	protected   void addResource(String name) {
+ 		Frame blsFrame    = UtilsBls.initFrame(200,200);
+		
+		//Create a LedObservableModel that makes reference to a concrete led
+ 		ILedObservable ledmodel = LedObservableModel.createLed( createConcreteComponent( blsFrame ) );
+ 		
 		//Create a LedCoapResource that makes reference to the LedObservableModel
-		LedCoapResource ledResource = new LedCoapResource(name,led) ;
+		LedCoapResource ledResource = new LedCoapResource(name,ledmodel) ;
+		
 		//Add the LedCoapResource to the server
 		server.add( ledResource );
-   		led.turnOff();
-		//Add to the application a Button to switch the Led
-    	addAButton(blsFrame,led);
+   		ledmodel.turnOff();
+   		
+		//Add to the application a Button to switch the Led (TODO: front-end server)
+    	addAButton(blsFrame,ledmodel);
 	}
 	
 	protected void addAButton(Frame blsFrame, ILedObservable led) {
@@ -90,22 +97,22 @@ private AsynchListener asynchListener = new AsynchListener();
 		System.out.println(Utils.prettyPrint(coapResp));
 	}
  	
-	public void monitorTheled() {
-		new Thread() {
-			public void run() {
-				for(int i=0; i<50; i++) {
-					synchGet();
-					UtilsBls.delay(2000);
- 				}
-			}
-		}.start();
-	}
+//	public void monitorTheled() {
+//		new Thread() {
+//			public void run() {
+//				for(int i=0; i<50; i++) {
+//					synchGet();
+//					UtilsBls.delay(2000);
+// 				}
+//			}
+//		}.start();
+//	}
 	
 /*
  *  	
  */
 	public static void main(String[] args) throws Exception {
- 		String resourceName="led";
+ 		String resourceName="Led";
  		int port = 5683; //8010;
 		MainCoapBasicBls appl = new MainCoapBasicBls(port,resourceName);
  		appl.synchGet();
@@ -114,6 +121,10 @@ private AsynchListener asynchListener = new AsynchListener();
 		Thread.sleep(1000);
 		System.out.println("NEW VALUE:");
 		appl.asynchGet();	
-		appl.monitorTheled();
+//		appl.monitorTheled();
 	}	
 }
+
+/*
+curl http://localhost:5683/led
+*/
