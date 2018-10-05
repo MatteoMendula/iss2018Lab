@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Class-Path: .  lib/uniboInterfaces.jar lib/unibonoawtsupports.jar lib/
+ uniboEnvBaseAwt.jar lib/2p301.jar lib/qa18Akka.jar lib/nanoHTTPD.jar 
+ lib/blsHL.jar lib/blsGUI.jar lib/blsRasp.jar lib/json-20160810.jar li
+ b/pi4j-core-1.0.jar lib/akka-remote_2.11-2.4.9-RC2.jar lib/org.eclips
+ e.paho.client.mqttv3-1.1.0.jar lib/rxjava-2.0.6.jar lib/scala-library
+ -2.11.8.jar lib/config-1.3.0.jar lib/scala-java8-compat_2.11-0.7.0.ja
+ r lib/akka-protobuf_2.11-2.4.9-RC2.jar lib/netty-3.10.6.Final.jar lib
+ /uncommons-maths-1.2.2a.jar lib/reactive-streams-1.0.0.jar lib/akka-a
+ ctor_2.11-2.4.9-RC2.jar
+Main-Class: it.unibo.ctxBlsRaspButtonMqtt.MainCtxBlsRaspButtonMqtt
+

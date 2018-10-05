@@ -1,0 +1,8 @@
+plan(1,init, sentence(true,move(print("buttongpio STARTS")),'','' ))
+plan(2,init, sentence( config( gui),move(actorOp(createAButtonWithGui( "local_click"))),'','' ))
+plan(3,init, sentence( config( raspberry),move(actorOp(createPi4jButton( 24))),'','' ))
+plan(4,init, sentence( config( MQTTSERV,TREPLY,TSEND),move(actorOp(connectToSend( "buttonpc",MQTTSERV,TSEND))),'','' ))
+plan(1,workAsObservable, sentence(true,move(print("clickhandler workAsObservable")),'','' ))
+plan(2,workAsObservable, sentence(true,printCurrentEvent(false),'','' ))
+plan(3,workAsObservable, sentence(true,memoCurrentEvent ,'','' ))
+plan(4,workAsObservable, sentence( dataToPublish( TSEND,DATA),move(actorOp(sendMsgMqtt( TSEND,sensordata,buttonhl,DATA))),'','' ))

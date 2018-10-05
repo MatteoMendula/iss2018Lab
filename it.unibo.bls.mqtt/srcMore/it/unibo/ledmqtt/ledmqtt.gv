@@ -1,0 +1,19 @@
+/*
+*
+* A GraphViz DOT FSM description 
+* Please use a GraphViz visualizer (like http://www.webgraphviz.com)
+*  
+*/
+
+digraph finite_state_machine {
+	rankdir=LR
+	size="8,5"
+	
+	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	blinkForAWhile [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	workAsObserver [ color = blue ][ fontcolor = blue ][ penwidth = 3 ]
+	
+	workAsObserver -> workAsObserver [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
+	blinkForAWhile -> blinkForAWhile [ label = "repeat 3"][ style = dashed ][ color = blue ][ fontcolor = blue ]
+	init -> blinkForAWhile [ label = "switch" ][ color = red ][ fontcolor = red ][ dir = both ]
+}

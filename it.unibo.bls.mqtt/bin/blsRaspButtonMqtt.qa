@@ -1,0 +1,60 @@
+/*
+ * blsRaspButtonMqtt.qa
+ */     
+System blsRaspButtonMqtt      
+Event local_click  : clicked
+Dispatch sensordata : sensordata(X)	
+
+Context ctxBlsRaspButtonMqtt ip [host="localhost" port=8020]  
+//EventHandler evh for local_click -print ;
+/*  
+ * ---------------------------------------------------------------------------
+ * Button  
+ * ---------------------------------------------------------------------------
+ */    
+QActor buttonhl context ctxBlsRaspButtonMqtt  -g cyan {     
+Rules{
+	// config( raspberry ).
+	config( gui ).  
+	
+	mqttServer("tcp://m2m.eclipse.org:1883").
+	topicSend("unibo/mqtt/bls").
+	config( MQTTSERV, none, TSEND ):-  //none is for TREPLY
+		mqttServer(MQTTSERV),topicSend(TSEND).
+
+	dataToPublish( TSEND, sensordata(CONTENT)) :-
+		topicSend(TSEND),
+		//msg/6 is stored by the plan workAsObservable (memoCurrentEvent)
+		retract( msg( MSGID, 'event', SENDER, none, CONTENT, SEQNUM ) ), !.
+	dataToPublish( TSEND, sensordata(dummy)).
+} 
+ 
+	Plan init  normal  [    
+		println("buttongpio STARTS");
+		[ !? config( gui ) ]       actorOp createAButtonWithGui("local_click");
+		[ !? config( raspberry ) ] actorOp createPi4jButton( 24 ) ;	//BCM 24 WPI 5
+  	//1) connect to the MQTT server
+		[!? config( MQTTSERV,TREPLY,TSEND)] actorOp connectToSend( "buttonpc", MQTTSERV, TSEND ) 
+
+		]
+		switchTo workAsObservable 
+ 	//4) clear the topics (to keep topics clean)
+//		[ !? topicSend(TOPIC)]  actorOp clearTopic(TOPIC)
+ 
+   /*
+    * waits for events local_click sent by the update operation of the button buttonhl 
+    * working as the observable of low-level components
+    */		
+	Plan  workAsObservable [
+		println("clickhandler workAsObservable");
+ 	//2) waits for a local_click
+//		sense time(6000000) local_click -> continue ;
+		printCurrentEvent ;
+		memoCurrentEvent ;
+	//3) send data  
+		//[!? dataToPublish(TSEND, DATA)] println( send(TSEND, DATA) );
+   		[!? dataToPublish(TSEND, DATA)] actorOp sendMsgMqtt(TSEND, sensordata, buttonhl, DATA) 
+   	
+   		]
+   		finally repeatPlan
+ }

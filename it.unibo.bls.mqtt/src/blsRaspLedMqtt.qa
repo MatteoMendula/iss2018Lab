@@ -1,0 +1,62 @@
+/*
+ * blsRaspLedMqtt.qa
+ */    
+ //https://wiki.eclipse.org/images/7/7c/MQTTIntroEclipseWebinarv1.pdf 
+ //https://iot.eclipse.org/
+ //http://mqtt.org/?cm_mc_uid=64243523534414719705264&cm_mc_sid_50200000=1494087445
+System   blsRaspLedMqtt      
+Dispatch sensordata : sensordata(X)	
+
+Context ctxBlsRaspLedMqtt ip [host="localhost" port=8062]   -g green
+     
+QActor ledmqtt context ctxBlsRaspLedMqtt   {  
+Rules{  
+	//config( raspberry ).
+	config( gui ).  
+	mqttServer("tcp://m2m.eclipse.org:1883").
+ 	topicReceive("unibo/mqtt/bls").
+  	config( SERVER, nove, TRECEIVE  ):- 	//none is for TREPLY
+		mqttServer(SERVER),topicReceive(TRECEIVE).
+ }    
+	Plan init  normal [              
+  		println("ledmqtt STARTS" ) ;
+		[ !? config( gui ) ]       actorOp createLedGui ;
+		[ !? config( raspberry ) ] actorOp createPi4jLed( 25 ) ;	
+ 		//1) connect to the server
+		[ !? config( SERVER, _, TRECEIVE ) ] actorOp connectToReceive( "ledmqttpc", SERVER, TRECEIVE ) ;
+ 		//2) clear the topics (to avoid last-run info)
+//		[ !? topicReceive(TOPIC)]  clearTopic(TOPIC) ;
+ 		//3) subscribe to the topicReceive
+  		[ !? topicReceive(TRECEIVE)] actorOp subscribe(TRECEIVE)  
+  	]
+  	switchTo blinkForAWhile 
+//  		switchToPlan workAsObserver  
+   /*
+    * waits for messages sent by the mqtt subscribe callback
+    */		
+   	Plan workAsObserver [
+   		println("ledmqtt workAsObserver" ) ;
+//  		receiveMsg time(3000000);
+//  		printCurrentMessage ;
+   		[ ?? tout(X,Y) ] endPlan "tout" ;
+		actorOp ledSwitch 
+	]
+ 	finally	repeatPlan  
+ 		
+ 	Plan blinkForAWhile resumeLastPlan [
+ 		actorOp ledSwitch ;
+ 		delay time(500) 
+ 	]
+ 	finally repeatPlan 3
+}
+ 
+/*
+You can also try manually starting the service yourself. 
+* Open a  Windows Command Prompt as Admin (in the Start Screen / Menu search for ‘CMD’ ->
+*  right-click on the icon that pops up -> select ‘Run as administrator’) and enter the following:
+
+netsh wlan start hostednetwork
+
+The command prompt should then show "The hosted network started". 
+After that, try starting Connectify and see if that helped.
+ */
