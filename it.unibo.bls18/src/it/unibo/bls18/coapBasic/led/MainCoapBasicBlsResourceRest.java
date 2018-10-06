@@ -1,44 +1,41 @@
 package it.unibo.bls18.coapBasic.led;
 
 import java.awt.Frame;
-import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapServer;
-import it.unibo.bls.applLogic.BlsApplicationLogic;
+import it.unibo.bls.applLogic.BlsApplicationLogicCoap;
 import it.unibo.bls.devices.ButtonAsGui;
 import it.unibo.bls.devices.LedAsGui;
 import it.unibo.bls.interfaces.ILedObservable;
 import it.unibo.bls.interfaces.IObserver;
 import it.unibo.bls.oo.model.LedObservableModel;
 import it.unibo.bls.utils.UtilsBls;
-
+ 
  
 /*
  * Create a CoaP server and a CoaP client
  * The server refers a LedCoapResource linked to a LedGui
  * The client sends to the server requests to get/put values of the led
  */
-public class MainCoapBasicBls {
+public class MainCoapBasicBlsResourceRest {
 private CoapServer server;
-private CoapClient coapClient;
 
 private ILedObservable ledmodel;
 private IObserver ledgui;
 private IObserver applLogic;
 private Frame blsFrame    = UtilsBls.initFrame(200,200);
 
-	public MainCoapBasicBls(int port, String resourceName) {
+	public MainCoapBasicBlsResourceRest(String hostName, int port, String resourceName) {
  		createServer(port);
-		createClient(port,resourceName);
-		configure(port, resourceName);
+		configure(hostName, port, resourceName);
 		ledmodel.turnOff();
 	}
 
-	protected void configure(int port, String resourceName) {
+	protected void configure(String hostName, int port, String resourceName) {
  		createResourceModel(  ) ;
  		createCoapEvelopeAroundResource( resourceName );
  		createConcreteResource();
  		addConcreteResourceToResourceModel();
-		createApplicationLogic(  );
+		createApplicationLogic( hostName,  port,   resourceName );
 		createButtonAsFrontEnd( );
   	}
 	
@@ -48,18 +45,12 @@ private Frame blsFrame    = UtilsBls.initFrame(200,200);
 		System.out.println("MainCoapBasicLed Server started");
 	}
 	
-	public CoapClient createClient(int port, String resourceName) {
-		coapClient= //new CoapClient("coap://192.168.1.12:"+port+"/"+resourceName);
-				new CoapClient("coap://localhost:"+port+"/"+resourceName);
-		System.out.println("MainCoapBasicLed Client started");
-		return coapClient;
-	}
-	
+ 
 	protected void createResourceModel(  ) {
   		ledmodel = LedObservableModel.createLed(  );
  	}
-	protected void createApplicationLogic(  ) {
-    	applLogic = new BlsApplicationLogic(ledmodel);
+	protected void createApplicationLogic( String hostName, int port, String resourceName ) {
+    	applLogic = new BlsApplicationLogicCoap( hostName,   port,   resourceName);
  	}
 	protected void createCoapEvelopeAroundResource( String resourceName ) {
 		//Create a LedCoapResource that makes reference to the LedObservableModel
@@ -76,16 +67,16 @@ private Frame blsFrame    = UtilsBls.initFrame(200,200);
 		ButtonAsGui.createButton( blsFrame, "press", applLogic);		
 }
 	
+  	
+	
 /*
  *  	
  */
 	public static void main(String[] args) throws Exception {
+		String hostName = "localhost"; //"192.168.107.15";//
  		String resourceName="Led";
  		int port = 5683; //8010;
-		MainCoapBasicBls appl = new MainCoapBasicBls(port,resourceName);
-	}	
+		new MainCoapBasicBlsResourceRest(hostName, port,resourceName);
+  	}	
 }
-
-/*
-curl http://localhost:5683/led
-*/
+ 

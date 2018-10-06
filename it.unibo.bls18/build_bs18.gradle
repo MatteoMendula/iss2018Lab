@@ -19,7 +19,7 @@ PROPERTIES
 version = "1.0"
 sourceCompatibility = "1.8"
 ext{
-	mainClassName = "it.unibo.ctxWotCoap.MainCtxWotCoap"
+	mainClassName = "it.unibo.bls18.coapBasic.led.raspberry.MainLedCoapOnRaspberry"
 }
 /*
 --------------------------------------------------------------
@@ -130,37 +130,6 @@ distributions {
 PREPARE DISTRIBUTION
 ---------------------------------------------------------
 */
-task copyInfoForDist << {
-	copy {
-		from 'audio'
-		into 'src/dist/audio/'
-		include '**/*.*'
- 	}
-	copy { 
-		from 'srcMore'
-		into 'src/dist/srcMore/'
-		include '**/*.*'
- 	}
-	copy { 
-		from '.'
-		into 'src/dist/'
-		include '*.pl'
-		include '*.html'
- 	}
-	copy {  
-		from 'src'
-		into 'src/dist/'
-		include '*.qa'
-		include '*.ddr'
-		include '*.baseddr'
-   	}
-}
-task cleanDistDir(type: Delete) {
-	  delete 'src/dist'
-      
-  }
-jar.dependsOn cleanDistDir
-jar.dependsOn copyInfoForDist
 /*
 ---------------------------------------------------------
 TESTING

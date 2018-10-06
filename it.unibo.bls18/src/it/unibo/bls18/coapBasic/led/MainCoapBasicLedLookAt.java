@@ -17,20 +17,18 @@ public class MainCoapBasicLedLookAt {
 private CoapClient coapClient;
 private AsynchListener asynchListener = new AsynchListener();
 	
-	public MainCoapBasicLedLookAt(int port, String resourceName) {
-		configure(port, resourceName);
+	public MainCoapBasicLedLookAt( String hostName, int port, String resourceName ) {
+		configure(hostName, port, resourceName);
 	}
 
-	protected void configure(int port, String resourceName) {
- 		createClient(port,resourceName);
+	protected void configure(String hostName, int port, String resourceName) {
+ 		createClient(hostName,port,resourceName);
  	}
 	
-	public CoapClient createClient(int port, String resourceName) {
-		coapClient= //new CoapClient("coap://192.168.1.12:"+port+"/"+resourceName);
-				new CoapClient("coap://localhost:"+port+"/"+resourceName);
+	public void createClient(String hostName, int port, String resourceName) {
+		coapClient=  new CoapClient("coap://"+hostName+":"+port+"/"+resourceName);
 		System.out.println("MainCoapBasicLedLookAt Client started");
-		return coapClient;
-	}
+ 	}
 	
  	
 	protected void synchGet() {
@@ -38,8 +36,7 @@ private AsynchListener asynchListener = new AsynchListener();
 		CoapResponse coapResp = coapClient.get();
 		//The "CoapResponse" message contains the response. 
  //		System.out.println(Utils.prettyPrint(coapResp));
-		System.out.println("%%% MainCoapBasicLedLookAt ANSWER get " + coapResp.getResponseText());
-		
+		System.out.println("%%% MainCoapBasicLedLookAt ANSWER get " + coapResp.getResponseText());		
 	}
 
 	protected void asynchGet() {
@@ -58,10 +55,10 @@ private AsynchListener asynchListener = new AsynchListener();
 			public void run() {
 				for(int i=0; i<50; i++) {
 					synchGet();
-					UtilsBls.delay(2000);
+					UtilsBls.delay(1000);
  				}
 			}
-		}.start();
+		}.start(); 
 	}
 	
 /*
@@ -70,13 +67,13 @@ private AsynchListener asynchListener = new AsynchListener();
 	public static void main(String[] args) throws Exception {
  		String resourceName="Led";
  		int port = 5683; //8010;
-		MainCoapBasicLedLookAt appl = new MainCoapBasicLedLookAt(port,resourceName);
- 		appl.synchGet();
-		Thread.sleep(500);
-		appl.put("true");
-		Thread.sleep(1000);
-		System.out.println("NEW VALUE:");
-		appl.asynchGet();	
+		MainCoapBasicLedLookAt appl = new MainCoapBasicLedLookAt("localhost", port,resourceName);
+// 		appl.synchGet();
+//		Thread.sleep(500);
+//		appl.put("true");
+//		Thread.sleep(1000);
+//		System.out.println("NEW VALUE:");
+//		appl.asynchGet();	
 		appl.monitorTheled();
 	}	
 }

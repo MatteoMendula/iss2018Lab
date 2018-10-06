@@ -19,8 +19,8 @@ public class BlsApplicationLogic implements IObserver{
 		System.out.println("BlsApplicationLogic ledstate=" + led.getState() + " count=" + count);
 	}
 	@Override
-	public void update(Observable arg0, Object arg1) {
-		System.out.println("BlsApplicationLogic update:"  + arg1);
+	public void update(Observable source, Object val) {
+		System.out.println("BlsApplicationLogic update:"  + val);
  		execute();
 	}
 	

@@ -46,7 +46,7 @@ protected void update() {
  */
 @Override
 public void addObserver(IObserver observer) {
-	super.addObserver(observer);
+	if( observer != null ) super.addObserver(observer);
 }
 
 }
