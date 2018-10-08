@@ -4,9 +4,7 @@ import java.awt.Frame;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.CoapServer;
-import org.eclipse.californium.core.Utils;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
-
 import it.unibo.bls.applLogic.BlsApplicationLogic;
 import it.unibo.bls.devices.ButtonAsGui;
 import it.unibo.bls.devices.LedAsGui;
@@ -42,8 +40,8 @@ private Frame blsFrame = UtilsBls.initFrame(200,200);
  		createCoapEvelopeAroundResource( resourceName );
  		createConcreteResource();
  		addConcreteResourceToResourceModel();
-		createApplicationLogic(  );
-		createButtonAsFrontEnd( );
+//		createApplicationLogic(  );
+//		createButtonAsFrontEnd( );
   	}
 
  
