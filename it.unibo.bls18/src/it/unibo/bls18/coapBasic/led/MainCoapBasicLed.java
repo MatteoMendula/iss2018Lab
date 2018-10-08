@@ -57,7 +57,7 @@ private Frame blsFrame = UtilsBls.initFrame(200,200);
 
 	public void createClient(String hostName, int port, String resourceName) {
 		coapClient=  new CoapClient("coap://"+hostName+":"+port+"/"+resourceName);
-		System.out.println("MainCoapBasicLed Client started");
+		System.out.println("MainCoapBasicLed Client started " + coapClient.getURI() );
  	}
 	
 	protected void createResourceModel(  ) {

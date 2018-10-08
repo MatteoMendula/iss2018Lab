@@ -32,10 +32,13 @@ function createHttpServer(callback){
 var handleHttpRequest = function (request, response) { 
 	var url  = parse(request.url);
 	console.log("myproxy request.method=" + request.method + " url.pathname=" + url.pathname); 
-	mySendCoapRequest();
-	response.end("hello from handleHttpRequest");
-	
+	mySendCoapRequest(request, response,handleCoapAnswer);
+//	response.end("hello from handleHttpRequest");	
 } 
+
+var handleCoapAnswer = function(request, response, coapData){
+	response.end("<html>"+"new hello from handleCoapAnswer " + coapData + "</html>");	
+}
 //-------------------------------------------------------------------------------
 function formatTitle(msg) {
     return '\n\n' + msg + '\n-------------------------------------';
@@ -51,11 +54,8 @@ function requestHandler(req, res) {
  */
 function createTargetServer(callback) {
     console.log('Creating target server at port 8976 ' ); //+ callback
-
     targetServer = coap.createServer(requestHandler);
-
-    targetServer.listen(8976, '0.0.0.0', callback);
-    
+    targetServer.listen(8976, '0.0.0.0', callback);  
 }
 
 
@@ -66,50 +66,53 @@ function proxyHandler(req, res) {
 
 function createProxy(callback) {
     console.log('Creating proxy at port 6780 ' ); // + callback
-
     proxy = coap.createServer({ proxy: true }, proxyHandler);
-
     proxy.listen(6780, '0.0.0.0', callback);
 }
 
-function mySendCoapRequest(){
+function mySendCoapRequest(request, response, callback ){
 	console.log("mySendRequest " );
-    var req = {
-            host: 'localhost',
-            port: 8976,
-            agent: false
-        },
-    rs = new Readable();
-    request = coap.request(req);
-
-    request.on('response', function(res) {
-        console.log('Client receives [%s] in port [%s] from [%s]', res.payload, res.outSocket.port, res.rsinfo.port);
-        //callback();
-    });
-
-    rs.push('MSG_' );
-    rs.push(null);
-    rs.pipe(request);
-	
+	//coap://localhost:5683/Led
+//    var req = {
+//            host: 'localhost',
+//            port: 5683,
+//            agent: false
+//        },
+//    rs = new Readable();
+//    request = coap.request(req);
+//
+//    request.on('response', function(res) {
+//        console.log('Coap request receives [%s] in port [%s] from [%s]', res.payload, res.outSocket.port, res.rsinfo.port);
+//        callback(request, response, res.payload);
+//    });
+//
+//    rs.push('MSG_' );
+//    rs.push(null);
+//    rs.pipe(request);
+	request = coap.request('coap://localhost/Led');
+	rs = new Readable();
+	request.on('response', function(res) {
+	   console.log('Coap request receives [%s] in port [%s] from [%s]', res.payload, res.outSocket.port, res.rsinfo.port);
+	   callback(request, response, res.payload);
+	  });
+  rs.push('MSG_' );
+  rs.push(null);
+  rs.pipe(request);
 }
 
 function sendRequest(proxied) {
-    return function(n, callback) {
-    	
+    return function(n, callback) {   	
         var req = {
                 host: 'localhost',
                 port: 8976,
                 agent: false
             },
             rs = new Readable();
-
         if (proxied) {
             req.port = 6780;
             req.proxyUri = 'coap://localhost:8976'; //'http://localhost:3000'; //
         }
-
         request = coap.request(req);
-
         request.on('response', function(res) {
             console.log('Client receives [%s] in port [%s] from [%s]', res.payload, res.outSocket.port, res.rsinfo.port);
             callback();
@@ -150,10 +153,10 @@ function checkResults(callback) {
  
 async.series([
 	createHttpServer,
-    createTargetServer
+    createTargetServer,
     //createProxy,
     //executeTest(false),
-    //executeTest(true),
+    //executeTest(true)
     //cleanUp
 ], //checkResults);
   function (err, results) {
