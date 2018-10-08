@@ -85,7 +85,7 @@ private static String resourceName = "writeme!";
 	  
 	  MyCoapClient c = new MyCoapClient(); 
 	  /* */
-  	  c.connect("coap://localhost:8012/"+resourceName);	 
+  	  c.connect("coap://localhost:5683/"+resourceName);	 
   	  c.workGet();
 //	  c.workPost();
 	  c.workPut();
