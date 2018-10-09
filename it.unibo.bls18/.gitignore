@@ -1,8 +1,8 @@
 /ReadMe.html
 ./bin
 .classpath
-.gradle 
-.
-node_modules
+./gradle 
+./settings
+./nodeCode/node_modules
 ./build
 ./docker
