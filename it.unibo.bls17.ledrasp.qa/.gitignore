@@ -1,6 +1,7 @@
 /ReadMe.html
 ./bin
 .classpath
-.gradle 
+./gradle 
+./settings
 node_modules
 ./build
