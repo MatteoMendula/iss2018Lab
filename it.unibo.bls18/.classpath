@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry path="bin/default" kind="output"/>
+	<classpathentry kind="output" path="bin/default"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
 	<classpathentry sourcepath="C:/Users/anatali/.gradle/caches/modules-2/files-2.1/com.typesafe.akka/akka-actor_2.11/2.5.2/51e75c292f6ac1f6a12d6c68f9df3b1e0ef468ba/akka-actor_2.11-2.5.2-sources.jar" kind="lib" path="C:/Users/anatali/.gradle/caches/modules-2/files-2.1/com.typesafe.akka/akka-actor_2.11/2.5.2/183ccaed9002bfa10628a5df48e7bac6f1c03f7b/akka-actor_2.11-2.5.2.jar">
 		<attributes>
@@ -9,6 +9,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry sourcepath="C:/Users/anatali/.gradle/caches/modules-2/files-2.1/org.eclipse.californium/californium-core/2.0.0-M5/56bf16a4dec83793cb6678f480ca97eb992348e1/californium-core-2.0.0-M5-sources.jar" kind="lib" path="C:/Users/anatali/.gradle/caches/modules-2/files-2.1/org.eclipse.californium/californium-core/2.0.0-M5/5be42e2b51d11d0a6aa995e6d3b628823fd678d7/californium-core-2.0.0-M5.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/anatali/.gradle/caches/modules-2/files-2.1/org.eclipse.californium/californium-proxy/2.0.0-M2/79c3f63d6da6eb7a0dde7496f047bc73bf143a22/californium-proxy-2.0.0-M2-sources.jar" kind="lib" path="C:/Users/anatali/.gradle/caches/modules-2/files-2.1/org.eclipse.californium/californium-proxy/2.0.0-M2/1db23905c6c79cca53ebf816478eb41872b892b2/californium-proxy-2.0.0-M2.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
@@ -53,6 +58,16 @@
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry sourcepath="C:/Users/anatali/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore-nio/4.2.5/1ecdd404592b85947b0af65ed925de45b29f9e87/httpcore-nio-4.2.5-sources.jar" kind="lib" path="C:/Users/anatali/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore-nio/4.2.5/7139154a94daad6ac207d95ce0eeaccd98a97034/httpcore-nio-4.2.5.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/anatali/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/15.0/36b6a585c0f0c63bd85fb04db0dcb7b217298956/guava-15.0-sources.jar" kind="lib" path="C:/Users/anatali/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/15.0/ed727a8d9f247e2050281cb083f1c77b09dcb5cd/guava-15.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry sourcepath="C:/Users/anatali/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.1/9700be0d0a331691654a8e901943c9a74e33c5fc/httpcore-4.4.1-sources.jar" kind="lib" path="C:/Users/anatali/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.1/f5aa318bda4c6c8d688c9d00b90681dcd82ce636/httpcore-4.4.1.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
@@ -83,32 +98,32 @@
 			<attribute name="gradle_used_by_scope" value="test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Didattica2018Work/iss2018Lab/it.unibo.bls18/libs/uniboInterfaces.jar">
+	<classpathentry kind="lib" path="C:/Repos/iss2018Lab/it.unibo.bls18/libs/uniboInterfaces.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Didattica2018Work/iss2018Lab/it.unibo.bls18/libs/unibonoawtsupports.jar">
+	<classpathentry kind="lib" path="C:/Repos/iss2018Lab/it.unibo.bls18/libs/unibonoawtsupports.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Didattica2018Work/iss2018Lab/it.unibo.bls18/libs/uniboEnvBaseAwt.jar">
+	<classpathentry kind="lib" path="C:/Repos/iss2018Lab/it.unibo.bls18/libs/uniboEnvBaseAwt.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Didattica2018Work/iss2018Lab/it.unibo.bls18/libs/2p301.jar">
+	<classpathentry kind="lib" path="C:/Repos/iss2018Lab/it.unibo.bls18/libs/2p301.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Didattica2018Work/iss2018Lab/it.unibo.bls18/libs/qa18Akka.jar">
+	<classpathentry kind="lib" path="C:/Repos/iss2018Lab/it.unibo.bls18/libs/qa18Akka.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Didattica2018Work/iss2018Lab/it.unibo.bls18/libs/nanoHTTPD.jar">
+	<classpathentry kind="lib" path="C:/Repos/iss2018Lab/it.unibo.bls18/libs/nanoHTTPD.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>

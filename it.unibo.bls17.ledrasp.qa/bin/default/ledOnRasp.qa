@@ -1,0 +1,45 @@
+/*
+ * it.unibo.bls17.ledrasp.qa/src/ledOnRasp.qa
+ * This code should run on a RaspberryPi
+ */  
+System ledOnRasp
+Event ctrlEvent   : ctrlEvent( CATEG, NAME,CMD   ) 	//CMD depends on CATEG/NAME
+
+pubSubServer "tcp://192.168.43.229:1883"
+//pubSubServer "tcp://192.168.137.1"		//does not work (perhaps public?)
+//pubSubServer  "tcp://m2m.eclipse.org:1883"  
+//pubSubServer  "tcp://test.mosquitto.org:1883"  
+
+Context ctxLedOnRasp ip [ host="192.168.43.18"   port=8079 ]    
+//Context blsMvcCtx ip    [ host="192.168.43.229"  port=8019 ] -standalone 
+
+QActor ledrasp context ctxLedOnRasp -pubsub{ //-pubsub required since it must be connected
+	Plan init normal [       
+   		println( ledraspmqtt(started)  ) 
+    ]
+   	switchTo doBlinckAtStart     
+  
+  	Plan doBlinckAtStart[
+ 		javaOp  "customExecute(\"sudo bash led25GpioTurnOn.sh\")";  
+		delay 300;
+		javaOp  "customExecute(\"sudo bash led25GpioTurnOff.sh\")";
+		delay 300;
+		javaOp  "customExecute(\"sudo bash led25GpioTurnOn.sh\")";  
+		delay 300;
+		javaOp  "customExecute(\"sudo bash led25GpioTurnOff.sh\")" 		
+  	]
+  	switchTo waitForCommand
+  	
+    Plan waitForCommand[  ]   
+    transition stopAfter 6000000 
+     	whenEvent ctrlEvent -> handleCmd
+    finally repeatPlan	
+   	 
+	Plan handleCmd resumeLastPlan[
+  		printCurrentEvent;
+		onEvent ctrlEvent : ctrlEvent(leds, led1, on)  ->  
+			 javaOp  "customExecute(\"sudo bash led25GpioTurnOn.sh\")";
+		onEvent ctrlEvent : ctrlEvent(leds, led1, off) ->  
+			 javaOp  "customExecute(\"sudo bash led25GpioTurnOff.sh\")"
+	]
+}
