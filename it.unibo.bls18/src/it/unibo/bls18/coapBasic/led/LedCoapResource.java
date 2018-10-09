@@ -31,8 +31,9 @@ private	ILedObservable ledModel ;
 	    public  void handlePUT(CoapExchange exchange) {
  	        try {
 	        	String value = exchange.getRequestText();//new String(payload, "UTF-8"); 
-	            //System.out.println("LedCoapResource handlePUT "+ value);
-	        	setValue(value);
+	            System.out.println("LedCoapResource handlePUT "+ value);
+	            if( value.equals("switch"))  switchValue();	             
+	            else setValue(value);
 	            exchange.respond(CHANGED,  value);
 	        } catch (Exception e) {
  	            exchange.respond(BAD_REQUEST, "Invalid String");
@@ -40,6 +41,10 @@ private	ILedObservable ledModel ;
 	    }
 	    
 	    
+		   protected void switchValue() {
+			   if( getValue( ).equals("true")) ledModel.turnOff();
+			   else ledModel.turnOn();
+	 	    }
 		   protected void setValue(String v) {
 			   if( v.equals("true")) ledModel.turnOn();
 			   else ledModel.turnOff();

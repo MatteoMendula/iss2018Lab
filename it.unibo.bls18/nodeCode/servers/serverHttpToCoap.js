@@ -7,22 +7,57 @@
 const
 	http    = require("http"),
 	parse   = require('url').parse,
-    coap  = require('coap'),
+    coap    = require('coap'),
+    join    = require('path').join,
+    srvUtil = require("./ServerUtils"),
     Readable = require('stream').Readable
+
+var root      = __dirname; //set by Node to the directory path to the file;
+var indexPath = root+"/index.html";
 
 function createHttpServer(port, callback){
 	//configure the system;
-		console.log('serverHttpToCoap creates a server and register handleRequest');
 		var server = http.createServer();
 		server.on( 'request' , handleHttpRequest); 
+		console.log('serverHttpToCoap register handleRequest root=' + root);
 	//start;
  		server.listen(port, callback );	
 };
  
 var handleHttpRequest = function (request, response) { 
-	var url  = parse(request.url);
-	console.log("serverHttpToCoap request.method=" + request.method + " url.pathname=" + url.pathname); 
-	sendCoapRequest(request, response, handleCoapAnswer);
+	var method = request.method;
+	var url    = parse(request.url);
+	var path   = url.pathname;
+	if( path === "/" ) path = "/index.html";
+	
+	console.log("serverHttpToCoap request.method=" + method + " path=" + path); 
+	
+	var fpath = join(root, path);
+	if( method === 'GET' && path === "/Led" ) { 
+ 		sendCoapRequest(request, response, handleCoapAnswer);	
+		return; 
+ 	}
+	if( method === 'GET'   ) {
+		srvUtil.renderStaticFile(fpath,response);
+ 		return; 		
+ 	}
+	if (method === 'POST' && path === '/adduser' ) {
+		var inData = '';
+		request.on('data', function (data) { //data is of type Buffer;
+	        inData += data;	
+	        // Too much data, kill the connection!;
+	        if (inData.length > 1e6) request.connection.destroy();
+	    });
+		request.on('end', function () { //data are all available;
+			response.end("<html>"+"inData=" + inData + "</html>");
+ 	    });
+ 		return;		
+	}
+	if (method === 'POST' && path === '/ledSwitch' ) {
+		sendCoapCoammnd(request, response, handleCoapAnswer);
+		return;	
+	}
+	response.end( "Sorry, I don't understand" );
 } 
 
 var handleCoapAnswer = function(request, response, coapData){
@@ -39,6 +74,36 @@ function sendCoapRequest(request, response, callback ){
 	req.end()
 }
 
+
+function sendCoapCoammnd(request, response, callback ){
+	console.log("sendCoapCoammnd " );
+	var requestOptions = {
+			  host: 'localhost',
+			  port: 5683,
+			  pathname: '/Led',
+			  method: 'PUT',
+	};
+ 	req   = coap.request(requestOptions);
+ 	var payload = {
+// 			  title: 'this is a test payload',
+// 			  body: 'containing nothing useful'
+ 			value : 'true'
+ 	}
+
+ 	//req.write(JSON.stringify(payload));
+ 	
+ 	req.write("switch");
+ 	
+	req.on('response', function(res) {
+ 		//callback(request, response, res.payload);
+		srvUtil.renderStaticFile(indexPath,response);
+	}) 
+	req.end()
+}
+
+
+
+ 
 /*
  * Another way to perform the request
  * A request to an HTTP server is a stream instance

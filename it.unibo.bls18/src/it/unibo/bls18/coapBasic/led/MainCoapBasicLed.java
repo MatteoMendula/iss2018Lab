@@ -40,8 +40,6 @@ private Frame blsFrame = UtilsBls.initFrame(200,200);
  		createCoapEvelopeAroundResource( resourceName );
  		createConcreteResource();
  		addConcreteResourceToResourceModel();
-//		createApplicationLogic(  );
-//		createButtonAsFrontEnd( );
   	}
 
  
@@ -50,8 +48,6 @@ private Frame blsFrame = UtilsBls.initFrame(200,200);
 		server.start();
 		System.out.println("MainCoapBasicLed Server started");
 	}
-	
- 	
 
 	public void createClient(String hostName, int port, String resourceName) {
 		coapClient=  new CoapClient("coap://"+hostName+":"+port+"/"+resourceName);

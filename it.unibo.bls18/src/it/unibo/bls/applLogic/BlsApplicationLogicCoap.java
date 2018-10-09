@@ -44,14 +44,15 @@ public class BlsApplicationLogicCoap implements IObserver{
 	@Override
 	public void update(Observable source, Object val) {
 		System.out.println("%%%  BlsApplicationLogicCoap update:"  + val);
- 		execute();
+ 		switchTheLed();
 	}
-	protected void execute( ){
+	protected void switchTheLed( ){
 		count++;
 		if( coapClient == null ) return;
-		if( ledState.equals("true")   ) put("false"); else put("true");		
+		//if( ledState.equals("true")   ) put("false"); else put("true");	//NO MORE
+		put("switch");
  		System.out.println("%%% BlsApplicationLogicCoap ledstate=" + ledState + " count=" + count);
- 		checkConsistence();	//just for tetsing
+ 		//checkConsistence();	//just for tetsing
 	}
 	
 	protected void checkConsistence() {

@@ -1,4 +1,4 @@
-package it.unibo.bls18.coapBasic.led.raspberry;
+package it.unibo.bls18.coapBasic.led;
 
 import java.awt.Frame;
 import it.unibo.bls.applLogic.BlsApplicationLogicCoap;
@@ -27,7 +27,7 @@ private Frame blsFrame    = UtilsBls.initFrame(200,200);
  	}
 
  	protected void createButtonAsFrontEnd( ) {
- 		System.out.println("MainCoapBasicLed createButtonAsFrontEnd");
+ 		System.out.println("MainCoapControlToLedRest createButtonAsFrontEnd");
 		ButtonAsGui.createButton( blsFrame, "press", applLogic);		
 }
 	
