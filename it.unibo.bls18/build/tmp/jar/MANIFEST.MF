@@ -9,6 +9,5 @@ Class-Path: .  lib/uniboInterfaces.jar lib/unibonoawtsupports.jar lib/
  nio-4.2.5.jar lib/guava-15.0.jar lib/netty-all-4.1.1.Final.jar lib/ht
  tpcore-4.4.1.jar lib/commons-logging-1.2.jar lib/commons-codec-1.9.ja
  r
-Main-Class: it.unibo.bls18.coapBasic.led.raspberry.MainLedCoapOnRaspbe
- rry
+Main-Class: it.unibo.bls.devices.raspberry.MainBlsModelWithLedOnRasp
 

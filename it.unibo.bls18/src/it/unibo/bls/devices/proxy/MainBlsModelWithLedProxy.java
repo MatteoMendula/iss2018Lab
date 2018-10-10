@@ -51,7 +51,7 @@ private int portNum;
 		blink();
  	}
  	protected void createLogicalComponents(){
-		//Create the led model t 
+		//Create the led model 
  		ledmodel    = LedObservableModel.createLed();
 		//Create the Application logic that refers the led model (as ILed)
     	applLogic   = new BlsApplicationLogic(ledmodel);
