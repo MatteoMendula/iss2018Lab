@@ -1,6 +1,0 @@
-plan(1,init, sentence(true,move(solve,assign( a,0),0,""),'','' ))
-plan(1,work, sentence(true,move(print("globalkb CREATE RESOURCE ")),'','' ))
-plan(2,work, sentence(true,not here StateMoveNormal,'','' ))
-plan(1,updateKb, sentence( getVal( a,X),move(print(inc( a,X))),'','' ))
-plan(2,updateKb, sentence(true,move(solve,inc( a,1,_),0,""),'','' ))
-plan(3,updateKb, sentence(true,delay( 300) ,'','' ))

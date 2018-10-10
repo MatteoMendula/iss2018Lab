@@ -1,5 +1,0 @@
-plan(1,init, sentence(true,move(print(qaactuator( starts))),'','' ))
-plan(2,init, sentence(true,not here StateMoveNormal,'','' ))
-plan(1,handleCmd, sentence(true,eventswitch(ctrlEvent, »ctrlEvent( on), not here StateMoveNormal ),'','' ))
-plan(2,handleCmd, sentence(true,eventswitch(ctrlEvent, »ctrlEvent( off), not here StateMoveNormal ),'','' ))
-plan(3,handleCmd, sentence(true,move(resumeplan),'','' ))

@@ -1,5 +1,0 @@
-plan(1,init, sentence(true,move(print("presslogical starts. INTERACTS via EUROMAP63 / 77 or NOCDLL")),'','' ))
-plan(1,handleMachineCmd, sentence(true,move(print("handleMachineCmd")),'','' ))
-plan(2,handleMachineCmd, sentence(true,printCurrentMessage(''),'','' ))
-plan(3,handleMachineCmd, sentence(true,msgswitch(machineCmd, machineCmd( CMD) , forward(pressphysicalsimulator, euromap63,euromap63( CMD))),'','' ))
-plan(4,handleMachineCmd, sentence(true,move(resumeplan),'','' ))

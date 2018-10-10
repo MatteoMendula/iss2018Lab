@@ -1,5 +1,0 @@
-plan(1,init, sentence(true,move(print(ledrasp( starts))),'','' ))
-plan(1,handleCmd, sentence(true,printCurrentEvent(false),'','' ))
-plan(2,handleCmd, sentence(true,eventswitch(ctrlEvent, »ctrlEvent( leds,led1,on), move(print(ctrlEventRASPBERRYTODO( leds,led1,on))) ),'','' ))
-plan(3,handleCmd, sentence(true,eventswitch(ctrlEvent, »ctrlEvent( leds,led1,off), move(print(ctrlEventRASPBERRYTODO( leds,led1,off))) ),'','' ))
-plan(4,handleCmd, sentence(true,move(resumeplan),'','' ))

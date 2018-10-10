@@ -1,7 +1,0 @@
-plan(1,init, sentence(true,delay( 500) ,'','' ))
-plan(2,init, sentence( ledmodel( NAME,value( V)),raise( ledcmd , ledcmd( V) )'),'','' ))
-plan(1,ledswitch, sentence( ledmodel( NAME,value( off)),addRule( newLedValue( on) ),'','' ))
-plan(2,ledswitch, sentence( ledmodel( NAME,value( on)),addRule( newLedValue( off) ),'','' ))
-plan(3,ledswitch, sentence(-  newLedValue( V) ,move(solve,changeledValue( V),0,""),'','' ))
-plan(4,ledswitch, sentence( ledmodel( NAME,value( V)),raise( ledcmd , ledcmd( V) )'),'','' ))
-plan(5,ledswitch, sentence(true,move(resumeplan),'','' ))

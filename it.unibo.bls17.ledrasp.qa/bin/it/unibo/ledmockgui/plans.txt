@@ -1,4 +1,0 @@
-plan(1,init, sentence(true,move(print(ledmockgui( starts))),'','' ))
-plan(1,handleCmd, sentence(true,eventswitch(ctrlEvent, »ctrlEvent( leds,led1,on), move(print("on")) ),'','' ))
-plan(2,handleCmd, sentence(true,eventswitch(ctrlEvent, »ctrlEvent( leds,led1,off), move(print("off")) ),'','' ))
-plan(3,handleCmd, sentence(true,move(resumeplan),'','' ))
