@@ -1,6 +1,7 @@
 package it.unibo.bls18.obj;
 import java.awt.Frame;
-import it.unibo.bls.devices.LedAsGui;
+
+import it.unibo.bls.devices.gui.LedAsGui;
 import it.unibo.bls.utils.UtilsBls;
  
 public class LedResourceGofObserver  extends ResourceLocalObserver {

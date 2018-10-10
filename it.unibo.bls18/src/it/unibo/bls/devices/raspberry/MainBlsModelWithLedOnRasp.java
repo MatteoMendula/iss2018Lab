@@ -3,11 +3,11 @@ package it.unibo.bls.devices.raspberry;
 
 import java.awt.Frame;
 import it.unibo.bls.applLogic.BlsApplicationLogic;
-import it.unibo.bls.devices.ButtonAsGui;
-import it.unibo.bls.devices.LedAsGui;
 import it.unibo.bls.devices.arduino.LedOnArduino;
-import it.unibo.bls.devices.remote.LedProxy;
-import it.unibo.bls.devices.remote.LedThingReceiver;
+import it.unibo.bls.devices.gui.ButtonAsGui;
+import it.unibo.bls.devices.gui.LedAsGui;
+import it.unibo.bls.devices.proxy.LedProxy;
+import it.unibo.bls.devices.proxy.LedThingReceiver;
 import it.unibo.bls.interfaces.ILedObservable;
 import it.unibo.bls.interfaces.IObservable;
 import it.unibo.bls.interfaces.IObserver;

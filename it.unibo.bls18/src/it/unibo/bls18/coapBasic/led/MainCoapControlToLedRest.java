@@ -2,7 +2,7 @@ package it.unibo.bls18.coapBasic.led;
 
 import java.awt.Frame;
 import it.unibo.bls.applLogic.BlsApplicationLogicCoap;
-import it.unibo.bls.devices.ButtonAsGui;
+import it.unibo.bls.devices.gui.ButtonAsGui;
 import it.unibo.bls.interfaces.IObserver;
 import it.unibo.bls.utils.UtilsBls;
  

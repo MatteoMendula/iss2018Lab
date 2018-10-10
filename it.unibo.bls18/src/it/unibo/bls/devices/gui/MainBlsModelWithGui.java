@@ -1,8 +1,6 @@
-package it.unibo.bls.appl;
+package it.unibo.bls.devices.gui;
 import java.awt.Frame;
 import it.unibo.bls.applLogic.BlsApplicationLogic;
-import it.unibo.bls.devices.ButtonAsGui;
-import it.unibo.bls.devices.LedAsGui;
 import it.unibo.bls.interfaces.ILedObservable;
 import it.unibo.bls.interfaces.IObservable;
 import it.unibo.bls.interfaces.IObserver;
@@ -81,6 +79,6 @@ private IObservable buttongui;
 		ledmodel.turnOn(); 		
  	}
 public static void main(String[] args) {
-   MainBlsModelWithGui sys = createTheSystem();
+	MainBlsModelWithGui.createTheSystem();
  }
 }

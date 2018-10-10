@@ -1,7 +1,5 @@
-package it.unibo.bls.appl;
+package it.unibo.bls.devices.mock;
 import it.unibo.bls.applLogic.BlsApplicationLogic;
-import it.unibo.bls.devices.ButtonMock;
-import it.unibo.bls.devices.LedMock;
 import it.unibo.bls.interfaces.IButton;
 import it.unibo.bls.interfaces.ILed;
 import it.unibo.bls.utils.UtilsBls;

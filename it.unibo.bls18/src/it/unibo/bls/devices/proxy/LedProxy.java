@@ -1,7 +1,8 @@
-package it.unibo.bls.devices.remote;
+package it.unibo.bls.devices.proxy;
 
 import java.util.Observable;
-import it.unibo.bls.devices.LedAsGui;
+
+import it.unibo.bls.devices.gui.LedAsGui;
 import it.unibo.bls.interfaces.ILedObservable;
 import it.unibo.bls.interfaces.IObservable;
 import it.unibo.bls.interfaces.IObserver;

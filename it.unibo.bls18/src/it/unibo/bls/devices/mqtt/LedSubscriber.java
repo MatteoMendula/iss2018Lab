@@ -9,18 +9,12 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
-import it.unibo.bls.devices.LedAsGui;
-import it.unibo.bls.devices.remote.LedProxy;
-import it.unibo.bls.devices.remote.LedThingReceiver;
-import it.unibo.bls.interfaces.ILedObservable;
+import it.unibo.bls.devices.gui.LedAsGui;
 import it.unibo.bls.interfaces.IObservable;
 import it.unibo.bls.interfaces.IObserver;
-import it.unibo.bls.oo.model.LedObservableModel;
 import it.unibo.bls.utils.UtilsBls;
 import it.unibo.bls18.mqtt.utils.MqttUtils;
-import it.unibo.contactEvent.interfaces.IActorMessage;
 import it.unibo.is.interfaces.IOutputEnvView;
-import it.unibo.qactors.QActorMessage;
 import it.unibo.system.SituatedSysKb;
 
 public class LedSubscriber extends Observable implements IObservable, MqttCallback {

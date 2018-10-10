@@ -1,4 +1,4 @@
-package it.unibo.bls.devices;
+package it.unibo.bls.devices.mock;
 
 import it.unibo.bls.interfaces.ILed;
 

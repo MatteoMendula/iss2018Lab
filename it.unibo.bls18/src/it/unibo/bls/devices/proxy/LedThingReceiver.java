@@ -1,4 +1,4 @@
-package it.unibo.bls.devices.remote;
+package it.unibo.bls.devices.proxy;
 
 import java.util.Observable;
 
@@ -62,10 +62,8 @@ public class LedThingReceiver extends Observable implements IObservable{
 							String msg = conn.receiveALine();
 							outEnvView.addOutput("LedThingReceiver receives:" + msg);
 							IActorMessage inputmsg = new QActorMessage( msg );
-//							if( inputmsg.msgContent().equals("true") ) {
 								setChanged();
 								notifyObservers( inputmsg.msgContent() );	
-//							}					
 					}
 				} catch (Exception e) {
 						e.printStackTrace();

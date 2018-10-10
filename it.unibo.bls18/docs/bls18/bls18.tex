@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper,openright,twoside]{../llncs}
+\documentclass[10pt,a4paper,openright,twoside]{C:/Didattica/git/lab2014Bo/it.unibo.iss2015intro/docsInternal/contents/llncs}
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
 
@@ -212,7 +212,7 @@
  \fi
 %%%%%%%%%%%%%%%
 
-\input{../MyStyle.sty}
+\input{C:/Didattica/git/lab2014Bo/it.unibo.iss2015intro/docsInternal/contents/MyStyle.sty}
 %
 % Comments
 %
@@ -493,20 +493,20 @@ A software system working with the \texttt{Mock} devices should include a \code{
 
  %%C:\Didattica2018Work\iss2018Lab\it.unibo.bls18\src\it\unibo\bls\appl\MainBlsMockBase.java
  
-\lstinputlisting[language=Java, caption={ \texttt{MainBlsMockBase.java}: configuration }, firstline=9, lastline=24 ]{../../src/it/unibo/bls/appl/MainBlsMockBase.java} 
+\lstinputlisting[language=Java, caption={ \texttt{MainBlsMockBase.java}: configuration }, firstline=9, lastline=24 ]{../../src/it/unibo/bls/devices/mock/MainBlsMockBase.java} 
  
 The system defines also some working activity, to cause the change of the state in the \texttt{ButtonMock}:
 
-\lstinputlisting[language=Java, caption={ \texttt{MainBlsMockBase.java}: simulated action }, firstline=25, lastline=31 ]{../../src/it/unibo/bls/appl/MainBlsMockBase.java} 
+\lstinputlisting[language=Java, caption={ \texttt{MainBlsMockBase.java}: simulated action }, firstline=25, lastline=31 ]{../../src/it/unibo/bls/devices/mock/MainBlsMockBase.java} 
 
 Since every system is a \textbf{composed} (i.e. it is a \code{non-atomic}) entity, it provides also \textbf{selector-methods} to get its components:
 
-\lstinputlisting[language=Java, caption={ \texttt{MainBlsMockBase.java}: selectors }, firstline=32, lastline=37 ]{../../src/it/unibo/bls/appl/MainBlsMockBase.java} 
+\lstinputlisting[language=Java, caption={ \texttt{MainBlsMockBase.java}: selectors }, firstline=32, lastline=37 ]{../../src/it/unibo/bls/devices/mock/MainBlsMockBase.java} 
 
 The selectors can be useful during the testing, to access the state of the single devices.
 
 Finally, there is the \code{main} method:
-\lstinputlisting[language=Java, caption={ \texttt{MainBlsMockBase.java}: the main method}, firstline=38, lastline=42 ]{../../src/it/unibo/bls/appl/MainBlsMockBase.java} 
+\lstinputlisting[language=Java, caption={ \texttt{MainBlsMockBase.java}: the main method}, firstline=38, lastline=42 ]{../../src/it/unibo/bls/devices/mock/MainBlsMockBase.java} 
 
 \newpage 
 %=================================================================
@@ -634,6 +634,14 @@ Dependency injection is one form of the broader technique of \code{Inversion of 
 \includegraphics[scale = 0.5]{img/bls18/bls18CoapBL.png}
 
 %% MainCoapControlToLedRest 
+
+%-----------------------------------------------------------------------
+\subsection{BLS front end }
+\labelssec{coapfrontend}
+%-----------------------------------------------------------------------
+
+\medskip 
+\includegraphics[scale = 0.5]{img/bls18/bls18CoapFrontEnd.png}
 
  
 

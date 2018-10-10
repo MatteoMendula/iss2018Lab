@@ -1,51 +1,51 @@
-package it.unibo.bls.appl;
+package it.unibo.bls.devices.arduino;
  
 
 import java.awt.Frame;
 import it.unibo.bls.applLogic.BlsApplicationLogic;
-import it.unibo.bls.devices.ButtonAsGui;
-import it.unibo.bls.devices.LedAsGui;
-import it.unibo.bls.devices.arduino.LedOnArduino;
-import it.unibo.bls.devices.remote.LedProxy;
-import it.unibo.bls.devices.remote.LedThingReceiver;
+import it.unibo.bls.devices.gui.ButtonAsGui;
 import it.unibo.bls.interfaces.ILedObservable;
 import it.unibo.bls.interfaces.IObservable;
 import it.unibo.bls.interfaces.IObserver;
 import it.unibo.bls.oo.model.ButtonModel;
 import it.unibo.bls.oo.model.LedObservableModel;
 import it.unibo.bls.utils.UtilsBls;
-import it.unibo.is.interfaces.IOutputEnvView;
 
 
-public class MainBlsModelWithLedProxy  {
+public class MainBlsModelWithArduino  {
 
 private ILedObservable ledmodel;
 private IObserver buttonmodel;
 private BlsApplicationLogic applLogic;
 
 private IObservable buttongui;
-private IObserver ledproxy;
-
-private String protocol;
-private String hostName;
-private int portNum;
-
+private IObserver ledOnArduino;
 
 //Factory method   	
-  	public static MainBlsModelWithLedProxy createTheSystem(){
- 		return new MainBlsModelWithLedProxy();
+  	public static MainBlsModelWithArduino createTheSystem(){
+ 		return new MainBlsModelWithArduino();
  	} 	
- 	protected MainBlsModelWithLedProxy( ) {
+ 	protected MainBlsModelWithArduino( ) {
  		configure();
  	}		
+ 	protected void configureMud(){
+		//Create the frame
+		Frame blsFrame = UtilsBls.initFrame(200,200);
+		//Create the led on Arduino
+		IObserver ledOnArduino = LedOnArduino.createLed("COM9");
+		//Create the led model that refers the ledOnArduino as the observer
+		ledmodel       = LedObservableModel.createLed(ledOnArduino);		
+		//Create the Application logic that refers the led model (as ILed)
+		BlsApplicationLogic applLogic = new BlsApplicationLogic(ledmodel);
+		//Create the button model that refers the Application logic
+		IObserver buttonmodel = ButtonModel.createButton(applLogic);
+		//Create the button gui that refers the buttonmodel as observer
+  		ButtonAsGui.createButton( blsFrame, "press", buttonmodel);
+  		ledmodel.turnOff();
+		blink();
+	} 	
  	
  	protected void configure(){
- 		protocol = "TCP";
- 		hostName = "localhost";
- 		portNum  = 8012;
- 		
- 		createARemoteLedThing() ; //just for testing with a single appl
- 		
  		createLogicalComponents();
  		createConcreteComponents();
  		configureSystemArchitecture();
@@ -61,24 +61,15 @@ private int portNum;
     	buttonmodel = ButtonModel.createButton(applLogic);
  	} 	
  	protected void createConcreteComponents(){
-   		//Create the ButtonAsGui
-		buttongui   = ButtonAsGui.createButton( UtilsBls.initFrame(200,200), "press");
-		//Create the led proxy
-		ledproxy = LedProxy.createLed(protocol,hostName,portNum);
+ 		//Create the frame
+ 		Frame blsFrame = UtilsBls.initFrame(200,200);
+  		//Create the ButtonAsGui
+		buttongui   = ButtonAsGui.createButton( blsFrame, "press");
+		//Create the led on Arduino
+		ledOnArduino = LedOnArduino.createLed("COM9");
   	} 	
- 	
-	//CREATE A REMOTE LED (just for testing with a single appl)
- 	protected void createARemoteLedThing() {
-		//Create the led thing
-		IObserver ledgui = LedAsGui.createLed(UtilsBls.initFrame(200,200));
-		System.out.println("LED GUI CREATED");
-		IObservable ledReceiver = LedThingReceiver.createLed(protocol, portNum);
-		System.out.println("LED RECEIVER CREATED");
-		ledReceiver.addObserver(ledgui); 		
- 	}
- 	
  	protected void configureSystemArchitecture(){
- 		ledmodel.addObserver(ledproxy);
+ 		ledmodel.addObserver(ledOnArduino);
  		buttongui.addObserver(buttonmodel);
  	}
 
@@ -93,6 +84,6 @@ private int portNum;
 		ledmodel.turnOff();
  	}
 public static void main(String[] args) {
-   MainBlsModelWithLedProxy sys = createTheSystem();
+   MainBlsModelWithArduino sys = createTheSystem();
  }
 }

@@ -1,4 +1,4 @@
-package it.unibo.bls.devices;
+package it.unibo.bls.devices.mock;
 
 import java.util.Observable;
 import it.unibo.bls.interfaces.IButtonObservable;

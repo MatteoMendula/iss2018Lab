@@ -1,4 +1,4 @@
-package it.unibo.bls.devices;
+package it.unibo.bls.devices.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
