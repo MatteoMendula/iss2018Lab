@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: 
-Main-Class: it.unibo.bls17.naive.MainBlsGuiBase
-
