@@ -30,7 +30,7 @@ DIRS
 sourceSets {
 	main {
 		java {
-			srcDirs = [ 'src-gen'  ]
+			srcDirs = [ 'src', 'src-gen'  ]
 		}
 	}
 	test {
@@ -117,13 +117,23 @@ test {
 JAR:  
 ---------------------------------------------------------------------
 */
-
+ 
 jar {   
-   	from( 'src' ){ include '**/*.*'	 exclude '**/*.java'	   }
+   	from( 'src' ){  include '**/*.*'	   } //  
  	manifest {
  		attributes "Class-Path": '.  ' + configurations.compile.collect { "lib/"+it.getName() }.join(' ') 
-		attributes 'Main-Class': "it.unibo.bls.devices.raspberry.MainBlsModelWithLedOnRasp"
+		attributes 'Main-Class': "it.unibo.bls.devices.raspberry.LedOnRaspberry"
 	}
+}
+ 
+
+task ledonraspJar(type: Jar){
+   	from( 'src' ){ include '**/*.*'		   } // exclude '**/*.java'
+ 	manifest {
+ 		attributes "Class-Path": '.  ' + configurations.compile.collect { "lib/"+it.getName() }.join(' ') 
+		attributes 'Main-Class': "it.unibo.bls.devices.raspberry.LedOnRaspberry"
+	}
+	baseName = 'LedOnRasp'
 }
 
 /*
