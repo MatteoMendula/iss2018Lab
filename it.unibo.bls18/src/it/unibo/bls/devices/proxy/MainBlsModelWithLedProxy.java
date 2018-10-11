@@ -1,9 +1,6 @@
 package it.unibo.bls.devices.proxy;
  
-
-import java.awt.Frame;
 import it.unibo.bls.applLogic.BlsApplicationLogic;
-import it.unibo.bls.devices.arduino.LedOnArduino;
 import it.unibo.bls.devices.gui.ButtonAsGui;
 import it.unibo.bls.devices.gui.LedAsGui;
 import it.unibo.bls.interfaces.ILedObservable;
@@ -12,7 +9,7 @@ import it.unibo.bls.interfaces.IObserver;
 import it.unibo.bls.oo.model.ButtonModel;
 import it.unibo.bls.oo.model.LedObservableModel;
 import it.unibo.bls.utils.UtilsBls;
-import it.unibo.is.interfaces.IOutputEnvView;
+ 
 
 
 public class MainBlsModelWithLedProxy  {

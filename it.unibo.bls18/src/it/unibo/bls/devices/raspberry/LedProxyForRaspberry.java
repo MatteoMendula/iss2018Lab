@@ -1,6 +1,5 @@
 package it.unibo.bls.devices.raspberry;
 
- 
 import java.util.Observable;
 import it.unibo.bls.interfaces.IObserver;
 import it.unibo.is.interfaces.IOutputEnvView;

@@ -15,11 +15,14 @@
 \contentsline {section}{\numberline {3}An object-based design}{7}{section.1.3}
 \contentsline {section}{\numberline {4}From BLS Mock devices to physical devices}{9}{section.1.4}
 \contentsline {subsubsection}{\numberline {4.0.1}Dependency injection and Inversion of Control}{9}{subsubsection.1.4.0.1}
-\contentsline {subsection}{\numberline {4.1}Devices on Arduino}{10}{subsection.1.4.1}
-\contentsline {subsection}{\numberline {4.2}Devices on Raspberry}{10}{subsection.1.4.2}
-\contentsline {section}{\numberline {5}Evolving the BLS into a distributed system}{11}{section.1.5}
-\contentsline {subsection}{\numberline {5.1}Led as a remote devices: the proxy pattern }{11}{subsection.1.5.1}
-\contentsline {subsection}{\numberline {5.2}Led as a remote device. the publish-subscribe pattern }{12}{subsection.1.5.2}
-\contentsline {section}{\numberline {6}CoAP}{13}{section.1.6}
-\contentsline {subsection}{\numberline {6.1}Led as a (CoAP) thing }{13}{subsection.1.6.1}
-\contentsline {subsection}{\numberline {6.2}BLS front end }{14}{subsection.1.6.2}
+\contentsline {subsection}{\numberline {4.1}MVC}{10}{subsection.1.4.1}
+\contentsline {subsection}{\numberline {4.2}Devices on Arduino}{10}{subsection.1.4.2}
+\contentsline {subsection}{\numberline {4.3}Devices on Raspberry}{11}{subsection.1.4.3}
+\contentsline {subsection}{\numberline {4.4}IOT}{11}{subsection.1.4.4}
+\contentsline {section}{\numberline {5}Evolving the BLS into a distributed system}{12}{section.1.5}
+\contentsline {subsection}{\numberline {5.1}Led as a remote devices: the proxy pattern }{12}{subsection.1.5.1}
+\contentsline {subsection}{\numberline {5.2}Led as a remote device. the publish-subscribe pattern }{13}{subsection.1.5.2}
+\contentsline {section}{\numberline {6}CoAP}{14}{section.1.6}
+\contentsline {subsection}{\numberline {6.1}Led as a (CoAP) thing }{14}{subsection.1.6.1}
+\contentsline {subsection}{\numberline {6.2}Hexagonal srchitecture}{15}{subsection.1.6.2}
+\contentsline {subsection}{\numberline {6.3}BLS front end }{16}{subsection.1.6.3}
