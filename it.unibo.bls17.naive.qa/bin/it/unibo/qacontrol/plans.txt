@@ -1,5 +1,0 @@
-plan(1,init, sentence(true,move(print(qacontrol( starts))),'','' ))
-plan(1,handleSensorEvent, sentence(true,printCurrentEvent(false),'','' ))
-plan(2,handleSensorEvent, sentence(true,eventswitch(sensorEvent, »sensorEvent( V), not here  GuardMove ),'','' ))
-plan(3,handleSensorEvent, sentence( evalTemperature( hot),raise( ctrlEvent , ctrlEvent( on) )'),'','' ))
-plan(4,handleSensorEvent, sentence(true,move(resumeplan),'','' ))

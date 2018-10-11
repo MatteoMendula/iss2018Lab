@@ -1,3 +1,0 @@
-plan(1,work, sentence(true,not here StateMoveNormal,'','' ))
-plan(2,work, sentence(true,move(print("qabuttonthingmqtt STARTS")),'','' ))
-plan(3,work, sentence(true,delay( 600000) ,'','' ))

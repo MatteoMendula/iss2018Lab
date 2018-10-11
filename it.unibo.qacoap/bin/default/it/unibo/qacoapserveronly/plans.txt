@@ -1,5 +1,0 @@
-plan(1,init, sentence(true,move(print("qacoapserveronly STARTS ")),'','' ))
-plan(2,init, sentence(true,not here StateMoveNormal,'','' ))
-plan(3,init, sentence(true,raise( coapServerStarted , info( 1) )'),'','' ))
-plan(4,init, sentence(true,move(print("qacoapserveronly ENDS ")),'','' ))
-plan(5,init, sentence(true,delay( 600000) ,'','' ))

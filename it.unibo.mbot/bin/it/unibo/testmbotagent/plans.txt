@@ -1,2 +1,0 @@
-plan(1,init, sentence(true,move(print("testmbotagent STARTS")),'','' ))
-plan(1,dotest, sentence(true,raise( usercmd , usercmd( robotgui( w( low))) )'),'','' ))
