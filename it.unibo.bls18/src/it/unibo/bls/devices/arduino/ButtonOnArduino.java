@@ -80,7 +80,7 @@ protected boolean buttonPressed = false;
 
    		    ButtonOnArduino button = new ButtonOnArduino("btnArduino", "COM9" ) ;
 	 		
-	 		ButtonModel buttonmodel = ButtonModel.createButton( new BlsApplicationLogic(null) );
+	 		ButtonModel buttonmodel = ButtonModel.createButton( "press", new BlsApplicationLogic(null) );
 	 		
 	 		button.addObserver(buttonmodel);
 	 		

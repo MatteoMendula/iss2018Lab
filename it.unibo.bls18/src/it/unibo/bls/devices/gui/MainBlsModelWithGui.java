@@ -10,6 +10,8 @@ import it.unibo.bls.utils.UtilsBls;
  
 public class MainBlsModelWithGui  {
 
+private final String btnName = "press";
+
 private ILedObservable ledmodel;
 private IObserver buttonmodel;
 private BlsApplicationLogic applLogic;
@@ -34,9 +36,9 @@ private IObservable buttongui;
 		//Create the Application logic that refers the led model (as ILed)
     	BlsApplicationLogic applLogic = new BlsApplicationLogic(ledmodel);
     	//Create the button model that refers the Application logic
-    	IObserver buttonmodel = ButtonModel.createButton(applLogic);
+    	IObserver buttonmodel = ButtonModel.createButton(btnName, applLogic);
     	//Create the button gui that refers the buttonmodel as observer
-   		ButtonAsGui.createButton( blsFrame, "press", buttonmodel);
+   		ButtonAsGui.createButton( blsFrame, btnName, buttonmodel);
   		ledmodel.turnOff();
 		blink();
 	} 	
@@ -54,7 +56,7 @@ private IObservable buttongui;
 		//Create the Application logic that refers the led model (as ILed)
     	applLogic   = new BlsApplicationLogic(ledmodel);
     	//Create the button model that refers the Application logic
-    	buttonmodel = ButtonModel.createButton(applLogic);
+    	buttonmodel = ButtonModel.createButton(btnName,applLogic);
  	} 	
  	protected void createConcreteComponents(){
  		//Create the frame
@@ -62,7 +64,7 @@ private IObservable buttongui;
  		//Create the LedAsGui
 		ledgui      = LedAsGui.createLed(blsFrame);
  		//Create the ButtonAsGui
-		buttongui   = ButtonAsGui.createButton( blsFrame, "press");
+		buttongui   = ButtonAsGui.createButton( blsFrame, btnName );
  	} 	
  	protected void configureSystemArchitecture(){
  		ledmodel.addObserver(ledgui);

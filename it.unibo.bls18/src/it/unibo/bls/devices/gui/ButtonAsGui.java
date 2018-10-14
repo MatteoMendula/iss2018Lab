@@ -11,9 +11,12 @@ import it.unibo.bls.interfaces.IObserver;
 import it.unibo.bls.utils.UtilsBls;
 
 public class ButtonAsGui extends Observable implements IObservable, ActionListener{
+	
+protected String cmd;
+
 //Factory method
 public static IObservable createButton( Frame frame, String cmd, IObserver obs ){
-	ButtonAsGui button         = new ButtonAsGui();
+	ButtonAsGui button         = new ButtonAsGui(cmd);
 	java.awt.Button buttonBase = new java.awt.Button(cmd);
 	buttonBase.addActionListener(  button );
 	frame.add(BorderLayout.WEST,buttonBase); 
@@ -21,9 +24,14 @@ public static IObservable createButton( Frame frame, String cmd, IObserver obs )
   	if( obs != null ) button.addObserver(obs);
 	return button;
 }
+
 public static IObservable createButton( Frame frame, String cmd  ){
 	return createButton(frame,cmd,null);
 }
+
+	public ButtonAsGui(String cmd ) {
+		this.cmd = cmd;
+	}
 
 	@Override //from IObservable
 	public void addObserver(IObserver observer) {
@@ -32,7 +40,7 @@ public static IObservable createButton( Frame frame, String cmd  ){
  	@Override //from ActionListener
 	public void actionPerformed(ActionEvent e) {
 		this.setChanged();
-		this.notifyObservers("pressed");
+		this.notifyObservers( this.cmd );
 	}
 	
 	

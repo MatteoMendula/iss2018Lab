@@ -1,12 +1,10 @@
 package it.unibo.bls.devices.mqtt;
 
 import java.util.Observable;
-
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-
 import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
 import it.unibo.bls.devices.gui.LedAsGui;
@@ -19,34 +17,34 @@ import it.unibo.system.SituatedSysKb;
 
 public class LedSubscriber extends Observable implements IObservable, MqttCallback {
 	protected IOutputEnvView outEnvView;
+	protected String ledName;
 	protected String serverAddr;
  	protected boolean isOn = false;
 	protected MqttUtils mqttutils = MqttUtils.getMqttSupport(   );
 	protected String clientid ;
-	protected String topic  ;
+	protected String topic  = CommonLedNames.allLedTopic;
 	protected int count = 0;
 	protected  MqttClient clientmqtt = null;
 	
 	//Factory method
-	public static IObservable createLed( String serverAddr ){
-		LedSubscriber led = new LedSubscriber( serverAddr );
+	public static IObservable createLed( String ledName, String serverAddr, String topic ){
+		LedSubscriber led = new LedSubscriber( ledName,serverAddr, topic);
 	 	return led;
 	}
 
-	public LedSubscriber( String serverAddr  ) {
+	public LedSubscriber( String ledName, String serverAddr, String topic  ) {
+		this.ledName    = ledName;
 		this.serverAddr = serverAddr;
+		this.topic      = topic;
  		outEnvView      = SituatedSysKb.standardOutEnvView;
 		try {
 			configure();
 		} catch (Exception e) {
 	 		e.printStackTrace();
-		}
-		
+		}		
 	}
 	public void configure( ) throws Exception {
-		clientid = "led1receiver";
-		topic    = "unibo/ledState" ;
-		clientmqtt = mqttutils.connect(clientid, serverAddr);  
+  		clientmqtt = mqttutils.connect(ledName, serverAddr);  
 		clientmqtt.setCallback(this);
 		clientmqtt.subscribe(topic);
  	}
@@ -72,7 +70,7 @@ public class LedSubscriber extends Observable implements IObservable, MqttCallba
 	@Override
 	public void messageArrived(String topic, MqttMessage msg)   {
  		try {
-  		     System.out.println("	%%% MqttUtils messageArrived on "+ topic + ": "+msg.toString());
+  		     System.out.println("	%%% LedSubscriber messageArrived on "+ topic + ": "+msg.toString());
 			 Struct msgt      = (Struct) Term.createTerm(msg.toString());
 // 			 String msgID      = msgt.getArg(0).toString();
 //			 String msgType    = msgt.getArg(1).toString();
@@ -91,13 +89,17 @@ public class LedSubscriber extends Observable implements IObservable, MqttCallba
  * Just for a rapid test 
  */
 	public static void main(String[] args) {
-		//ASSUMPTION:  launch local MQTT on docker
+		/*
+		 * ASSUMPTION:  launch local MQTT on docker 
+		 * docker images
+		 * docker run -ti -p 1883:1883 -p 9001:9001 eclipse-mosquitto
+		 */
 		
-		String severAddr = "tcp://m2m.eclipse.org:1883";
+		String severAddr = CommonLedNames.serverAddr;   
 			//Create the led thing
 		IObserver ledgui = LedAsGui.createLed(UtilsBls.initFrame(200,200));
 		System.out.println("LED GUI CREATED");
-		IObservable ledsubscriber = LedSubscriber.createLed(severAddr);
+		IObservable ledsubscriber = LedSubscriber.createLed("led1",severAddr,CommonLedNames.allLedTopic);
 		System.out.println("LED SUBSCRIBER CREATED");
 		ledsubscriber.addObserver(ledgui);
 		System.out.println("LED THING CREATED");

@@ -53,7 +53,7 @@ private int portNum;
 		//Create the Application logic that refers the led model (as ILed)
     	applLogic   = new BlsApplicationLogic(ledmodel);
     	//Create the button model that refers the Application logic
-    	buttonmodel = ButtonModel.createButton(applLogic);
+    	buttonmodel = ButtonModel.createButton("press",applLogic);
  	} 	
  	protected void createConcreteComponents(){
    		//Create the ButtonAsGui

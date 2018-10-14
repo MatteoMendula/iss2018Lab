@@ -1,14 +1,10 @@
 package it.unibo.bls.devices.mqtt;
 
+ 
+
 import java.util.Observable;
-
 import org.eclipse.paho.client.mqttv3.MqttClient;
-
-import it.unibo.bls.devices.gui.LedAsGui;
-import it.unibo.bls.devices.proxy.LedProxy;
-import it.unibo.bls.devices.proxy.LedThingReceiver;
 import it.unibo.bls.interfaces.ILedObservable;
-import it.unibo.bls.interfaces.IObservable;
 import it.unibo.bls.interfaces.IObserver;
 import it.unibo.bls.oo.model.LedObservableModel;
 import it.unibo.bls.utils.UtilsBls;
@@ -21,7 +17,7 @@ import it.unibo.system.SituatedSysKb;
 public class LedPublisher implements IObserver {
 	protected IOutputEnvView outEnvView;
 	protected String serverAddr;
- 	protected boolean isOn = false;
+  	protected boolean isOn = false;
 	protected MqttUtils mqttutils = MqttUtils.getMqttSupport(   );
 	protected String clientid ;
 	protected String topic  ;
@@ -29,13 +25,16 @@ public class LedPublisher implements IObserver {
 	protected  MqttClient clientmqtt = null;
 	
 	//Factory method
-	public static IObserver createLed( String serverAddr ){
-		LedPublisher led = new LedPublisher( serverAddr );
+	public static IObserver createLed( String serverAddr, String topic ){
+		LedPublisher led = new LedPublisher( serverAddr, topic );
 	 	return led;
 	}
-
-	public LedPublisher( String serverAddr  ) {
+/*
+ * Constructor
+ */
+	public LedPublisher( String serverAddr, String topic  ) {
 		this.serverAddr = serverAddr;
+		this.topic      = topic;
  		outEnvView      = SituatedSysKb.standardOutEnvView;
 		try {
 			configure();
@@ -45,9 +44,8 @@ public class LedPublisher implements IObserver {
 		
 	}
 	public void configure( ) throws Exception {
-		clientid   = "led1sender";
-		topic      = "unibo/ledState";
-		clientmqtt = mqttutils.connect(clientid, serverAddr);  
+		clientid   = "ledsender";
+ 		clientmqtt = mqttutils.connect(clientid, serverAddr);  
  	}
 	
 	
@@ -82,7 +80,7 @@ public class LedPublisher implements IObserver {
 	 */
 		@Override
 		public void update(Observable source, Object value) {
-			System.out.println(" LedPublisher update " + value  );
+			System.out.println(" LedPublisher update=" + value  );
 			String v = ""+value;
 			if( v.equals("true") ) turnOn();
 			else turnOff();
@@ -93,13 +91,16 @@ public class LedPublisher implements IObserver {
 		 */
 			
 			public static void main(String[] args) {
-				//ASSUMPTION:  launch local MQTT on docker
+				/*
+				 * ASSUMPTION:  launch local MQTT on docker 
+				 * docker images
+				 * docker run -ti -p 1883:1883 -p 9001:9001 eclipse-mosquitto
+				 */
 				
-				String severAddr = "tcp://m2m.eclipse.org:1883";
-  
- 				
+				String severAddr = "tcp://localhost:1883"; //tcp://m2m.eclipse.org:1883
+  				
 				//Create the led client (proxy)
-				IObserver ledpublisher = LedPublisher.createLed( severAddr );
+				IObserver ledpublisher = LedPublisher.createLed( severAddr, CommonLedNames.allLedTopic );
 				System.out.println("LED PUBLISHER CREATED");
 				//Create the led model
 				ILedObservable ledmodel  = LedObservableModel.createLed(ledpublisher);
@@ -109,7 +110,7 @@ public class LedPublisher implements IObserver {
 				
  				
 				//Do some interaction
-		 		for( int i=0; i<5; i++ ) {
+		 		for( int i=0; i<3; i++ ) {
 					UtilsBls.delay(1000);
 					ledmodel.turnOn(); 		
 					UtilsBls.delay(1000);

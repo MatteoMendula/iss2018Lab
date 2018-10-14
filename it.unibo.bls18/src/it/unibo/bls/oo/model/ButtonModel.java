@@ -6,14 +6,22 @@ import it.unibo.bls.interfaces.IObserver;
 
 public class ButtonModel extends Observable implements IObservable, IObserver{
 private boolean buttonState = false;
+private String btnName;
 
-//Factory method
-public static ButtonModel createButton( IObserver obs ){
-	 ButtonModel button = new ButtonModel();
+//Factory methods
+public static ButtonModel createButton( String btnName, IObserver obs ){
+	 ButtonModel button = new ButtonModel(btnName);
 	 button.addObserver(obs);
 	 return button;
 }
+public static ButtonModel createButton( String btnName ){
+	 ButtonModel button = new ButtonModel(btnName);
+ 	 return button;
+}
 
+	public ButtonModel(String btnName) {
+		this.btnName = btnName;
+	}
 	@Override  //for IObservable
 	public void addObserver(IObserver observer) {
 		 super.addObserver(observer);		
@@ -21,13 +29,13 @@ public static ButtonModel createButton( IObserver obs ){
 	
 	@Override //for IObserver (called by the lower layer)
 	public void update(Observable source, Object value) {
-		System.out.println("ButtonObserverModel updated"   );
+		System.out.println("ButtonModel updated"   );
 		switchThestate();
 	}
 
 	protected void switchThestate() {
 		buttonState = ! buttonState;
 		this.setChanged();
-		this.notifyObservers("pressed");				
+		this.notifyObservers(btnName);				
 	}
 }

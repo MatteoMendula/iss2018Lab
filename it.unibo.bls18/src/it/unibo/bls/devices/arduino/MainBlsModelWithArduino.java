@@ -38,7 +38,7 @@ private IObserver ledOnArduino;
 		//Create the Application logic that refers the led model (as ILed)
 		BlsApplicationLogic applLogic = new BlsApplicationLogic(ledmodel);
 		//Create the button model that refers the Application logic
-		IObserver buttonmodel = ButtonModel.createButton(applLogic);
+		IObserver buttonmodel = ButtonModel.createButton("press",applLogic);
 		//Create the button gui that refers the buttonmodel as observer
   		ButtonAsGui.createButton( blsFrame, "press", buttonmodel);
   		ledmodel.turnOff();
@@ -58,7 +58,7 @@ private IObserver ledOnArduino;
 		//Create the Application logic that refers the led model (as ILed)
     	applLogic   = new BlsApplicationLogic(ledmodel);
     	//Create the button model that refers the Application logic
-    	buttonmodel = ButtonModel.createButton(applLogic);
+    	buttonmodel = ButtonModel.createButton("press",applLogic);
  	} 	
  	protected void createConcreteComponents(){
  		//Create the frame
