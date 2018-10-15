@@ -17,6 +17,7 @@ protected final String cmdName = "switch";
 	
 	protected MainBlsOOModel sysmodel;
 	protected ILedObservable ledmodel;
+	protected IObserver buttonmodel;
 	protected IObserver ledpublisher;
 	protected IObservable leds[] ;
 	
@@ -33,6 +34,7 @@ protected final String cmdName = "switch";
 	protected void createTheModel() {
 		sysmodel  = MainBlsOOModel.createTheSystem(cmdName);
 		ledmodel  = sysmodel.getLedModel();
+		buttonmodel = sysmodel.getButtonModel();
 	}
 	protected void createTheLeds() {
 		ledpublisher = LedPublisher.createLed(severAddr,CommonLedNames.allLedTopic);
@@ -47,7 +49,7 @@ protected final String cmdName = "switch";
 	}
 	
 	protected void createCmdButton() {
-		ButtonAsGui.createButton( UtilsBls.initFrame(250,250), CommonLedNames.ledCmd, sysmodel.getButtonModel());
+		ButtonAsGui.createButton( UtilsBls.initFrame(250,250), CommonLedNames.ledCmd, buttonmodel);
 	}
 	protected void configure() {
 		ledmodel.addObserver ( ledpublisher );
