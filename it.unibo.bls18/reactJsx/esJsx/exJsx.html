@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ex0</title>
+    <!-- Load React. -->
+    <!-- Note: when deploying, replace "development.js" with "production.min.js".  --> 
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <style>
+    #place0 {
+      padding: 10px;
+      background-color: #1C89BF;
+    }
+    #place1 {
+      padding: 10px;
+      background-color: #49DD8E ;//#E94F37
+    }
+    #place2 {
+      padding: 10px;
+      background-color: #58B3FF ; //#A40E4C
+    }
+  </style>
+	
+ </head>
+  <body>
+ 
+ <!--
+ -------------------------------------------------------------
+ OUTPUT
+ -------------------------------------------------------------
+ --> 
+   <h3>Output</h3>
+   <div id="output"> ... </div>
+ 
+ 	<!-- LOAD --> 
+	<script src="exJsx.js"></script>
+ 
+ 
+ <!--
+ -------------------------------------------------------------
+ HTML
+ -------------------------------------------------------------
+ -->  
+  <h3>Plain HTML</h3>
+  <div id="place0">  
+  <ul>
+  	<li>Item1</li>
+  	<li>Item2</li>
+  </ul>
+  </div>
+ 
+ 
+ <!--
+ -------------------------------------------------------------
+ REACT
+ -------------------------------------------------------------
+ -->  
+  <h3>React JavaScript</h3>
+  <div id="place1"></div>
+ 
+  <script>
+  ReactDOM.render( 
+   // React.createElement("h2",null,"hello"),
+  
+  	React.createElement(
+  		"div",
+  		null,
+  		React.createElement( 
+  		    "ul",null,
+  			React.createElement( "li",null,"Item1"),
+  			React.createElement( "li",null,"Item2"),			
+  		)	
+    ),
+    place1,
+    function(){ output("update place1 done")  } //console.log("update place1 done")
+  )
+  </script>
+ 
+ <!--
+ -------------------------------------------------------------
+ REACT
+ -------------------------------------------------------------
+ -->
+  <h3>React JSX</h3>
+  <div id="place2"></div>
+ 
+  <script type="text/babel">
+    const i2 = "Item2"
+    ReactDOM.render( 
+  	<div>
+    <ul>
+  		<li>Item1</li>
+  	    <li>{i2}</li>
+    </ul> 		
+  	</div>,
+  	place2,
+  	function(){ output("update place2 done") } //console.log("update place2 done")
+  	)
+  </script> 
+
+ <!--
+ -------------------------------------------------------------
+ ANIMATE
+ -------------------------------------------------------------
+ -->  
+   <h3>Animation</h3>
+   <div id="place3">wait a minute ... </div>
+   
+    <script type="text/babel">
+    var count = 0;
+    var myTimer = setInterval(function() { 
+    	count++; 
+    	ReactDOM.render( <p>animate {count}</p>, document.getElementById('place3') );
+    	//console.log(count); 
+    	if( count >= 5 ) clearInterval(myTimer);
+    }, 1000);
+    </script>
+ 
+  </body>
+</html>
