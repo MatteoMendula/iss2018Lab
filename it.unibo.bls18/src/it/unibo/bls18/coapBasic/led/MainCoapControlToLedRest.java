@@ -36,9 +36,9 @@ private Frame blsFrame    = UtilsBls.initFrame(200,200);
  *  	
  */
 	public static void main(String[] args) throws Exception {
-		String hostName = "localhost"; //192.168.107.15 //"192.168.137.2";//
- 		String resourceName="Led";
- 		int port = 5683; //8010;
+		String hostName     = CommonCoapNames.hostName;
+ 		String resourceName = CommonCoapNames.resourceName;
+ 		int port            = CommonCoapNames.port;
 		new MainCoapControlToLedRest(hostName, port,resourceName);
   	}	
 }

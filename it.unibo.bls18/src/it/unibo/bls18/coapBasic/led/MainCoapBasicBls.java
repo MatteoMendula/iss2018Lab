@@ -49,9 +49,10 @@ private Frame blsFrame    = UtilsBls.initFrame(200,200);
 	}
 	
 	public CoapClient createClient(int port, String resourceName) {
-		coapClient= //new CoapClient("coap://192.168.1.12:"+port+"/"+resourceName);
-				new CoapClient("coap://localhost:"+port+"/"+resourceName);
-		System.out.println("MainCoapBasicLed Client started");
+		String hostName     = CommonCoapNames.hostName;
+	
+ 		coapClient   =  new CoapClient("coap://"+hostName+":"+port+"/"+resourceName);
+ 		System.out.println("MainCoapBasicLed Client started");
 		return coapClient;
 	}
 	

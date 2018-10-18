@@ -52,7 +52,7 @@ public class BlsApplicationLogicCoap implements IObserver{
 		//if( ledState.equals("true")   ) put("false"); else put("true");	//NO MORE
 		put("switch");
  		System.out.println("%%% BlsApplicationLogicCoap ledstate=" + ledState + " count=" + count);
- 		//checkConsistence();	//just for tetsing
+ 		//checkConsistence();	//just for testing
 	}
 	
 	protected void checkConsistence() {

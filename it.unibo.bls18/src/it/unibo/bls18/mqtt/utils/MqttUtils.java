@@ -1,7 +1,6 @@
 package it.unibo.bls18.mqtt.utils;
  
- 
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;

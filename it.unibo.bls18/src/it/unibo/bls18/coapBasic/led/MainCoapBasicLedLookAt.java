@@ -65,9 +65,10 @@ private AsynchListener asynchListener = new AsynchListener();
  *  	
  */
 	public static void main(String[] args) throws Exception {
- 		String resourceName="Led";
- 		int port = 5683; //8010;
-		MainCoapBasicLedLookAt appl = new MainCoapBasicLedLookAt("localhost", port,resourceName);
+		String hostName     = CommonCoapNames.hostName;
+		String resourceName = CommonCoapNames.resourceName;
+ 		int port            = CommonCoapNames.port;
+		MainCoapBasicLedLookAt appl = new MainCoapBasicLedLookAt(hostName, port,resourceName);
 // 		appl.synchGet();
 //		Thread.sleep(500);
 //		appl.put("true");

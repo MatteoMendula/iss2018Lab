@@ -1,7 +1,5 @@
 package it.unibo.bls.devices.mqtt;
 
- 
-
 import java.util.Observable;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import it.unibo.bls.interfaces.ILedObservable;

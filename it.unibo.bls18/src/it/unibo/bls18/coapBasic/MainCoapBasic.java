@@ -21,16 +21,17 @@ private static AsynchListener asynchListener = new AsynchListener();
 	}
 	
 	public static void createClient(int port, String resourceName) {
-		coapClient= new CoapClient("coap://192.168.1.12:"+port+"/"+resourceName);
-//		new  CoapClient("coap://localhost:8010/led" );
+//		coapClient= new CoapClient("coap://192.168.1.12:"+port+"/"+resourceName);
+ 		new  CoapClient("coap://localhost:8010/led" );
 		System.out.println("Client started");
 	}
 	
 	public static void addResource(String name) {
-		server.add(new ResourceCoap(name));
+		server.add( new ResourceCoap(name) );
 	}
 	
 	public static void synchGet() {
+ 		System.out.println("%%% synchGet " );
 		//Synchronously send the GET message (blocking call)
 //		CoapResponse coapResp = coapClient.advanced(request);
 		CoapResponse coapResp = coapClient.get();
@@ -55,8 +56,8 @@ private static AsynchListener asynchListener = new AsynchListener();
 	public static void main(String[] args) throws Exception {
 		String resourceName="led";
 		int port = 5683; //8010;
-//		MainCoapBasic.createServer(port);
-//		addResource(resourceName);
+		MainCoapBasic.createServer(port);
+		addResource(resourceName);
 		createClient(port,resourceName);
 		synchGet();
 		Thread.sleep(500);

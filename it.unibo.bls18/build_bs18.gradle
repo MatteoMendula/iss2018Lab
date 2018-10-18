@@ -4,7 +4,7 @@ build_bs18.gradle
 USAGE:	 
 	gradle -b build_bs18.gradle eclipse	//to set the dependency on the library
  	gradle -b build_bs18.gradle build   //creates the jar
- 	gradle -b build_bs18.gradle build ledonraspJar
+ 	gradle -b build_bs18.gradle build ledcoaponraspJar
 ================================================================================
 */
 apply plugin: 'java'
@@ -124,37 +124,38 @@ test {
 ---------------------------------------------------------------------
 JAR:  
 ---------------------------------------------------------------------
-*/
+
  
 jar {   
+   	from( 'src' ){      } //  
+ 	manifest {
+ 		attributes "Class-Path": '.  ' + configurations.compile.collect { "lib/"+it.getName() }.join(' ') 
+		attributes 'Main-Class': "it.unibo.bls.devices.raspberry.LedOnRaspberry"
+	}
+}
+*/
+ 
+jar {
    	from( 'src' ){  include '**/*.*'	   } //  
  	manifest {
  		attributes "Class-Path": '.  ' + configurations.compile.collect { "lib/"+it.getName() }.join(' ') 
-		attributes 'Main-Class': "it.unibo.bls.devices.raspberry.LedOnRaspberry"
+		attributes 'Main-Class': "it.unibo.bls.devices.mqtt.LedSubscriberOnRasp"
 	}
-}
+} 
  
-
-task ledonraspJar(type: Jar){
-   	from( 'src' ){ include '**/*.*'		   } // exclude '**/*.java'
- 	manifest {
- 		attributes "Class-Path": '.  ' + configurations.compile.collect { "lib/"+it.getName() }.join(' ') 
-		attributes 'Main-Class': "it.unibo.bls.devices.raspberry.LedOnRaspberry"
-	}
-	baseName = 'LedOnRasp'
-}
-
-/*
-task ledonraspJar(type: Jar) {
+ 
+ 
+task ledcoaponraspJar(type: Jar) {
     manifest {
-        attributes 'Main-Class': 'it.unibo.bls.devices.raspberry.MainBlsModelWithLedOnRasp'
+        attributes 'Main-Class': 'it.unibo.bls18.coapBasic.Led.raspberry.MainLedCoapOnRaspberry'
     }
-    baseName = 'LedOnRasp'
+    baseName = 'LedCoapOnRasp'
     //from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     from { configurations.compile.collect { "lib/"+it.getName() }.join(' ') }
     with jar
 }
 
+/*
 
 jar {
    	from( 'src' ){      }

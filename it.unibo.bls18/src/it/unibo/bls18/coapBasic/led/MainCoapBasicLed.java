@@ -5,6 +5,8 @@ import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
+import org.eclipse.californium.core.coap.CoAP.Type;
+
 import it.unibo.bls.applLogic.BlsApplicationLogic;
 import it.unibo.bls.devices.gui.ButtonAsGui;
 import it.unibo.bls.devices.gui.LedAsGui;
@@ -45,7 +47,7 @@ private Frame blsFrame = UtilsBls.initFrame(200,200);
  
 	protected  void createServer(int port) {	//port=5683 default
 		server   = new CoapServer(port);
-		server.start();
+  		server.start();
 		System.out.println("MainCoapBasicLed Server started");
 	}
 
@@ -99,9 +101,9 @@ private Frame blsFrame = UtilsBls.initFrame(200,200);
  *  	
  */
 	public static void main(String[] args) throws Exception {
-		String hostName     ="localhost";
- 		String resourceName ="Led";
- 		int port            = 5683; //8010;
+		String hostName     = CommonCoapNames.hostName;
+ 		String resourceName = CommonCoapNames.resourceName;
+ 		int port            = CommonCoapNames.port;
 		MainCoapBasicLed appl = new MainCoapBasicLed(hostName, port, resourceName);
  		appl.synchGet();
  		for( int i=0; i<3; i++ ) {

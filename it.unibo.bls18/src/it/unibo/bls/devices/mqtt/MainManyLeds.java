@@ -43,7 +43,7 @@ protected final String cmdName = "switch";
 	}
 	protected IObservable createASubscriberLed() {
 		IObserver ledgui = LedAsGui.createLed(UtilsBls.initFrame(200,200));
- 		IObservable ledsubscriber = LedSubscriber.createLed("led"+ledCount++,severAddr,CommonLedNames.allLedTopic);
+ 		IObservable ledsubscriber = LedSubscriber.createLed("ledNat"+ledCount++,severAddr,CommonLedNames.allLedTopic);
  		ledsubscriber.addObserver(ledgui);
  		return ledsubscriber;
 	}
