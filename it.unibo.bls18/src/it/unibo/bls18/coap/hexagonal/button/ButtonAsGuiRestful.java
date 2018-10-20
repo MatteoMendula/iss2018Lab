@@ -22,7 +22,7 @@ protected CoapClient buttonClient;
 //Factory method
 public static ButtonAsGuiRestful createButton( Frame frame, String cmd  ){
 	ButtonAsGuiRestful button         = new ButtonAsGuiRestful(cmd);
-	java.awt.Button buttonBase = new java.awt.Button(cmd);
+	java.awt.Button buttonBase        = new java.awt.Button(cmd);
 	buttonBase.addActionListener(  button );
 	frame.add(BorderLayout.WEST,buttonBase); 
 	frame.validate();
@@ -34,13 +34,15 @@ public static ButtonAsGuiRestful createButton( Frame frame, String cmd  ){
  */
 	public ButtonAsGuiRestful(String cmd ) {
 		this.cmd = cmd;
-		buttonClient  = new  CoapClient("coap://localhost:8020/"+ CommonBlsHexagNames.buttonResourceName );	
+		buttonClient  = new  CoapClient("coap://localhost:5683/"+ CommonBlsHexagNames.buttonResourceName );	
+		System.out.println("ButtonAsGuiRestful buttonClient done "   );
 	}
 
 @Override //from ActionListener
 	public void actionPerformed(ActionEvent e) {
  		CoapResponse resp =  buttonClient.put("pressed", MediaTypeRegistry.TEXT_PLAIN);	
- 		System.out.println("ButtonAsGuiRestful RESPONSE to put= " + resp.getResponseText() ); 	}
+ 		System.out.println("ButtonAsGuiRestful RESPONSE to put= " + resp.getResponseText() ); 	
+ 	}
 	
 	
 	/*
