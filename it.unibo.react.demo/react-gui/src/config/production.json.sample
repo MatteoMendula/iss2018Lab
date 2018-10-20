@@ -1,0 +1,4 @@
+{
+  "mqttUrl": "ws://your_host:1884", // For example ws://localhost:1884
+  "mqttTopic": "<topic>" // For example unibo/qasys
+}

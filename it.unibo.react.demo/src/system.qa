@@ -1,0 +1,76 @@
+System resoucemodelReplication
+
+Event resourceChangeEvt : resource( TYPE, CATEG, NAME, VALUE ) 
+Event updateResourceEvt : resource( TYPE, CATEG, NAME, VALUE ) 
+
+Dispatch updateResourceMsg : resource( TYPE, CATEG, NAME, VALUE ) 
+Dispatch updateModelMsg : resource( TYPE, CATEG, NAME, VALUE ) 
+
+pubSubServer "ws://broker.hivemq.com:8000/mqtt" //"tcp://localhost:1883"
+
+Context ctxSystemController ip [ host="localhost" port=8032 ]
+Context ctxSensors ip [ host="localhost" port=8033 ]
+
+QActor worldobserver context ctxSystemController {
+	Plan init  normal [
+		demo consult("./resourceModel.pl"); 
+		println("Init World Observer")
+	]
+	switchTo waitForResourceChange            
+		 
+   	Plan waitForResourceChange[  ]  
+  	transition stopAfter 3600000   	//1h 
+ 		whenEvent resourceChangeEvt -> handleResourceChange  	  
+ 	finally repeatPlan 
+ 	
+ 	Plan handleResourceChange resumeLastPlan [
+ 		printCurrentEvent;
+ 		onEvent resourceChangeEvt : resource( TYPE, CATEG, NAME, VALUE ) 
+ 			-> demo changeModelItem(CATEG, NAME, VALUE)
+ 	]
+}
+
+QActor controller context ctxSystemController -pubsub {
+	Plan init  normal [
+		delay 500;
+		println("Init Controller")
+	]
+	switchTo waitForUpdateResource            
+		 
+   	Plan waitForUpdateResource[  ]  
+  	transition stopAfter 3600000   	//1h 
+ 		whenMsg updateResourceMsg -> handleUpdateResource
+ 	finally repeatPlan 
+ 	
+ 	Plan handleUpdateResource resumeLastPlan [
+ 		printCurrentMessage;
+ 		onMsg updateResourceMsg : resource( TYPE, CATEG, NAME, VALUE ) 
+ 			-> publishMsg "unibo/qasys" for "node" -m updateModelMsg : resource( TYPE, CATEG, NAME, VALUE )
+ 	]
+}
+
+QActor temperature context ctxSensors /*-pubsub*/ {
+	Plan init  normal [
+		println("Init Temperature");
+		delay 5000;
+		// Events should be sent as mqtt event, but QA on same ctx can't share mqtt connection because use singleton class
+		// So I prefer to use mqtt only on controller QA because it has to send information outside (node)
+		emit resourceChangeEvt : resource( sensor, temperature, cityTemperature, 14 );
+		delay 3000;
+		emit resourceChangeEvt : resource( sensor, temperature, cityTemperature, 16 );
+		delay 3000;
+		emit resourceChangeEvt : resource( sensor, temperature, cityTemperature, 18 );
+		delay 3000;
+		emit resourceChangeEvt : resource( sensor, temperature, cityTemperature, 20 );
+		delay 3000;
+		emit resourceChangeEvt : resource( sensor, temperature, cityTemperature, 22 );
+		delay 3000; 
+		emit resourceChangeEvt : resource( sensor, temperature, cityTemperature, 24 );
+		delay 3000;
+		emit resourceChangeEvt : resource( sensor, temperature, cityTemperature, 26 );
+		delay 3000;
+		emit resourceChangeEvt : resource( sensor, temperature, cityTemperature, 16 );
+		delay 3000;
+		emit resourceChangeEvt : resource( sensor, temperature, cityTemperature, 14 )
+	]
+}
