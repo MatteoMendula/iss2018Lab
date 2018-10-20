@@ -2,9 +2,7 @@ package it.unibo.bls18.coapBasic.led;
 
 import static org.eclipse.californium.core.coap.CoAP.ResponseCode.BAD_REQUEST;
 import static org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED;
-
 import java.util.Observable;
-
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
@@ -15,7 +13,7 @@ import it.unibo.bls.interfaces.IObserver;
  
 
 /*
- * A LedCoapResource is a CoapResource that uses a LedObservableModel
+ * A LedCoapResource is a CoapResource that uses and observes a LedObservableModel
  * Usage: MainCoapBasicLed  MainCoapBasicBls
  */
 public class LedCoapResource extends CoapResource implements IObserver{ //observes the ledModel
@@ -32,6 +30,7 @@ private	ILedObservable ledModel ;
 
 	    @Override	//CoapResource
 	    public void handleGET(CoapExchange exchange) {
+ 		    CommonCoapNames.showExchange(exchange);
 	    	//System.out.println("	LedResource GET source="+exchange.getSourceAddress() + " value=" + getValue());
 	        exchange.respond( ResponseCode.CONTENT, getValue(), MediaTypeRegistry.TEXT_PLAIN) ;
 	    }
@@ -39,6 +38,7 @@ private	ILedObservable ledModel ;
 	    @Override	//CoapResource
 	    public  void handlePUT(CoapExchange exchange) {
  	        try {
+  		    	CommonCoapNames.showExchange(exchange);
 	        	String value = exchange.getRequestText();//new String(payload, "UTF-8"); 
 	            System.out.println("LedCoapResource handlePUT "+ value);
 	            if( value.equals("switch"))  switchValue();	             

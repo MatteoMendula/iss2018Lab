@@ -5,8 +5,6 @@ import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
-import org.eclipse.californium.core.coap.CoAP.Type;
-
 import it.unibo.bls.applLogic.BlsApplicationLogic;
 import it.unibo.bls.devices.gui.ButtonAsGui;
 import it.unibo.bls.devices.gui.LedAsGui;
@@ -30,10 +28,12 @@ private ILedObservable ledmodel;
 private IObserver ledgui;
 private IObserver applLogic;
 private Frame blsFrame = UtilsBls.initFrame(200,200);
+private String uriStr;
 
 	public MainCoapBasicLed(String hostName, int port, String resourceName) {
+		uriStr = "coap://"+hostName+":"+port+"/"+resourceName;
 		createServer(port);
-		createClient(hostName, port,resourceName);
+		createClient( );
 		configure(port, resourceName);
 	}
 
@@ -51,8 +51,8 @@ private Frame blsFrame = UtilsBls.initFrame(200,200);
 		System.out.println("MainCoapBasicLed Server started");
 	}
 
-	public void createClient(String hostName, int port, String resourceName) {
-		coapClient=  new CoapClient("coap://"+hostName+":"+port+"/"+resourceName);
+	public void createClient( ) {
+ 		coapClient=  new CoapClient(uriStr);
 		System.out.println("MainCoapBasicLed Client started " + coapClient.getURI() );
  	}
 	
@@ -110,7 +110,7 @@ private Frame blsFrame = UtilsBls.initFrame(200,200);
 			Thread.sleep(500);
 			appl.put("true");
 			Thread.sleep(1000);
-			appl.put("fase");
+			appl.put("false");
  		}
 		System.out.println("LAST VALUE:");
 		appl.asynchGet();
