@@ -48,8 +48,8 @@ public static ButtonAsGuiRestful createButton( Frame frame, String cmd  ){
 	/*
 	 * Just for a rapid test	
 	 */		
-		public static void main(String[] args) {
- 			ButtonAsGuiRestful.createButton( UtilsBls.initFrame(200,200), "press");
-		}
+public static void main(String[] args) {
+	ButtonAsGuiRestful.createButton( UtilsBls.initFrame(200,200), "press");
+}
 	
 }

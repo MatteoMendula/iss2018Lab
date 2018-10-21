@@ -1,18 +1,16 @@
 package it.unibo.bls18.coap.hexagonal.bls;
 
-import java.util.Observable;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
-
 import it.unibo.bls18.coap.hexagonal.CommonBlsHexagNames;
-import it.unibo.bls18.coap.hexagonal.ResourceLocalObserver;
+import it.unibo.bls18.coap.hexagonal.ResourceLocalGofObserver;
  
 
-public class BlsHexagApplLogic extends ResourceLocalObserver  {
+public class BlsHexagApplLogicObserver extends ResourceLocalGofObserver  {
 protected CoapClient ledClient;
 protected boolean ledState = false;
 
- 	public BlsHexagApplLogic( ) {
+ 	public BlsHexagApplLogicObserver( ) {
  		ledClient = new  CoapClient("coap://localhost:5683/"+CommonBlsHexagNames.ledResourceName );
  		getCurrentLedState();
    		showMsg("BlsHexagApplLogic CREATED ledState=" + ledState);
@@ -37,9 +35,9 @@ protected boolean ledState = false;
  	/*
  	 * Called by
  	 */
-	@Override
-	public void update(Observable source, Object v) {
-		System.out.println("	BlsHexagApplLogic update/2: " + v);			 		
-	}
+//	@Override
+//	public void update(Observable source, Object v) {
+//		System.out.println("	BlsHexagApplLogic update/2: " + v);			 		
+//	}
 
 }

@@ -7,6 +7,9 @@ import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapHandler;
 import org.eclipse.californium.core.CoapObserveRelation;
 import org.eclipse.californium.core.CoapResponse;
+import org.eclipse.californium.core.coap.MediaTypeRegistry;
+
+import it.unibo.bls.utils.UtilsBls;
  
 public class  CoapLedObserverClient {
  	
@@ -22,8 +25,17 @@ public class  CoapLedObserverClient {
 		String content1 = client.get().getResponseText();
 		System.out.println("Client: RESPONSE GET: " + content1);
 		
+		
+		//modify
+		for( int i=0; i<3;i++) {
+			UtilsBls.delay(500);
+			CoapResponse coapResp = client.put("true", MediaTypeRegistry.TEXT_PLAIN);
+			System.out.println("Client: RESPONSE PUT: " + coapResp.getResponseText());
+			UtilsBls.delay(500);
+			coapResp = client.put("fasle", MediaTypeRegistry.TEXT_PLAIN);
+			System.out.println("Client: RESPONSE PUT: " + coapResp.getResponseText());
+		}
 		// observe
-
 		System.out.println("Client: OBSERVE (press enter to exit)");
 		
 		CoapObserveRelation relation = client.observe(

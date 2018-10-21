@@ -1,11 +1,9 @@
 package it.unibo.bls18.coap.hexagonal.button;
 
-import java.util.Observable;
-
-import it.unibo.bls18.coap.hexagonal.ResourceLocalObserver;
+import it.unibo.bls18.coap.hexagonal.ResourceLocalGofObserver;
  
 
-public class ButtonResourceGofObserver extends ResourceLocalObserver  {
+public class ButtonResourceGofObserver extends ResourceLocalGofObserver  {
 
  	public ButtonResourceGofObserver( ) {
   		showMsg("ButtonResourceGofObserver CREATED");
@@ -21,9 +19,9 @@ public class ButtonResourceGofObserver extends ResourceLocalObserver  {
  	/*
  	 * Called by
  	 */
-	@Override
-	public void update(Observable source, Object v) {
-		System.out.println("	ButtonResourceGofObserver update/2: " + v);			 		
-	}
+//	@Override
+//	public void update(Observable source, Object v) {
+//		System.out.println("	ButtonResourceGofObserver update/2: " + v);			 		
+//	}
 
 }

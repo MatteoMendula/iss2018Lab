@@ -2,7 +2,7 @@ package it.unibo.bls18.coap.hexagonal;
 import org.eclipse.californium.core.observe.ObserveRelation;
 import org.eclipse.californium.core.server.resources.Resource;
 
-public abstract class ResourceLocalObserver implements IResourceLocalObserver{
+public abstract class ResourceLocalGofObserver implements IResourceLocalGofObserver{
    
   	protected void showMsg(String msg) {
  		 System.out.println( msg ) ;

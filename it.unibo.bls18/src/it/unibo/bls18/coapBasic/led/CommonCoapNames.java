@@ -4,6 +4,11 @@ import org.eclipse.californium.core.server.resources.CoapExchange;
 
 public class CommonCoapNames {
 
+	public static String mqttUrl      = "ws://broker.hivemq.com:8000/mqtt";//"tcp://localhost:1883"; //tcp://m2m.eclipse.org:1883
+	public static String mqttClientId ="LedCoapResourceNat";
+	public static String mqttTopic    ="unibo/bls18";
+
+	
 	public static String hostName     ="localhost"; //"192.168.107.15"; 192.168.0.51//localhost
 	public static String hostRaspName ="192.168.0.50";  
 	public static String ledResourceName    ="Led";

@@ -28,7 +28,7 @@ public static void create( int port ) {
 public ButtonThing(int port ) {
 	try {
   		resource = new ButtonResource() ;
-		resource.setObserver(new ButtonResourceGofObserver());
+		resource.setObserver( new ButtonResourceGofObserver() );
 		server   = new CoapServer(port);
 		server.add( resource );
 		server.start();

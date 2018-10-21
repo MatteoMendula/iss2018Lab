@@ -19,6 +19,10 @@ public class LedAsGui implements IObserver {
 private Panel p = new Panel(); 
 private final Dimension sizeOn  = new Dimension(100,100);
 private final Dimension sizeOff = new Dimension(30,30);
+
+private boolean ledGuiState = false;
+
+
 //Factory method
 public static IObserver createLed( Frame frame){
 	LedAsGui led = new LedAsGui(frame);
@@ -26,7 +30,6 @@ public static IObserver createLed( Frame frame){
 	return led;
 }
 	public LedAsGui( Frame frame ) {
-//		super();
  		configure(frame); 
   	}	
 	protected void configure(Frame frame){
@@ -37,10 +40,12 @@ public static IObserver createLed( Frame frame){
 		p.validate();
  	}		    
  	protected void turnOn(){
+ 		ledGuiState = true;
  		p.setSize( sizeOn );
 		p.validate();
 	}
  	protected void turnOff() {
+ 		ledGuiState = false;
  		p.setSize( sizeOff );
 		p.validate();
 	}
@@ -54,7 +59,8 @@ public static IObserver createLed( Frame frame){
 		System.out.println(" LedAsGui update " + value );
 		String v = ""+value;
 		if( v.equals("true") ) turnOn();
-		else turnOff();
+		else if( v.equals("false") )  turnOff();
+		else if( v.equals("switch") ) { if(ledGuiState) turnOff(); else turnOn();}
 	}
 	
 /*

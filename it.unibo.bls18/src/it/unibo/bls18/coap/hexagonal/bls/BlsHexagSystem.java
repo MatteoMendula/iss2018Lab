@@ -1,21 +1,20 @@
 package it.unibo.bls18.coap.hexagonal.bls;
 
 import org.eclipse.californium.core.CoapServer;
-
 import it.unibo.bls.utils.UtilsBls;
 import it.unibo.bls18.coap.hexagonal.CommonBlsHexagNames;
 import it.unibo.bls18.coap.hexagonal.button.ButtonAsGuiRestful;
 import it.unibo.bls18.coap.hexagonal.button.ButtonResource;
-import it.unibo.bls18.coap.hexagonal.button.ButtonResourceGofObserver;
+import it.unibo.bls18.coap.hexagonal.led.LedAsGuiPluginObserver;
 import it.unibo.bls18.coap.hexagonal.led.LedResource;
-import it.unibo.bls18.coap.hexagonal.led.LedResourceGofObserver;
+
  
 
-public class BlsSystem {
+public class BlsHexagSystem {
 	private CoapServer server;
 	private ButtonResource buttonResource;
 	
-	public BlsSystem() {
+	public BlsHexagSystem() {
 		createServer();
 		configure();
 	}
@@ -34,7 +33,7 @@ public class BlsSystem {
 	
 	protected void createResourceModel(  ) {
 		LedResource ledResource = new LedResource( ) ;
-		ledResource.setObserver( new LedResourceGofObserver() );  //add a model viewer
+		ledResource.setObserver( new LedAsGuiPluginObserver( UtilsBls.initFrame(200,200) ) );  //add a model viewer
 		System.out.println("CREATE ledResource ");
 		buttonResource = new ButtonResource();
 		System.out.println("CREATE buttonResource ");
@@ -44,7 +43,7 @@ public class BlsSystem {
 	}
 
 	protected void createApplLogic(  ) {
- 		buttonResource.setObserver( new BlsHexagApplLogic() );
+ 		buttonResource.setObserver( new BlsHexagApplLogicObserver() );
  	}
 
 	protected void createInputDevice() {
@@ -54,7 +53,7 @@ public class BlsSystem {
  * 	
  */
 	public static void main(String[] args) throws Exception {
-		new BlsSystem();
+		new BlsHexagSystem();
 	}
 
 }

@@ -36,6 +36,7 @@ public class BlsApplicationLogicCoap implements IObserver{
 //	}
  	
 	protected void put(String v) {
+		System.out.println("%%% BlsApplicationLogicCoap put " );
 		ledState = v;
 		CoapResponse coapResp = coapClient.put(v, MediaTypeRegistry.TEXT_PLAIN);
  		//System.out.println("%%% BlsApplicationLogicCoap ANSWER put " );

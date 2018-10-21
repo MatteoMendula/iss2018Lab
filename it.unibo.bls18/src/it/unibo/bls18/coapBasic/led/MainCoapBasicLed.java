@@ -2,6 +2,8 @@ package it.unibo.bls18.coapBasic.led;
 
 import java.awt.Frame;
 import org.eclipse.californium.core.CoapClient;
+import org.eclipse.californium.core.CoapHandler;
+import org.eclipse.californium.core.CoapObserveRelation;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
@@ -29,11 +31,11 @@ private IObserver ledgui;
 private IObserver applLogic;
 private Frame blsFrame = UtilsBls.initFrame(200,200);
 private String uriStr;
-
+ 
 	public MainCoapBasicLed(String hostName, int port, String resourceName) {
 		uriStr = "coap://"+hostName+":"+port+"/"+resourceName;
 		createServer(port);
-		createClient( );
+//		createCoapObserverClient( );
 		configure(port, resourceName);
 	}
 
@@ -44,24 +46,41 @@ private String uriStr;
  		addConcreteResourceToResourceModel();
   	}
 
- 
+	protected void createResourceModel(  ) {
+  		ledmodel = LedObservableModel.createLed(  );
+ 	}
+//	protected void createApplicationLogic(  ) {
+//    	applLogic = new BlsApplicationLogic(ledmodel);
+// 	}
+
 	protected  void createServer(int port) {	//port=5683 default
 		server   = new CoapServer(port);
   		server.start();
 		System.out.println("MainCoapBasicLed Server started");
 	}
-
-	public void createClient( ) {
+/*
+	public void createCoapObserverClient( ) {
  		coapClient=  new CoapClient(uriStr);
+  		createCoapObserverRelation(coapClient);
 		System.out.println("MainCoapBasicLed Client started " + coapClient.getURI() );
  	}
 	
-	protected void createResourceModel(  ) {
-  		ledmodel = LedObservableModel.createLed(  );
- 	}
-	protected void createApplicationLogic(  ) {
-    	applLogic = new BlsApplicationLogic(ledmodel);
- 	}
+	protected void createCoapObserverRelation(CoapClient coapClient) {
+		CoapObserveRelation relation = coapClient.observe(
+				new CoapHandler() {
+					@Override public void onLoad(CoapResponse response) {
+						String content = response.getResponseText();
+						System.out.println("MainCoapBasicLed Client CoAp observes: " + content);
+						
+					}
+					
+					@Override public void onError() {
+						System.err.println("MainCoapBasicLed Client: OBSERVING FAILED (press enter to exit)");
+					}
+				});
+		//relation.proactiveCancel();			//TO DETACH
+	}
+*/	
 	protected void createCoapEvelopeAroundResource( String resourceName ) {
 		//Create a LedCoapResource that makes reference to the LedObservableModel
 		LedCoapResource ledResource = new LedCoapResource(resourceName,ledmodel) ;
@@ -73,16 +92,16 @@ private String uriStr;
 	protected void addConcreteResourceToResourceModel() {
 		ledmodel.addObserver(ledgui);
 	}
- 	protected void createButtonAsFrontEnd( ) {
-		ButtonAsGui.createButton( blsFrame, "press", applLogic);		
-}
+// 	protected void createButtonAsFrontEnd( ) {
+//		ButtonAsGui.createButton( blsFrame, "press", applLogic);		
+// 	}
  	
 	protected void synchGet() {
 		//Synchronously send the GET message (blocking call)
 		CoapResponse coapResp = coapClient.get();
 		//The "CoapResponse" message contains the response. 
  //		System.out.println(Utils.prettyPrint(coapResp));
-		System.out.println("%%% MainCoapBasicLedLookAt ANSWER get " + coapResp.getResponseText());		
+		System.out.println("%%% MainCoapBasicLed ANSWER get " + coapResp.getResponseText());		
 	}
 
 	protected void asynchGet() {
@@ -92,10 +111,12 @@ private String uriStr;
 	public void put(String v) {
 		CoapResponse coapResp = coapClient.put(v, MediaTypeRegistry.TEXT_PLAIN);
 		//The "CoapResponse" message contains the response.
- 		System.out.println("%%% MainCoapBasicLed ANSWER put " );
 		//System.out.println(Utils.prettyPrint(coapResp));
-		System.out.println("%%% MainCoapBasicLedLookAt ANSWER put " + coapResp.getResponseText());		
+		System.out.println("%%% MainCoapBasicLed NEW LED STATE= " + coapResp.getResponseText());	
+ 		
 	}
+
+	
 	
 /*
  *  	
@@ -105,14 +126,15 @@ private String uriStr;
  		String resourceName = CommonCoapNames.resourceName;
  		int port            = CommonCoapNames.port;
 		MainCoapBasicLed appl = new MainCoapBasicLed(hostName, port, resourceName);
- 		appl.synchGet();
- 		for( int i=0; i<3; i++ ) {
-			Thread.sleep(500);
-			appl.put("true");
-			Thread.sleep(1000);
-			appl.put("false");
- 		}
-		System.out.println("LAST VALUE:");
-		appl.asynchGet();
+// 		appl.synchGet();
+		System.out.println(" ---  START --- ");
+// 		for( int i=0; i<3; i++ ) {
+//			Thread.sleep(500);
+//			appl.put("true");
+//			Thread.sleep(1000);
+//			appl.put("false");
+// 		}
+//		System.out.println("LAST VALUE:");
+//		appl.asynchGet();
 	}	
 }

@@ -3,13 +3,13 @@ package it.unibo.bls18.coap.hexagonal;
 import org.eclipse.californium.core.CoapResource;
 
 public abstract class CoapGofObservableResource extends CoapResource implements IResourceIot{
-protected IResourceLocalObserver observer  ;
+protected IResourceLocalGofObserver observer  ;
 	
 	public CoapGofObservableResource(String name) {
 		super(name);
  	}
 	
-	public void setObserver( IResourceLocalObserver obs ) {
+	public void setObserver( IResourceLocalGofObserver obs ) {
 		observer = obs;
 	}
 	/*
