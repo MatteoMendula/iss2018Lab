@@ -19,6 +19,15 @@ const
     const mqtt   = require('mqtt');			//npm install --save mqtt
     const config = require('./config/config');
 
+	/*
+	 * DB PART
+	 */
+    const ctrlGet     = require('./controls/ctrlGetUsersRest');
+    const ctrlAdd     = require('./controls/ctrlAddUserRest');
+    const ctrlDel     = require('./controls/ctrlDeleteUserRest');
+    const ctrlChng    = require('./controls/ctrlChangeUserRest'); 
+    const requestUtil = require('./utilsMongoose.js');   //sets connections; 
+    
 var root       = __dirname; //set by Node to the directory path to the file;
 var indexPath  = root+"/index.html";
 var ledViewPath= root+"/ledState.html";
@@ -61,41 +70,64 @@ function handler (request, response) {
 	console.log("serverHttpToCoap request.method=" + method + " path=" + path); 
 
 	var fpath = join(root, path);
-	if( method === 'GET' && path === "/Led" ) { 
- 		sendCoapRequest(request, response, "Led", handleCoapAnswer);	
-		return; 
- 	}
-	if( method === 'GET' && path === "/Button" ) { 
- 		sendCoapRequest(request, response, "Button", handleCoapAnswer);	
-		return; 
- 	}
-	if( method === 'GET'   ) {
-		srvUtil.renderStaticFile(fpath,response);
- 		return; 		
- 	}
-	if (method === 'POST' && path === '/adduser' ) {
-		var inData = '';
-		request.on('data', function (data) { //data is of type Buffer;
-	        inData += data;	
-	        // Too much data, kill the connection!;
-	        if (inData.length > 1e6) request.connection.destroy();
-	    });
-		request.on('end', function () { //data are all available;
-			response.end("<html>"+"inData=" + inData + "</html>");
- 	    });
- 		return;		
-	}
-	if (method === 'POST' && path === '/ledSwitch' ) {
-		sendCoapCoammnd(request, response, handleCoapAnswer);
-		return;	
-	}
-	response.end( "Sorry, I don't understand" );
+	
+	/*
+	 * DB PART
+	 */
+ 
+	switch ( method ){
+		case 'GET' :
+			if( path === '/Led' ){
+				sendCoapRequest(request, response, "Led", handleCoapAnswer);
+			} else	if( path === "/Button" ) { 
+		 		sendCoapRequest(request, response, "Button", handleCoapAnswer);	
+ 		 	} else if( path === '/api/user' ){
+				console.log("serverHttpToCoap switch method=" + method + " path=" + path); 
+				ctrlGet.getUsers(  response, doAnswerStr );  //perform an asynch  query
+			} else  srvUtil.renderStaticFile(fpath,response);  //default index and ico 
+			return;
+		case 'POST' : //add 
+			if ( path === '/ledSwitch' ) {
+				sendCoapCoammnd(request, response, handleCoapAnswer);
+ 			} else if( path==='/api/user'  ){
+				ctrlAdd.addUser(  reqInfo.body, response, doAnswerStr );
+			}  	
+			return;
+		case 'PUT':  //modify
+			if ( path === '/ledSwitch' ) {
+				sendCoapCoammnd(request, response, handleCoapAnswer);
+ 			} else if( path === '/api/user' ){  //accepts only JSON format;
+				var jsonBody = JSON.parse(  reqInfo.body  );
+				console.log("oldUser=" + jsonBody.old);
+				console.log("chngUser=" + jsonBody.new);
+ 				ctrlChng.changeUser(jsonBody.old, jsonBody.new, response, doAnswerStr );
+			}  
+			return;
+		case 'DELETE':
+			if( path === '/api/user' ){ // for JSON only;
+				ctrlDel.deleteUser( JSON.parse( reqInfo.body ), response, doAnswerStr);
+ 			} //else{ response.statusCode=400; response.end("ERROR on DLEETE"); }
+			return;
+		default:{
+			response.writeHead(405, {'Content-type':'application/json'});
+			response.end(  "METHOD ERROR"  );		
+			return;
+		}	
+		
+	}//switch
+ 	
+	
 //	response.setHeader('Content-Type', 'text/html');
 //	response.setHeader('Content-Length', Buffer.byteLength(html, 'utf8'));
 //	response.end(html);
 
 }
 
+var doAnswerStr = function(err, response, msg){
+	console.log("serverHttpToCoap doAnswerStr" +msg);
+ 	if( err ){	response.statusCode=500; response.end(msg); }
+	else{ response.statusCode=200; response.end(msg); }
+} 
 /**
  * COAP messaging
  */
@@ -187,3 +219,6 @@ app.listen(8080, function(){console.log("serverHttpToCoap bound to port 8080")})
 //createHttpServer( 8080, function() { console.log('serverHttpToCoap bound to port 8080'); } );
 
 
+/*
+ curl -X POST -d "{\"name\": \"Alice\",\"age\": \"25\",\"password\": \"pp\"}" http://localhost:3000/api/user
+*/
