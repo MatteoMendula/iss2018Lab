@@ -9,13 +9,19 @@ public class CommonBlsHexagNames {
 	public static String ledResourceName    ="Led";
 	public static String buttonResourceName ="Button";
 	public static String resourceName ="Led";
-	public static int port            = 5683; //8010;
+	public static int port            = 5683;  
+	public static int ledPort         = 8010;  
+	public static int buttonPort      = 8020;  
 	
-	public static String ledUriStr    =  "coap://"+hostName+":"+port+"/"+ledResourceName ;
-	public static String ButtonUriStr =  "coap://"+hostName+":"+port+"/"+buttonResourceName ;
+	public static String ledUriStr    =  "coap://"+hostName+":"+ledPort+"/"+ledResourceName ;
+	public static String ButtonUriStr =  "coap://"+hostName+":"+buttonPort+"/"+buttonResourceName ;
+
+	public static String BlsLedUriStr    =  "coap://"+hostName+":"+port+"/"+ledResourceName ;
+	public static String BlsButtonUriStr =  "coap://"+hostName+":"+port+"/"+buttonResourceName ;
 
 	public static final String cmdTurnOn  = "true";
 	public static final String cmdTurnOff = "false";
+	public static final String buttonCmd  = "pressed";
 	
 	
 	

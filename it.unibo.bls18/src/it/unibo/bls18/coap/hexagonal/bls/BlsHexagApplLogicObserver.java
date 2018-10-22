@@ -11,9 +11,9 @@ protected CoapClient ledClient;
 protected boolean ledState = false;
 
  	public BlsHexagApplLogicObserver( ) {
- 		ledClient = new  CoapClient("coap://localhost:5683/"+CommonBlsHexagNames.ledResourceName );
+ 		ledClient = new  CoapClient( CommonBlsHexagNames.BlsLedUriStr );	//
  		getCurrentLedState();
-   		showMsg("BlsHexagApplLogic CREATED ledState=" + ledState);
+   		showMsg("BlsHexagApplLogicObserver CREATED ledState=" + ledState);
  	}
  	
  	protected void getCurrentLedState() {  //just to be sure ...
@@ -21,23 +21,14 @@ protected boolean ledState = false;
  		ledState = ledValStr.equals("true");		
  	}
  	/*
- 	 * Called by Coap
- 	 * @see it.unibo.bls18.coap.hexagonal.IResourceLocalObserver#update(java.lang.String)
- 	 */
+ 	 * Called by  
+  	 */
  	@Override
 	public void update(String v) {
-		System.out.println("	BlsHexagApplLogic updated with: " + v);
+		System.out.println("BlsHexagApplLogicObserver updated with: " + v);
 		//Switch
 		if( ledState ) ledClient.put("false", MediaTypeRegistry.TEXT_PLAIN);
 		else ledClient.put("true", MediaTypeRegistry.TEXT_PLAIN);
 		getCurrentLedState();
   	}
- 	/*
- 	 * Called by
- 	 */
-//	@Override
-//	public void update(Observable source, Object v) {
-//		System.out.println("	BlsHexagApplLogic update/2: " + v);			 		
-//	}
-
-}
+ }

@@ -12,6 +12,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 import it.unibo.bls.interfaces.ILedObservable;
 import it.unibo.bls.interfaces.IObserver;
+import it.unibo.bls18.coap.hexagonal.CommonBlsHexagNames;
 import it.unibo.bls18.mqtt.utils.MqttUtils;
  
 
@@ -52,12 +53,17 @@ public class LedCoapResource extends CoapResource implements IObserver{ //observ
 	    @Override	//CoapResource
 	    public  void handlePUT(CoapExchange exchange) {  
  	        try {
- 	           System.out.println("LedCoapResource handlePUT " );
+ 	            System.out.println("LedCoapResource handlePUT " );
  		    	//CommonCoapNames.showExchange(exchange);
-	        	String value = exchange.getRequestText();//new String(payload, "UTF-8"); 
-	            if( value.equals("switch"))  switchValue();	else setValue(value);
-	            System.out.println("LedCoapResource handlePUT New Led Value="+ getLedValue());
+	        	String msg = exchange.getRequestText();//new String(payload, "UTF-8"); 
+	        	
+	        	if( msg.equals("switch"))  switchValue();	
+	            else if( msg.equals( CommonCoapNames.cmdTurnOn) || 
+	            		msg.equals( CommonCoapNames.cmdTurnOff) ) setValue(msg);
+	        	
+ 	            System.out.println("LedCoapResource handlePUT New Led Value="+ getLedValue());
 	            //exchange.respond(CHANGED,  value);
+ 	           //RETURN to the Coap client the current value of the Led
 	            exchange.respond( ResponseCode.CONTENT, getLedValue(), MediaTypeRegistry.TEXT_PLAIN) ;
  	        } catch (Exception e) {
  	            exchange.respond(BAD_REQUEST, "Invalid String");
@@ -89,7 +95,7 @@ public class LedCoapResource extends CoapResource implements IObserver{ //observ
 
 		@Override
 		public void update(Observable source, Object value) {
-			System.out.println("LedCoapResource update/2 (SHOULD NOT BE USED HERE)" );
+			System.out.println(" LedCoapResource update/2 (ledModel CHANGED)" );
 			modelModified();			
 		}
 

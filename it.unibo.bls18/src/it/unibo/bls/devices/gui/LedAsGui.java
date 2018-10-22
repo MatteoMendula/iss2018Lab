@@ -56,7 +56,7 @@ public static IObserver createLed( Frame frame){
  */
 	@Override
 	public void update(Observable source, Object value) {
-		System.out.println(" LedAsGui update " + value );
+// 		System.out.println(" LedAsGui update " + value );
 		String v = ""+value;
 		if( v.equals("true") ) turnOn();
 		else if( v.equals("false") )  turnOff();

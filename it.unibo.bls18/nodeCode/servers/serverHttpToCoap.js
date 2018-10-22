@@ -25,7 +25,7 @@ var ledViewPath= root+"/ledState.html";
 var html       = fs.readFileSync('index.html', 'utf8');
 
 /**
- * Init mqtt
+ * MQTT section
  */
 const topic  = config.mqttTopic;
 const client = mqtt.connect(config.mqttUrl);
@@ -40,6 +40,9 @@ client.on('message', function(topic, message) {
     io.sockets.send( message.toString());
 });
 
+/**
+ * CREATE section
+ */
 function createHttpServer(port, callback){
 	//configure the system;
 		var server = http.createServer();
@@ -59,7 +62,11 @@ function handler (request, response) {
 
 	var fpath = join(root, path);
 	if( method === 'GET' && path === "/Led" ) { 
- 		sendCoapRequest(request, response, handleCoapAnswer);	
+ 		sendCoapRequest(request, response, "Led", handleCoapAnswer);	
+		return; 
+ 	}
+	if( method === 'GET' && path === "/Button" ) { 
+ 		sendCoapRequest(request, response, "Button", handleCoapAnswer);	
 		return; 
  	}
 	if( method === 'GET'   ) {
@@ -89,11 +96,12 @@ function handler (request, response) {
 
 }
 
-
-
-function sendCoapRequest(request, response, callback ){
+/**
+ * COAP messaging
+ */
+function sendCoapRequest(request, response, resource, callback ){
 	console.log("sendCoapRequest " );
- 	req   = coap.request('coap://localhost/Led')
+ 	req   = coap.request('coap://localhost/'+resource)
 	req.on('response', function(res) {
 		//res.pipe( process.stdout );
 		callback(request, response, res.payload);
@@ -104,7 +112,7 @@ var handleCoapAnswer = function(request, response, coapData){
 	//response.end("<html>"+"handleCoapAnswer=" + coapData + "</html>");	
 	srvUtil.renderStaticFile(indexPath,response);
 //	clientMqtt.publish(""+coapData);
-//	setTimeout( function(){ io.sockets.send(""+coapData  ) }, 200 ) ;
+ 	setTimeout( function(){ io.sockets.send(""+coapData  ) }, 200 ) ;
 	//io.sockets.send(""+coapData);
 }
 
@@ -166,54 +174,16 @@ function sendCoapRequestOther(request, response, callback ){
 	});
 }
 
-
+/*
+ * io.sockets test section
+ */
 function tick () {
 	  var now = new Date().toUTCString();	  
 	  io.sockets.send(now);
 }
-
- 
-
 //setInterval(tick, 10000);
 
 app.listen(8080, function(){console.log("serverHttpToCoap bound to port 8080")}); 
 //createHttpServer( 8080, function() { console.log('serverHttpToCoap bound to port 8080'); } );
 
 
-/*
-var handleHttpRequest = function (request, response) { 
-	var method = request.method;
-	var url    = parse(request.url);
-	var path   = url.pathname;
-	if( path === "/" ) path = "/index.html";
-	
-	console.log("serverHttpToCoap request.method=" + method + " path=" + path); 
-	
-	var fpath = join(root, path);
-	if( method === 'GET' && path === "/Led" ) { 
- 		sendCoapRequest(request, response, handleCoapAnswer);	
-		return; 
- 	}
-	if( method === 'GET'   ) {
-		srvUtil.renderStaticFile(fpath,response);
- 		return; 		
- 	}
-	if (method === 'POST' && path === '/adduser' ) {
-		var inData = '';
-		request.on('data', function (data) { //data is of type Buffer;
-	        inData += data;	
-	        // Too much data, kill the connection!;
-	        if (inData.length > 1e6) request.connection.destroy();
-	    });
-		request.on('end', function () { //data are all available;
-			response.end("<html>"+"inData=" + inData + "</html>");
- 	    });
- 		return;		
-	}
-	if (method === 'POST' && path === '/ledSwitch' ) {
-		sendCoapCoammnd(request, response, handleCoapAnswer);
-		return;	
-	}
-	response.end( "Sorry, I don't understand" );
-} 
-*/

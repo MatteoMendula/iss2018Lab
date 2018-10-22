@@ -12,9 +12,6 @@ import it.unibo.bls.utils.UtilsBls;
  
  
 /*
- * Create a CoaP server and a CoaP client
- * The server refers a LedCoapResource linked to a LedGui
- * The client sends to the server requests to get/put values of the led
  */
 public class MainCoapBasicBlsResourceRest {
 private CoapServer server;

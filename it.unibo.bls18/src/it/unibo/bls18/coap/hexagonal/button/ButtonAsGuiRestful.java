@@ -20,23 +20,34 @@ protected String cmd;
 protected CoapClient buttonClient;
 
 //Factory method
-public static ButtonAsGuiRestful createButton( Frame frame, String cmd  ){
-	ButtonAsGuiRestful button         = new ButtonAsGuiRestful(cmd);
+public static ButtonAsGuiRestful createButton( Frame frame, String cmd, String uri  ){
+	ButtonAsGuiRestful button         = new ButtonAsGuiRestful(cmd, uri);
 	java.awt.Button buttonBase        = new java.awt.Button(cmd);
 	buttonBase.addActionListener(  button );
 	frame.add(BorderLayout.WEST,buttonBase); 
 	frame.validate();
 	return button;
+	
+}
+public static ButtonAsGuiRestful createButton( Frame frame, String cmd  ){
+	return createButton( frame,   cmd, null);
 }
 
 /*
  * Constructor 
  */
-	public ButtonAsGuiRestful(String cmd ) {
+	public ButtonAsGuiRestful(String cmd, String uri ) {
 		this.cmd = cmd;
-		buttonClient  = new  CoapClient("coap://localhost:5683/"+ CommonBlsHexagNames.buttonResourceName );	
+		if( uri != null ) buttonClient  = new  CoapClient( uri ); 
+		else buttonClient  = new  CoapClient( CommonBlsHexagNames.ButtonUriStr );
 		System.out.println("ButtonAsGuiRestful buttonClient done "   );
 	}
+//	public ButtonAsGuiRestful(String cmd ) {
+//		this(cmd,CommonBlsHexagNames.ButtonUriStr );
+////		this.cmd = cmd;
+////		buttonClient  = new  CoapClient( CommonBlsHexagNames.ButtonUriStr );	
+////		System.out.println("ButtonAsGuiRestful buttonClient done "   );
+//	}
 
 @Override //from ActionListener
 	public void actionPerformed(ActionEvent e) {

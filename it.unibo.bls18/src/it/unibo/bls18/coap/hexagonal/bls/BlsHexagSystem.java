@@ -32,11 +32,12 @@ public class BlsHexagSystem {
    	}
 	
 	protected void createResourceModel(  ) {
-		LedResource ledResource = new LedResource( ) ;
-		ledResource.setObserver( new LedAsGuiPluginObserver( UtilsBls.initFrame(200,200) ) );  //add a model viewer
-		System.out.println("CREATE ledResource ");
+		LedResource ledResource = 
+				new LedResource(new LedAsGuiPluginObserver(UtilsBls.initFrame(200,200)));  //add a model viewer
+	  	System.out.println("CREATE ledResource ");
 		buttonResource = new ButtonResource();
 		System.out.println("CREATE buttonResource ");
+		//Two resources in the same server
 		server.add( ledResource );
  		server.add( buttonResource );
 		System.out.println("createResourceModel DONE ");
@@ -47,7 +48,7 @@ public class BlsHexagSystem {
  	}
 
 	protected void createInputDevice() {
-		ButtonAsGuiRestful.createButton( UtilsBls.initFrame(200,200), "press");
+		ButtonAsGuiRestful.createButton( UtilsBls.initFrame(200,200), "press", CommonBlsHexagNames.BlsButtonUriStr );
 	}
 /*
  * 	

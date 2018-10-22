@@ -7,6 +7,7 @@ import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import it.unibo.bls18.coap.hexagonal.CommonBlsHexagNames;
 
+
 /*
  * 
  */
@@ -46,8 +47,8 @@ protected void showMsg(String msg) {
  * Just for testing (with Firefox Copper)
  */
 	public static void main(String[] args) throws Exception {
-		create(8020);
-		CoapClient buttonClient  = new  CoapClient("coap://localhost:8020/"+ CommonBlsHexagNames.buttonResourceName );
+		create(CommonBlsHexagNames.buttonPort);
+ 		CoapClient buttonClient  = new  CoapClient( CommonBlsHexagNames.ButtonUriStr );
 		CoapResponse resp;
  		for( int i=1; i<=3; i++ ) {
  			Thread.sleep(1000);

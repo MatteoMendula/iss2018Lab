@@ -6,10 +6,10 @@ import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
 import it.unibo.bls18.coapBasic.led.CommonCoapNames;
 
-public class MainCoapClient {
+public class MainCoapClientForLedOnRasp {
 	private CoapClient coapClient;
 
-	public MainCoapClient(String hostName, int port, String resourceName) {
+	public MainCoapClientForLedOnRasp(String hostName, int port, String resourceName) {
  		createClient(hostName, port,resourceName);
  	}
 	public void createClient(String hostName, int port, String resourceName) {
@@ -39,7 +39,7 @@ public class MainCoapClient {
 		String hostName     = CommonCoapNames.hostRaspName;
  		String resourceName = CommonCoapNames.resourceName;
  		int port            = CommonCoapNames.port;
- 		MainCoapClient appl = new MainCoapClient(hostName, port, resourceName);
+ 		MainCoapClientForLedOnRasp appl = new MainCoapClientForLedOnRasp(hostName, port, resourceName);
  		appl.synchGet();
  		for( int i=0; i<3; i++ ) {
 			Thread.sleep(500);
