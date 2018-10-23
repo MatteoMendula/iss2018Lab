@@ -2,7 +2,6 @@ package it.unibo.bls.devices.mongo;
 
 import java.util.Arrays;
 import java.util.List;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;

@@ -22,29 +22,32 @@ public class BlsHexagSystem {
 	protected  void createServer( ) {	//port=5683 default
 		server   = new CoapServer( CommonBlsHexagNames.port );
 		server.start();
-		System.out.println("MainCoapBasicLed Server started");
+		System.out.println("BlsHexagSystem Server started");
 	}
 	
 	protected void configure( ) {
  		createInputDevice();
 		createResourceModel(  ) ;
- 		createApplLogic(  );
+ 		addApplLogic(  );
    	}
 	
 	protected void createResourceModel(  ) {
 		LedResource ledResource = 
 				new LedResource(new LedAsGuiPluginObserver(UtilsBls.initFrame(200,200)));  //add a model viewer
-	  	System.out.println("CREATE ledResource ");
+	  	System.out.println("BlsHexagSystem CREATE ledResource ");
 		buttonResource = new ButtonResource();
-		System.out.println("CREATE buttonResource ");
+		System.out.println("BlsHexagSystem CREATE buttonResource ");
 		//Two resources in the same server
 		server.add( ledResource );
  		server.add( buttonResource );
-		System.out.println("createResourceModel DONE ");
+		System.out.println("BlsHexagSystem createResourceModel DONE ");
 	}
 
-	protected void createApplLogic(  ) {
+	protected void addApplLogic(  ) {
  		buttonResource.setObserver( new BlsHexagApplLogicObserver() );
+ 	}
+	protected void addLogButton(  ) {
+ 		buttonResource.setObserver( new ButtonLogObserver() );
  	}
 
 	protected void createInputDevice() {

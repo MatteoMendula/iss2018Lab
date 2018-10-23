@@ -23,6 +23,10 @@ public class CommonBlsHexagNames {
 	public static final String cmdTurnOff = "false";
 	public static final String buttonCmd  = "pressed";
 	
+	public static final String ledMqttCientId    = "ledsenderNat";
+	public static final String buttonMqttCientId = "buttonsenderNat";
+	public static final String serverMqttAddr    = "tcp://localhost:1883";  
+	public static final String buttonLogTopic    = "unibo/buttonLog";
 	
 	
 	public static void showExchange(CoapExchange exchange) {

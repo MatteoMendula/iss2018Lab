@@ -2,6 +2,9 @@ package it.unibo.bls.devices.mqtt;
 
 public class CommonLedNames {
 
+	public static final String ledMqttCientId    = "ledsenderNat";
+	public static final String buttonMqttCientId = "buttonsenderNat";
+	
 	public static final String ledCmd        = "switch";
 	public static final String startCmd      = "start";
 	public static final String stopCmd       = "stop";

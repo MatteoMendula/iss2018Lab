@@ -42,7 +42,7 @@ public class LedPublisher implements IObserver {
 		
 	}
 	public void configure( ) throws Exception {
-		clientid   = "ledsender";
+		clientid   = CommonLedNames.allLedTopic;
  		clientmqtt = mqttutils.connect(clientid, serverAddr);  
  	}
 	
