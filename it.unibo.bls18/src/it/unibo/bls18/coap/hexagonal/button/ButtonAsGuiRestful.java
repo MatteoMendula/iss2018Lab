@@ -42,13 +42,7 @@ public static ButtonAsGuiRestful createButton( Frame frame, String cmd  ){
 		else buttonClient  = new  CoapClient( CommonBlsHexagNames.ButtonUriStr );
 		System.out.println("ButtonAsGuiRestful buttonClient done "   );
 	}
-//	public ButtonAsGuiRestful(String cmd ) {
-//		this(cmd,CommonBlsHexagNames.ButtonUriStr );
-////		this.cmd = cmd;
-////		buttonClient  = new  CoapClient( CommonBlsHexagNames.ButtonUriStr );	
-////		System.out.println("ButtonAsGuiRestful buttonClient done "   );
-//	}
-
+ 
 @Override //from ActionListener
 	public void actionPerformed(ActionEvent e) {
  		CoapResponse resp =  buttonClient.put("pressed", MediaTypeRegistry.TEXT_PLAIN);	

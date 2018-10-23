@@ -6,7 +6,10 @@
  
 
 const
-    app     = require('http').createServer(handler),   
+    app     = require('http').createServer(
+	    		function (request, response) {  //request is an IncomingMessage;
+	    				requestUtil( request, response, handler );
+	    		}),   
     io      = require('socket.io').listen(app); 	//npm install --save socket.io
 	http    = require("http"),
 	parse   = require('url').parse,
@@ -26,6 +29,9 @@ const
     const ctrlAdd     = require('./controls/ctrlAddUserRest');
     const ctrlDel     = require('./controls/ctrlDeleteUserRest');
     const ctrlChng    = require('./controls/ctrlChangeUserRest'); 
+
+    const ctrlLogAdd  = require('./controls/ctrlAddLogRest');
+    
     const requestUtil = require('./utilsMongoose.js');   //sets connections; 
     
 var root       = __dirname; //set by Node to the directory path to the file;
@@ -63,11 +69,11 @@ function createHttpServer(port, callback){
 
 function handler (request, response) {
 	var method = request.method;
-	var url    = parse(request.url);
+	var url    = parse(request.urlPathname);
 	var path   = url.pathname;
 	if( path === "/" ) path = "/index.html";
 	
-	console.log("serverHttpToCoap request.method=" + method + " path=" + path); 
+	console.log("serverHttpToCoap request.method=" + method + " path=" + path + " request=" + request.body); 
 
 	var fpath = join(root, path);
 	
@@ -82,22 +88,25 @@ function handler (request, response) {
 			} else	if( path === "/Button" ) { 
 		 		sendCoapRequest(request, response, "Button", handleCoapAnswer);	
  		 	} else if( path === '/api/user' ){
-				console.log("serverHttpToCoap switch method=" + method + " path=" + path); 
-				ctrlGet.getUsers(  response, doAnswerStr );  //perform an asynch  query
+ 				ctrlGet.getUsers(  response, doAnswerStr );  //perform an asynch  query
 			} else  srvUtil.renderStaticFile(fpath,response);  //default index and ico 
 			return;
-		case 'POST' : //add 
+		case 'POST' : //add (sent by browser)
 			if ( path === '/ledSwitch' ) {
 				sendCoapCoammnd(request, response, handleCoapAnswer);
  			} else if( path==='/api/user'  ){
-				ctrlAdd.addUser(  reqInfo.body, response, doAnswerStr );
+  				ctrlAdd.addUser(  request.body, response, doAnswerStr );
+			} else if( path==='/api/log'  ){
+				ctrlLogAdd.addLog(  request.body, response, doAnswerStr );
 			}  	
 			return;
 		case 'PUT':  //modify
 			if ( path === '/ledSwitch' ) {
 				sendCoapCoammnd(request, response, handleCoapAnswer);
+ 			} else if ( path === '/Button' ) {
+				sendCoapCoammnd(request, response, handleCoapAnswer);
  			} else if( path === '/api/user' ){  //accepts only JSON format;
-				var jsonBody = JSON.parse(  reqInfo.body  );
+				var jsonBody = JSON.parse(  request.body  );
 				console.log("oldUser=" + jsonBody.old);
 				console.log("chngUser=" + jsonBody.new);
  				ctrlChng.changeUser(jsonBody.old, jsonBody.new, response, doAnswerStr );
@@ -220,5 +229,6 @@ app.listen(8080, function(){console.log("serverHttpToCoap bound to port 8080")})
 
 
 /*
- curl -X POST -d "{\"name\": \"Alice\",\"age\": \"25\",\"password\": \"pp\"}" http://localhost:3000/api/user
+ curl -X POST -d "{\"name\": \"Bob\",\"age\": \"35\",\"password\": \"qq\"}" http://localhost:8080/api/user
+ curl -X POST -d "{ \"log\": \"xxx\" }" http://localhost:8080/api/log
 */
