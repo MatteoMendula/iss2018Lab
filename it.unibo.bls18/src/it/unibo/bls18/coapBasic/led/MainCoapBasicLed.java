@@ -23,7 +23,6 @@ private ILedObservable ledmodel;
 private IObserver ledgui;
 private Frame blsFrame = UtilsBls.initFrame(200,200);
 
- 
 	public MainCoapBasicLed(String hostName, int port, String resourceName) {
 		createServer(port);
 		configure(port, resourceName);
@@ -32,8 +31,6 @@ private Frame blsFrame = UtilsBls.initFrame(200,200);
 /*
     server(5683)LedCoapResource --> ledmodel --> ledAsGui	
 */
-	
-	
 	protected void configure(int port, String resourceName) {
  		createResourceModel(  ) ;
  		createCoapEvelopeAroundResource( resourceName );
