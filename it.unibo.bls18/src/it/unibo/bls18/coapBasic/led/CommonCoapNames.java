@@ -13,8 +13,8 @@ public class CommonCoapNames {
 	public static String hostRaspName ="192.168.0.50";  
 	public static String ledResourceName    ="Led";
 	public static String buttonResourceName ="Button";
-	public static String resourceName ="Led";
-	public static int port            = 5683; //8010;
+	public static String resourceName       ="Led";
+	public static int port                  = 5683; //8010;
 	
 	public static String ledUriStr =  "coap://"+hostName+":"+port+"/"+ledResourceName ;
 

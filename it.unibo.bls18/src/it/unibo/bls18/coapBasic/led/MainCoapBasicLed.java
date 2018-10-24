@@ -40,7 +40,6 @@ private Frame blsFrame = UtilsBls.initFrame(200,200);
  		createConcreteResource();
  		addConcreteResourceToResourceModel();
   	}
-
 	
 	protected void createResourceModel(  ) {
   		ledmodel = LedObservableModel.createLed(  );
@@ -91,6 +90,9 @@ private Frame blsFrame = UtilsBls.initFrame(200,200);
  		String resourceName = CommonCoapNames.resourceName;
  		int port            = CommonCoapNames.port;
  		System.out.println("---------------------------------------------------------------------");
+ 		System.out.println("MainCoapBasicLed hostName="     + hostName);
+ 		System.out.println("MainCoapBasicLed resourceName=" + resourceName);
+ 		System.out.println("MainCoapBasicLed port="         + port);
  		System.out.println("WARNING: we will use a resource that requires MQTT. See CommonCoapNames");
  		System.out.println(" ");
  		System.out.println("PLEASE RUN MainCoapControlToLedRest after the starting of this system");

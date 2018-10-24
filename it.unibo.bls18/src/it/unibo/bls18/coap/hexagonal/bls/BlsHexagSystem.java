@@ -8,7 +8,6 @@ import it.unibo.bls18.coap.hexagonal.button.ButtonResource;
 import it.unibo.bls18.coap.hexagonal.led.LedAsGuiPluginObserver;
 import it.unibo.bls18.coap.hexagonal.led.LedResource;
 
- 
 
 public class BlsHexagSystem {
 	private CoapServer server;

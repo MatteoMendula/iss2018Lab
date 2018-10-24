@@ -141,16 +141,18 @@ var doAnswerStr = function(err, response, msg){
  * COAP messaging
  */
 function sendCoapRequest(request, response, resource, callback ){
-	console.log("sendCoapRequest " );
+	console.log("sendCoapRequest " + resource);
  	req   = coap.request('coap://localhost/'+resource)
 	req.on('response', function(res) {
 		//res.pipe( process.stdout );
+		console.log("sendCoapRequest answer=" + res.payload);
 		callback(request, response, res.payload);
 	}) 
 	req.end()
 }
 var handleCoapAnswer = function(request, response, coapData){
 	//response.end("<html>"+"handleCoapAnswer=" + coapData + "</html>");	
+	console.log("handleCoapAnswer " + ""+coapData );
 	srvUtil.renderStaticFile(indexPath,response);
 //	clientMqtt.publish(""+coapData);
  	setTimeout( function(){ io.sockets.send(""+coapData  ) }, 200 ) ;
@@ -224,11 +226,34 @@ function tick () {
 }
 //setInterval(tick, 10000);
 
-app.listen(8080, function(){console.log("serverHttpToCoap bound to port 8080")}); 
+
+const initMsg=
+	"\n"+
+	"------------------------------------------------------\n"+
+	"serverHttpToCoap bound to port 8080\n"+
+	"uses socket.io\n"+
+	"INITIALLY COONECTS TO  MQTT broker (mosuqitto) at tcp://localhost:1883\n"+
+	"DYNAMICALLY COONECTS (as client) TO  CoAP server at coap://localhost:5683\n"+
+	"work as an HTTP-to-CoaP proxy\n"+
+	"with reference to resource URI = /Led    (by MainCoapBasicLed / LedCoapResource)\n"+
+	"with reference to resource URI = /Led    (by BlsHexagSystem / LedResource)\n"+
+	"with reference to resource URI = /Button (by BlsHexagSystem / ButtonResource )\n"+
+	"------------------------------------------------------\n";
+app.listen(8080, function(){console.log(initMsg)}); 
 //createHttpServer( 8080, function() { console.log('serverHttpToCoap bound to port 8080'); } );
 
 
 /*
+/Led requires MainCoapBasicLed / LedCoapResource or BlsHexagSystem / LedResource
+curl -X PUT -d "true" http://localhost:8080/ledSwitch
+curl -X GET  http://localhost:8080/Led
+
+/Button requires BlsHexagSystem / ButtonResource
+curl -X GET  http://localhost:8080/Button  ()
+curl -X PUT -d "pressed" http://localhost:8080/Button
+
+
  curl -X POST -d "{\"name\": \"Bob\",\"age\": \"35\",\"password\": \"qq\"}" http://localhost:8080/api/user
  curl -X POST -d "{ \"log\": \"xxx\" }" http://localhost:8080/api/log
+ curl -X PUT -d "true" http://localhost:8080/ledSwitch
 */

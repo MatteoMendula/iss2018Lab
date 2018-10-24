@@ -9,10 +9,8 @@ import org.eclipse.californium.core.coap.CoAP.Type;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
-
 import it.unibo.bls.interfaces.ILedObservable;
 import it.unibo.bls.interfaces.IObserver;
-import it.unibo.bls18.coap.hexagonal.CommonBlsHexagNames;
 import it.unibo.bls18.mqtt.utils.MqttUtils;
  
 
@@ -35,7 +33,10 @@ public class LedCoapResource extends CoapResource implements IObserver{ //observ
 		setObserveType(Type.CON); 			// configure the notification type to CONs
 		getAttributes().setObservable();	// mark observable in the Link-Format	
 		
-		clientmqtt = mqttutils.connect(clientid, serverAddr);
+		// schedule a periodic update task, otherwise let events call changed()
+//		Timer timer = new Timer();
+//		timer.schedule(new UpdateTask(), 0, 1000);
+//		clientmqtt = mqttutils.connect(clientid, serverAddr);
 		
 		ledModel = model;
 		ledModel.addObserver(this);
@@ -59,7 +60,7 @@ public class LedCoapResource extends CoapResource implements IObserver{ //observ
 	        	
 	        	if( msg.equals("switch"))  switchValue();	
 	            else if( msg.equals( CommonCoapNames.cmdTurnOn) || 
-	            		msg.equals( CommonCoapNames.cmdTurnOff) ) setValue(msg);
+	            		 msg.equals( CommonCoapNames.cmdTurnOff) ) setValue(msg);
 	        	
  	            System.out.println("LedCoapResource handlePUT New Led Value="+ getLedValue());
 	            //exchange.respond(CHANGED,  value);
@@ -74,30 +75,29 @@ public class LedCoapResource extends CoapResource implements IObserver{ //observ
 	    	changed(); // notify all CoAp observers	
 	    	//Emit an event using MQTT 
 	    	try {
-				mqttutils.publish(clientmqtt, topic, getLedValue() );
+	    		System.out.println("LedCoapResource modelModified clientmqtt="+ clientmqtt );
+				if( clientmqtt != null ) mqttutils.publish(clientmqtt, topic, getLedValue() );
 			} catch (MqttException e) {
- 				e.printStackTrace();
+				 System.out.println("LedCoapResource WARNING "+ e.getMessage());
 			}
 	    }
  		   protected void switchValue() {
 			   if( getLedValue( ).equals("true")) ledModel.turnOff();
 			   else ledModel.turnOn();
-			   modelModified();
+//			   modelModified();		//When the ldModel changes, the update/2 methid is called
 	 	    }
 		   protected void setValue(String v) {
 			   if( v.equals("true")) ledModel.turnOn();
 			   else ledModel.turnOff();
-			   modelModified();
+//			   modelModified();		//When the ldModel changes, the update/2 methid is called
 	 	    }
 		   protected String getLedValue( ) {
 			    return ""+ledModel.getState();
 	 	   }
 
-		@Override
+		@Override  //Called by the ledModel when modified by a Button
 		public void update(Observable source, Object value) {
 			System.out.println(" LedCoapResource update/2 (ledModel CHANGED)" );
 			modelModified();			
 		}
-
- 	
 }

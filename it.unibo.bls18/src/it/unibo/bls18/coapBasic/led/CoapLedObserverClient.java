@@ -16,11 +16,6 @@ public class  CoapLedObserverClient {
  		int port            = CommonCoapNames.port;
 	
 		CoapClient client   =  new CoapClient("coap://"+hostName+":"+port+"/"+resourceName);
-		System.out.println("SYNCHRONOUS");
-		
-		// synchronous
-		String content1 = client.get().getResponseText();
-		System.out.println("CoapLedObserverClient: RESPONSE GET: " + content1);
 		
 		// observe
 		System.out.println("CoapLedObserverClient: OBSERVE (press enter to exit)");
