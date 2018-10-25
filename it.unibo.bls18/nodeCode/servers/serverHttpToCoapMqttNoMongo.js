@@ -259,8 +259,7 @@ const initMsg=
 	"INITIALLY COONECTS TO  MQTT broker (mosuqitto) at tcp://localhost:1883\n"+
  	"DYNAMICALLY CONNECTS (as client) TO  CoAP server at coap://localhost:5683\n"+
 	"work as an HTTP-to-CoaP proxy\n"+
-	"with reference to resource URI = /Led    (by MainCoapBasicLed / LedCoapResource)\n"+
-	"with reference to resource URI = /Led    (by BlsHexagSystem / LedResource)\n"+
+ 	"with reference to resource URI = /Led    (by BlsHexagSystem / LedResource)\n"+
 	"with reference to resource URI = /Button (by BlsHexagSystem / ButtonResource )\n"+
 	"------------------------------------------------------\n";
 

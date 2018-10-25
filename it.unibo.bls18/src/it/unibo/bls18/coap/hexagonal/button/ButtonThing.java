@@ -5,6 +5,8 @@ import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
+
+import it.unibo.bls.utils.UtilsBls;
 import it.unibo.bls18.coap.hexagonal.CommonBlsHexagNames;
 
 
@@ -51,9 +53,14 @@ protected void showMsg(String msg) {
  		CoapClient buttonClient  = new  CoapClient( CommonBlsHexagNames.ButtonUriStr );
 		CoapResponse resp;
  		for( int i=1; i<=3; i++ ) {
- 			Thread.sleep(1000);
+ 			UtilsBls.delay(2000);
 			resp = buttonClient.put("pressed", MediaTypeRegistry.TEXT_PLAIN);
 			System.out.println("RESPONSE buttonPut : " + resp.getResponseText() );
+			resp = buttonClient.get( );
+			System.out.println("RESPONSE buttonGet after PUT: " + resp.getResponseText() );
+			UtilsBls.delay(3500);
+			resp = buttonClient.get( );
+			System.out.println("RESPONSE buttonGet after DELAY: " + resp.getResponseText() );
  		}
 
 	}
