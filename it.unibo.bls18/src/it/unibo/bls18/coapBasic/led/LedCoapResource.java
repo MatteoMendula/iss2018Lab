@@ -36,7 +36,9 @@ public class LedCoapResource extends CoapResource implements IObserver{ //observ
 		// schedule a periodic update task, otherwise let events call changed()
 //		Timer timer = new Timer();
 //		timer.schedule(new UpdateTask(), 0, 1000);
-//		clientmqtt = mqttutils.connect(clientid, serverAddr);
+		
+		
+ 		clientmqtt = mqttutils.connect(clientid, serverAddr);
 		
 		ledModel = model;
 		ledModel.addObserver(this);
