@@ -16,12 +16,12 @@ serialport.list(function (err, ports) {
  * one that emits a data event every 'length' bytes, 
  * and one which provides familiar "readline" style parsing.
  */
-var portName="COM9";
+var portName="COM6";  //"/dev/ttyUSB0";
 var inputStr = "";
 console.log(serialport.parsers);
 
 var port = new serialport (portName, {
-  baudRate: 9600,
+  baudRate: 115200, //9600,
   parser: new serialport.parsers.Readline("\r\n")
 });
 //var msg  = "1";
@@ -32,7 +32,7 @@ port.on('data', function (data) {
 	//console.log('Data: ' + data);
 	inputStr = inputStr + data;
 	if( inputStr.indexOf("\n") >= 0 ){
-		console.log("inputStr:\n" + inputStr);
+		console.log("serial port input= " + inputStr);
 		inputStr = "";
 	}
 });	 

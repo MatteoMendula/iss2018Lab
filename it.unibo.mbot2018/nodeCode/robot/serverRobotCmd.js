@@ -12,12 +12,20 @@ const
     url     = require('url'),    
     Readable = require('stream').Readable;
 
-const robotModel     = require('./models/robot');
-const toVirtualRobot = require("./clientRobotVirtual");
-const serialPort     = require('./serial');
 
+const robotModel     = require('./models/robot');
+
+var serialPort ;
+var toVirtualRobot;
+var myPort;
 
 const realRobot = false;
+
+if( realRobot ){    
+	serialPort = require('./serial');
+	console.log("serialPort= " + serialPort.path  );
+}
+else   toVirtualRobot = require("./clientRobotVirtual");
 
 /*
 * --------------------------------------------------------------
@@ -77,11 +85,16 @@ function actuate( cmd, req, res ){
 	var newState     = "";
 	var cmdToVirtual = "";
 	console.log("actuate " + cmd  );
-	if( cmd === "w" ){ cmdToVirtual=`{ "type": "moveForward",  "arg": -1 }` ; newState="server moving forward"; }
-	else if( cmd === "s" ){ cmdToVirtual=`{ "type": "moveBackward",  "arg": -1 }` ; newState="server moving backward"; }
-	else if( cmd === "h" ){ cmdToVirtual=`{ "type": "alarm",  "arg": 1000 }` ; newState="server stopped"; }
-	else if( cmd === "a" ){ cmdToVirtual=`{ "type": "turnLeft",  "arg": 1000 }` ; newState="server  moving left"; }
-	else if( cmd === "d" ){ cmdToVirtual=`{ "type": "turnRight",  "arg": 1000 }` ; newState="server  moving right"; }
+	if( cmd === "w" ){ cmdToVirtual=`{ "type": "moveForward",  "arg": -1 }` ; 
+		newState="server moving forward"; }
+	else if( cmd === "s" ){ cmdToVirtual=`{ "type": "moveBackward",  "arg": -1 }` ; 
+		newState="server moving backward"; }
+	else if( cmd === "h" ){ cmdToVirtual=`{ "type": "alarm",  "arg": 1000 }` ; 
+			newState="server stopped"; }
+	else if( cmd === "a" ){ cmdToVirtual=`{ "type": "turnLeft",  "arg": 1000 }` ; 
+			newState="server  moving left"; }
+	else if( cmd === "d" ){ cmdToVirtual=`{ "type": "turnRight",  "arg": 1000 }` ; 
+		newState="server  moving right"; }
 	
 	if( realRobot){
 		actuateOnArduino( cmd, newState, req,res ) 
@@ -91,6 +104,7 @@ function actuate( cmd, req, res ){
 	
 }
 function actuateOnVirtual(cmd, newState, req, res ){
+
 	console.log("actuateOnVirtual:" + cmd );
   	toVirtualRobot.send( cmd );  	
  	robotModel.robot.state = newState;
@@ -104,13 +118,8 @@ function actuateOnVirtual(cmd, newState, req, res ){
 }
 
 function actuateOnArduino(cmd, newState, req, res ){
-	console.log("actuateOnArduino:" + cmd );
-	if( cmd.indexOf("moveForward") >= 0 ) serialPort.port.write("w");
-	else if( cmd.indexOf("moveBackward") >= 0 ) serialPort.port.write("s");
-	else if( cmd.indexOf("alarm") >= 0 ) serialPort.port.write("h");
-	else if( cmd.indexOf("turnRight") >= 0 ) serialPort.port.write("d");
-	else if( cmd.indexOf("turnLeft") >= 0 ) serialPort.port.write("a");
-	
+	console.log("actuateOnArduino: " + cmd + " " + serialPort.path);
+	serialPort.write(cmd);	
 }
 
 function delegate( hlcmd, newState, req, res ){
@@ -170,7 +179,6 @@ process.on('uncaughtException', function (err) {
   	process.exit(1);		//MANDATORY!!!;
 });
  
-
 
 /*
 * --------------------------------------------------------------
