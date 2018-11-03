@@ -1,20 +1,22 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');  ////npm install --save cookie-parser
-var bodyParser = require('body-parser');
+var express      = require('express');
+var path         = require('path');
+var favicon      = require('serve-favicon');
+var logger       = require('morgan');
+var cookieParser = require('cookie-parser');   
+var bodyParser   = require('body-parser');
 
-var routes = require('./appServer/routes/index');	//MODIFIED
-//var users = require('./routes/users');
-
+var mainpageRoute   = require('./appServer/routes/index');		//SET BY DESIGNER after MVC refactoring
+//var actuatorsRoutes = require('./appServer/routes/actuators');	//See 10) of ReadMe.txt
+//var sensorsRoutes   = require('./appServer/routes/sensors');
+ 
+var robotModel      = require("./appServer/models/robotModel"); //See 8) of ReadMe.txt
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'appServer', 'views')); //MODIFIED
+app.set('views', path.join(__dirname, 'appServer', 'views')); //SET BY DESIGNER
 app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /public //npm install --save serve-favicon
+// uncomment after placing your favicon in /public  
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));	
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -22,8 +24,26 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);		//MODIFIED
-//app.use('/users', users);
+/*
+ * 
+ */
+//Create Routes  //WORKING
+var routesCreator = require('./appServer/routes/routesActionCreator');
+app.use('/', routesCreator.create(robotModel));
+
+app.use('/', mainpageRoute);	//SET BY DESIGNER after MVC refactoring
+
+
+
+//INTERFACE
+//app.use('/actuators', actuatorsRoutes);		//See 11) of ReadMe.txt
+//app.use('/sensors',  sensorsRoutes);
+
+//REPRESENTATION
+app.use( function(req,res){ console.log("last " + req.originalUrl); res.send(req.myresult); } );
+//app.use(converter());
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -45,4 +65,16 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
-//node ./bin/www
+//node ./bin/www	//INSERTED BY DESIGNER
+
+
+
+/*
+  curl -X POST \
+   'http://localhost:8484/actions/ledState?ledId=1&state=true' \
+  -H 'Accept: application/json' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: 5b3077f2-6003-051d-e32c-1644252d4119'
+ 
+*/
