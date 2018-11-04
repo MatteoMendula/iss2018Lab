@@ -5,7 +5,7 @@ var logger       = require('morgan');
 var cookieParser = require('cookie-parser');   
 var bodyParser   = require('body-parser');
 
-var mainpageRoute   = require('./appServer/routes/index');		//SET BY DESIGNER after MVC refactoring
+var mainpageRoute     = require('./appServer/routes/index');		//SET BY DESIGNER after MVC refactoring
 //var actuatorsRoutes = require('./appServer/routes/actuators');	//See 10) of ReadMe.txt
 //var sensorsRoutes   = require('./appServer/routes/sensors');
  
@@ -24,25 +24,40 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//view engine setup
+app.set('views', path.join(__dirname, 'appServer', 'views'));
+app.set('view engine', 'ejs');
+
 /*
  * 
  */
+const dataCreator   = require('./appServer/routes/createDataFields');
+dataCreator.createdatafields(robotModel);
+
 //Create Routes  //WORKING
-var routesCreator = require('./appServer/routes/routesActionCreator');
+const routesCreator = require('./appServer/routes/routesCreator');
 app.use('/', routesCreator.create(robotModel));
 
-app.use('/', mainpageRoute);	//SET BY DESIGNER after MVC refactoring
+//app.use('/', mainpageRoute);	//SET BY DESIGNER after MVC refactoring
 
 
+//app.use(express.static(__dirname + './../public'));
 
 //INTERFACE
 //app.use('/actuators', actuatorsRoutes);		//See 11) of ReadMe.txt
 //app.use('/sensors',  sensorsRoutes);
 
 //REPRESENTATION
-app.use( function(req,res){ console.log("last " + req.originalUrl); res.send(req.myresult); } );
-//app.use(converter());
+//app.use( function(req,res){ console.log("last " + req.originalUrl); res.send(req.myresult); } );
 
+//const converter = require('./appServer/utils/converter')
+//app.use( converter() );
+
+app.use( function(req,res){ 
+	console.log("last " + req.myresult );
+	//console.log(  req  );
+	res.render('access', {'title': 'Robot Control', 'res': req.myresult} ); 
+} );
 
 
 // catch 404 and forward to error handler

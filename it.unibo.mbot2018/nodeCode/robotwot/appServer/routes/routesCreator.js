@@ -1,115 +1,133 @@
 var express = require('express'),
-  router = express.Router(),
-  uuid = require('node-uuid'),
+  router = express.Router();
+//  	 = require('node-uuid'),
   utils = require('./../utils/utils');
 
 exports.create = function (model) {
+	  console.log("create the routes "   ); 
+ 
+	  createRootRoute(model);
+ 	  createModelRoutes(model);
+ 	  createPropertiesRoutes(model);
+	  createActionsRoutes(model);
+	  createRobotActionsRoutes(model);
+	  
+	  return router;
+}; //create
 
-  createDefaultData(model.links.properties.resources);
-  createDefaultData(model.links.actions.resources);
-
-  // Let's create the routes
-  createRootRoute(model);
-  createModelRoutes(model);
-  createPropertiesRoutes(model);
-  createActionsRoutes(model);
-
-  return router;
-};
 
 
 function createRootRoute(model) {
-  router.route('/').get(function (req, res, next) {
+	console.log("createRootRoute (GET /)");
+	router.route('/').get(function (req, res, next) {
+	    req.model = model;
+	    req.type = 'root';
 
-    req.model = model;
-    req.type = 'root';
+	    var fields   = ['id', 'name', 'description', 'tags', 'customFields'];
+	    req.myresult = utils.extractFields(fields, model);
 
-    var fields = ['id', 'name', 'description', 'tags', 'customFields'];
-    req.result = utils.extractFields(fields, model);
+	    if (model['@context']) type = model['@context'];
+	    else type = 'http://model.webofthings.io/';
 
-    if (model['@context']) type = model['@context'];
-    else type = 'http://model.webofthings.io/';
+	    res.links({
+	      model: '/model/',
+	      properties: '/properties/',
+	      actions: '/actions/',
+	      things: '/things/',
+	      help: '/help/',
+	      ui: '/',
+	      type: type
+	    });
 
-    res.links({
-      model: '/model/',
-      properties: '/properties/',
-      actions: '/actions/',
-      things: '/things/',
-      help: '/help/',
-      ui: '/',
-      type: type
-    });
+	    next();
+	  });
+	};
 
-    next();
-  });
-};
+	function createModelRoutes(model) {
+		console.log("createModelRoutes (GET /model)");
+		  // GET /model
+		  router.route('/model').get(function (req, res, next) {
+		    req.myresult = model;
+		    console.log(" xxx ................ ");
+		    req.model    = model;
 
+		    if (model['@context']) type = model['@context'];
+		    else type = 'http://model.webofthings.io/';
+		    res.links({
+		      type: type
+		    });
 
-function createModelRoutes(model) {
-  // GET /model
-  router.route('/model').get(function (req, res, next) {
-    req.result = model;
-    req.model = model;
+		    next();
+		  });
+		};
 
-    if (model['@context']) type = model['@context'];
-    else type = 'http://model.webofthings.io/';
-    res.links({
-      type: type
-    });
+	function createPropertiesRoutes(model) {
+		console.log("createPropertiesRoutes (GET /properties, GET /properties/{id})");
+		  var properties = model.links.properties;
 
-    next();
-  });
-};
+		  // GET /properties
+		  router.route(properties.link).get(function (req, res, next) {
+		    req.model    = model;
+		    req.type     = 'properties';
+		    req.entityId = 'properties';
 
-function createPropertiesRoutes(model) {
-  var properties = model.links.properties;
+		    req.myresult = utils.modelToResources(properties.resources, true);
 
-  // GET /properties
-  router.route(properties.link).get(function (req, res, next) {
-    req.model    = model;
-    req.type     = 'properties';
-    req.entityId = 'properties';
+		    // Generate the Link headers 
+		    if (properties['@context']) type = properties['@context'];
+		    else type = 'http://model.webofthings.io/#properties-resource';
 
-    req.result = utils.modelToResources(properties.resources, true);
+		    res.links({
+		      type: type
+		    });
 
-    // Generate the Link headers 
-    if (properties['@context']) type = properties['@context'];
-    else type = 'http://model.webofthings.io/#properties-resource';
+		    next();
+		  });
 
-    res.links({
-      type: type
-    });
+		  // GET /properties/{id}
+		  router.route(properties.link + '/:id').get(function (req, res, next) {
+		    req.model         = model;
+		    req.propertyModel = properties.resources[req.params.id];
+		    req.type          = 'property';
+		    req.entityId      = req.params.id;
 
-    next();
-  });
+		    req.myresult      = reverseResults(properties.resources[req.params.id].data);
 
-  // GET /properties/{id}
-  router.route(properties.link + '/:id').get(function (req, res, next) {
-    req.model         = model;
-    req.propertyModel = properties.resources[req.params.id];
-    req.type          = 'property';
-    req.entityId      = req.params.id;
+		    // Generate the Link headers 
+		    if (properties.resources[req.params.id]['@context']) type = properties.resources[req.params.id]['@context'];
+		    else type = 'http://model.webofthings.io/#properties-resource';
 
-    req.result        = reverseResults(properties.resources[req.params.id].data);
+		    res.links({
+		      type: type
+		    });
 
-    // Generate the Link headers 
-    if (properties.resources[req.params.id]['@context']) type = properties.resources[req.params.id]['@context'];
-    else type = 'http://model.webofthings.io/#properties-resource';
+		    next();
+		  });
+		};
 
-    res.links({
-      type: type
-    });
+function reverseResults(array) {
+	  return array.slice(0).reverse();
+}
+const robotControl  = require('../controllers/robotControl');
+function createRobotActionsRoutes (model) {
+	  console.log("createRobotActionsRoutes ( POST /robot/actions/commands/CMD )"  ); 
+	  
+	  router.route('/robot/actions/commands/:cmdType').post(function (req, res, next) {
+		  var url = req.originalUrl;
+ 		  console.log( "doing robot command:" + req.params.cmdType ); 
+		  robotControl.actuate( req.params.cmdType , req, res);
+		  req.myresult ="done " + req.params.cmdType;
+		  next();
+	  });
+}//createRobotActionsRoutes
 
-    next();
-  });
-};
-
-function createActionsRoutes(model) {
+function createActionsRoutes (model) {
+  console.log("createActionsRoutes (GET /actions , POST /actions/{actionType} , GET /actions/{actionType} ");
   var actions = model.links.actions;
-
+ 
   // GET /actions
   router.route(actions.link).get(function (req, res, next) {
-    req.result = utils.modelToResources(actions.resources, true);
+    req.myresult = utils.modelToResources(actions.resources, true);
     
     req.model = model;
     req.type = 'actions';
@@ -124,17 +142,18 @@ function createActionsRoutes(model) {
 
     next();
   });
+
   // POST /actions/{actionType}
   router.route(actions.link + '/:actionType').post(function (req, res, next) {
-    console.log("createActionsRoutes " + req.originalUrl); //AN
+    console.log( "actions POST " + req.originalUrl );  
     var action       = req.body;
-    action.id        = uuid.v1();
+    action.id        = "todo"; 		//uuid.v1();
     action.status    = "pending";
     action.timestamp = utils.isoTimestamp();
-    console.log("createActionsRoutes action=" + action); //AN
+    console.log("/actions action=" + action); //AN
     utils.cappedPush(actions.resources[req.params.actionType].data, action);
     res.location(req.originalUrl + '/' + action.id);
-    console.log("createActionsRoutes location=" + (req.originalUrl + '/' + action.id) ); //AN
+    console.log("/actions location=" + (req.originalUrl + '/' + action.id) ); //AN
 	//simulate observer plugin reaction AN
 	if(req.originalUrl.indexOf( "/actions/ledState" ) >= 0 ){
 		console.log("AD HOC" );
@@ -144,18 +163,19 @@ function createActionsRoutes(model) {
     else next();
   });
 
-
-  // GET /actions/{actionType}
+  
+//GET /actions/{actionType}
   router.route(actions.link + '/:actionType').get(function (req, res, next) {
-
-    req.result      = reverseResults(actions.resources[req.params.actionType].data);
+    req.myresult    = reverseResults(actions.resources[req.params.actionType].data);
+	console.log("route actions GET=" + req.myresult  ); //AN
     req.actionModel = actions.resources[req.params.actionType];
     req.model       = model;
 
     req.type        = 'action';
     req.entityId    = req.params.actionType;
-console.log("createActionsRoutes entityId=" + req.entityId ); //AN
-    if (actions.resources[req.params.actionType]['@context']) type = actions.resources[req.params.actionType]['@context'];
+    console.log("route actions GET entityId=" + req.entityId ); //AN
+    if (actions.resources[req.params.actionType]['@context']) 
+  	  type = actions.resources[req.params.actionType]['@context'];
     else type = 'http://model.webofthings.io/#actions-resource';
 
     res.links({
@@ -165,25 +185,8 @@ console.log("createActionsRoutes entityId=" + req.entityId ); //AN
 
     next();
   });
-
-  // GET /actions/{id}/{actionId}
-  router.route(actions.link + '/:actionType/:actionId').get(function (req, res, next) {
-    req.result = utils.findObjectInArray(actions.resources[req.params.actionType].data,
-      {"id" : req.params.actionId});
-    next();
-  });
-}; //createActionsRoutes
-
-function createDefaultData(resources) {
-  Object.keys(resources).forEach(function (resKey) {
-    var resource  = resources[resKey];
-    resource.data = [];
-  });
-}
-
-function reverseResults(array) {
-  return array.slice(0).reverse();
-}
+ 
+}//createActionsRoutes
 
 
-
+ 
