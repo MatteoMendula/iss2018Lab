@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title><%= title %></title>
+<link rel="stylesheet" href="/stylesheets/style.css">
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script>
+       var socket  = io.connect();
+       socket.on('connect', function(){ console.log("socket connected");});
+       socket.on('message', function(v){ document.getElementById('display').innerHTML=v; });
+</script>
+ 
+</head>
+
+<body>
+<div class="container">
+<h2><%= title %></h2>
+
+<p><%= res %></p>
+<p><%= model %></p>
+<p>Description= <%= model.description %>  <%= Object.keys(model) %>  </p>
+ 
+<ul>
+<% Object.keys(model).forEach( function(key)  { %>
+   <li><%= key  %></li>
+<% } );%>
+</ul>
+<h3>Devices in the environment</h3>
+<ul>
+<% Object.keys(model.devices).forEach( function( dev )  { %>
+   <li><%= dev  %>, 
+       name=<%= model.devices[dev].name %>, 
+       descr=<%= model.devices[dev].description %></li>
+   
+ <% } );%>
+</ul>
+  
+
+</div>
+</body>

@@ -1,45 +1,51 @@
 {
   "robot": {
-	    "name": "WoT Robot",
+	    "name": "UniboDdrRobot",
 	    "description": "A simple robot model",
 	    "port": 8032,
 	    "state": "stopped",
-	    "sonar1": {
-	    	"name" : "sonar1",
-	    	"value": 0
-	    },
-	    "sonar2": {
-	    	"name" : "sonar1",
-	    	"value": 0
-	    },
 	    "sonarRobot": {
 	    	"name"  : "sonarRobot",
 	    	"value" :  0
-	    }
-    },
-    "pi": {
-    "name": "WoT Pi",
-    "description": "A simple WoT-connected Raspberry PI for the WoT book.",
-    "port": 8484,
-    "sensors": {
-      "temperature": {
-      	"T1": {
-      		"name": "T1",
-        	"description": "An ambient temperature sensor.",
-        	"unit": "celsius",
-        	"value": 0,
-        	"gpio": 12
-      	}
-      }
-    },
-    "actuators": {
-      "leds": {
-        "L1": {
-          "name": "LED 1",
+         },
+        "leds": {
+         "L1": {
+          "name": "LED for motionT",
           "value": false,
           "gpio": 25
         }
-      }
+        }
+    },
+    "robotenv": {
+    "name": "RobotEnv",
+    "description": "The robot environment.",
+    "devices":{
+        	
+ 	    "sensor-sonar1": {
+	    	"name" : "sonar1",
+         	"description": "The upper sonar.",
+	    	"value": 0
+	    },
+	    "sensor-sonar2": {
+	    	"name" : "sonar2",
+         	"description": "The lower sonar.",
+	    	"value": 0
+	    },
+	    "sensor-temperature":{
+       		"name" : "temperature",
+          	"description": "An ambient temperature sensor.",
+        	"unit": "celsius",
+        	"value": 0,
+        	"gpio": 12
+      	},
+       "actuator-led": {
+          "name": "Hue Lamp",
+          "description": "A REST lamp.",
+          "value": false,
+          "ip": "https://www2.meethue.com/it-it"
+        }
     }
+    
+ 
   }
 }
