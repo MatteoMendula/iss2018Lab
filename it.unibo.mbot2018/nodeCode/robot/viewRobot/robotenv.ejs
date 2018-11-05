@@ -15,27 +15,38 @@
 
 <body>
 <div class="container">
-<h2><%= title %></h2>
+<h1><%= title %></h1>
 
-<p><%= res %></p>
-<p><%= model %></p>
+<!-- 
+<p><%= res %></p> 
 <p>Description= <%= model.description %>  <%= Object.keys(model) %>  </p>
- 
+
+<h3>Properties of the environment</h3>
+<p>  <%= Object.getOwnPropertyNames(model) %>  </p>
+
 <ul>
 <% Object.keys(model).forEach( function(key)  { %>
    <li><%= key  %></li>
+    
+ 	<% Object.keys( key ).forEach( function(item)  { %>
+ 	<%= item  %>
+ 	<% } );%>
+ 	 
 <% } );%>
 </ul>
+-->
 <h3>Devices in the environment</h3>
 <ul>
 <% Object.keys(model.devices).forEach( function( dev )  { %>
-   <li><%= dev  %>, 
+   <li><b><%= dev  %></b> <br/> 
        name=<%= model.devices[dev].name %>, 
        descr=<%= model.devices[dev].description %></li>
    
  <% } );%>
 </ul>
-  
-
+ 
+<p>
+Back to main page: <a href="http://<%=host%>">main page</a>  
+</p>
 </div>
 </body>

@@ -2,7 +2,6 @@
   "robot": {
 	    "name": "UniboDdrRobot",
 	    "description": "A simple robot model",
-	    "port": 8032,
 	    "state": "stopped",
 	    "sonarRobot": {
 	    	"name"  : "sonarRobot",
@@ -10,7 +9,7 @@
          },
         "leds": {
          "L1": {
-          "name": "LED for motionT",
+          "name": "LED for motion",
           "value": false,
           "gpio": 25
         }

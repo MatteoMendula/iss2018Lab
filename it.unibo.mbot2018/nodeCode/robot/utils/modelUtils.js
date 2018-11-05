@@ -36,12 +36,12 @@ exports.extractFields = function(fields, object, target) {
 exports.modelToResources = function(subModel, withValue) {
   var resources = [];
   Object.keys(subModel).forEach(function(key) {
-	  console.log("utils modelToResources key=" +key );
+	//console.log("utils modelToResources key=" +key );
     var val       = subModel[key];
     var resource  = {};
     resource.id   = key;
     resource.name = val['name'];
-      console.log("utils modelToResources val=" + val );
+      //console.log("utils modelToResources val=" + val );
       console.log( val );
     if(withValue) resource.values = val.data[val.data.length-1];
     

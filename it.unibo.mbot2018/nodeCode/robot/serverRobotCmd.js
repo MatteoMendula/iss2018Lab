@@ -20,7 +20,7 @@ if( realRobot ){
 	serialPort = require('./utils/serial');
 	console.log("serialPort= " + serialPort.path  );
 }
-else   toVirtualRobot = require("./utils/clientRobotVirtual");
+else toVirtualRobot = require("./utils/clientRobotVirtual");
 
 /*
 * --------------------------------------------------------------
@@ -50,20 +50,24 @@ app.set("view engine", "ejs");			//npm install --save ejs
 * --------------------------------------------------------------
 */
 app.get('/', function(req, res) {
+ 	//console.log( req.headers.host ); 
 	var state  = robotModel.robot.state;
 	res.render('access', 
-		{'title': 'Robot Control', 'res': "Welcome", 'robotstate': state} 
+		{'title': 'Robot Control', 'res': "Welcome", 
+		'robotstate': state, 'refToEnv': req.headers.host+"/robotenv"} 
 	); 
 });	
 
 app.get('/robotenv', function (req, res) {
+	console.log( req.headers.host ); 
 	var state     = robotModel.robot.state;
-	var envToShow = JSON.stringify( 
+ 	var envToShow = JSON.stringify( 
 			modelutils.modelToResources(robotModel.robotenv, false)
 			);
-	res.render('robotenv', 
-		{'title': 'Robot Environment', 'res': envToShow , 'model': robotModel.robotenv} 
-	); 
+ 	res.render('robotenv', 
+ 		{'title': 'Robot Environment', 'res': envToShow , 
+ 		'model': robotModel.robotenv, 'host': req.headers.host } 
+ 	); 
 });
 app.get('/robotstate', function (req, res) {
 	var state  = robotModel.robot.state;
