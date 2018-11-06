@@ -14,7 +14,7 @@ var serialPort ;
 var toVirtualRobot;
 var myPort;
 
-const realRobot = false;
+const realRobot = true;
 
 if( realRobot ){    
 	serialPort = require('./utils/serial');
@@ -53,7 +53,7 @@ app.get('/', function(req, res) {
  	//console.log( req.headers.host ); 
 	var state  = robotModel.robot.state;
 	res.render('access', 
-		{'title': 'Robot Control', 'res': "Welcome", 
+		{'title': 'Robot Control', 'res': "Welcome", 'model': robotModel.robot,
 		'robotstate': state, 'refToEnv': req.headers.host+"/robotenv"} 
 	); 
 });	
@@ -101,7 +101,8 @@ app.use( function(req,res){
 	console.log("last " + req.myresult );
 	//console.log(  req  );
 	res.render('access', 
-		{'title': 'Robot Control', 'res': req.myresult, 'robotstate':robotModel.robot.state} 
+		{'title': 'Robot Control', 'res': req.myresult, 'model': robotModel.robot,
+		 'robotstate':robotModel.robot.state, 'refToEnv': req.headers.host+"/robotenv"} 
 	); 
 } );
  

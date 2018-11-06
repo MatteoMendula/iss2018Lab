@@ -17,6 +17,15 @@
 <div class="container">
 <h1><%= title %></h1>
  
+  
+<ul>
+<% Object.keys(model.devices.resources).forEach( function( dev )  { %>
+   <li><b><%= dev  %></b> :
+       name=<%= model.devices.resources[dev].name %>, 
+       value=<%= model.devices.resources[dev].value %></li>
+   
+ <% } );%>
+</ul>
    
 			<table style="background-color: #d9f7f3" >
 					<tr>
@@ -65,12 +74,13 @@
 </div>
  
 	<div>
- 		COMMAND ANSWER: <span id="display"><%= res %></span>
+ 		<b>COMMAND ANSWER</b>: <span id="display"><%= res %></span>
 	</div>
 	<div>
- 		ROBOT STATE:   <span id="display"><%= robotstate %></span>
+ 		<b>ROBOT STATE</b>:   <span id="display"><%= robotstate %></span>
 	</div>
- <p><%= refToEnv %></p>
- <a href="http://<%= refToEnv %>">Description  of the Robot Environment</a>
+ <p> 
+ <a href="http://<%= refToEnv %>">Description  of the Robot Environment</a> (<%= refToEnv %>)
+ </p>
 </body>
 </html>

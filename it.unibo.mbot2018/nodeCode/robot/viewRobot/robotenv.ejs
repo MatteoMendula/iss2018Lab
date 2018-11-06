@@ -35,12 +35,13 @@
 <% } );%>
 </ul>
 -->
+
 <h3>Devices in the environment</h3>
 <ul>
-<% Object.keys(model.devices).forEach( function( dev )  { %>
+<% Object.keys(model.devices.resources).forEach( function( dev )  { %>
    <li><b><%= dev  %></b> <br/> 
-       name=<%= model.devices[dev].name %>, 
-       descr=<%= model.devices[dev].description %></li>
+       name=<%= model.devices.resources[dev].name %>, 
+       descr=<%= model.devices.resources[dev].description %></li>
    
  <% } );%>
 </ul>

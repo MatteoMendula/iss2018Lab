@@ -5,7 +5,7 @@
 	    "properties":{
 	    	"link": "/robotstate",
 	    	"resources":{
-	    		"state": "stopped"
+	    		"state": "stopped",
 	    	}
 	    },
 	    "devices":{
@@ -27,18 +27,18 @@
         	"description": "The set of robot moves",
         	"resources":{
 		        "move": {
-			          "name": "RobotMove",
-			          "description": "Move the robot",
-			          "values": {
-				            "moveId": {
-				              "type": "enum",
-				              "enum": {"w":"forward","h":"stop","a":"left"} ,
-				              "required": true
-				            }
-	         	 	   }
+		          "name": RobotMove",
+		          "description": "Move the robot",
+		          "values": {
+		            "moveId": {
+		              "type": "enum",
+		              "enum":{"w":"forward","h":"stop","a":"left"},
+		              "required": true
+		            }
+	         	 }
 	         	}
         	}
-        } 
+        }
     },
     "robotenv": {
 	"link": "/robotenv",
