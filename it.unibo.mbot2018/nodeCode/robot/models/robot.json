@@ -1,15 +1,16 @@
 {
+  "url":"http://localhost:8080/model/",
   "robot": {
 	    "name": "UniboDdrRobot",
 	    "description": "A simple robot model",
 	    "properties":{
-	    	"link": "/robotstate",
+	    	"link": "robotstate/",
 	    	"resources":{
 	    		"state": "stopped"
 	    	}
 	    },
 	    "devices":{
-	    	"link": "/robotdevices",
+	    	"link": "robotdevices/",
 	    	"resources":{
 			    "sonarRobot": {
 			    	"name"  : "sonarRobot",
@@ -23,7 +24,7 @@
 		    }
         },
         "actions":{
-        	"link": "/cmd",
+        	"link": "cmd/",
         	"description": "The set of robot moves",
         	"resources":{
 		        "move": {
@@ -45,7 +46,7 @@
     "name": "RobotEnv",
     "description": "The robot environment.",
     "devices":{
-	    "link": "/robotenv/devices",
+	    "link": "robotenv/devices/",
 	    "resources":{       	
 	 	    "sensor-sonar1": {
 		    	"name" : "sonar1",
@@ -71,8 +72,14 @@
 	          "ip": "https://www2.meethue.com/it-it"
 	        }
         }
-    }
-    
+    }    
  
-  }
+  },
+      "links":{
+    	"meta":{
+    		"rel" :"http://http://infolab.ingce.unibo.it/iss2018/it.unibo.issMaterial/issdocs/Material/LectureCesena1819.html",
+    		"title": "A description"
+    	}
+    }
+  
 }

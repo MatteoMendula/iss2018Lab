@@ -42,7 +42,7 @@ exports.modelToResources = function(subModel, withValue) {
     resource.id   = key;
     resource.name = val['name'];
       //console.log("utils modelToResources val=" + val );
-    console.log( val );
+    console.log( "modelToResources" );console.log( val );
     if(withValue) resource.values = val.data[val.data.length-1];
     
 //    console.log("utils modelToResources name=" + resource.name + 

@@ -1,7 +1,7 @@
 /*
  * it.unibo.mbot2018\nodeCode/robot/controllers/robotControl
  */
-const robotModel     = require('./../models/robot');
+const robotModel  = require('./../models/robot');
 
 var realRobot = false;
 var serialPort ;
@@ -9,8 +9,8 @@ var toVirtualRobot;
 var myPort;
 
 exports.setRealRobot = function( v ){
-	console.log("setRealRobot=" + v);
-	realRobot = v;
+	console.log("robotControl setRealRobot=" + (v == true) );
+	realRobot =   v ;
 	if( realRobot ){    
 		serialPort = require('./../utils/serial');
 		console.log("serialPort= " + serialPort.path  );
@@ -48,13 +48,6 @@ function actuateOnVirtual(cmd, newState, req, res ){
   	toVirtualRobot.send( cmd );  	
   	updateRobotState(newState);
   	setActuateResult(req,cmd);
- 	 
-//		setTimeout( function(){
-//			//var now = new Date().toUTCString();
-//			io.sockets.send( newState ); //+ " time=" + now
-//		}, 200 ) ;
-//
-//  	res.render("access");
 }
 
 function actuateOnArduino(cmd, newState, req, res ){

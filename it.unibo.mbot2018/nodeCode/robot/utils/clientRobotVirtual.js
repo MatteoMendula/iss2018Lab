@@ -4,6 +4,7 @@
 const net       = require('net')
 const SEPARATOR = ";"
 const client    = new Client({ip: "localhost", port: 8999})
+const echannel  =  require("./channel");
 
 function Client({ port, ip }) {
     const self = this
@@ -30,7 +31,12 @@ function Client({ port, ip }) {
                     .map( string => string.trim() )
                     .filter( string => string.length !== 0  )
                     .map( JSON.parse )
-                    .forEach( message => console.log(message) )
+                    .forEach( message => 
+                    	{ //console.log(message); 
+                    	  if(  message.type == 'collision')
+                    		  echannel.emit("sonarEvent", message.type + ":"+ message.arg.objectName); 
+                    	  else console.log(message.arg.sonarName + " " + message.arg.distance ); 
+                    	} )
         })       
         client.on('close', () =>  console.log(`\t clientRobotVirtual Connection closed`) )
         client.on('error', () => console.log(`\t clientRobotVirtual Connection error`) )

@@ -1,8 +1,12 @@
-var serialport = require("serialport");		//npm install --save serialport
-var SerialPort = serialport.SerialPort;
- 
+/*
+ * nodeCode/robot/utils/serial.js
+ */
+const echannel   =  require("./channel");
+const serialport = require("serialport");		//npm install --save serialport
+const SerialPort = serialport.SerialPort;
+
 // list serial ports:
-//Serialport.list(): Promise<PortInfo[]>
+
 serialport.list(function (err, ports) {
   ports.forEach(function(port) {
     console.log(port.comName);
@@ -18,7 +22,7 @@ serialport.list(function (err, ports) {
  */
 var portName="COM6";  //"/dev/ttyUSB0";
 var inputStr = "";
-console.log(serialport.parsers);
+//console.log(serialport.parsers);
 
 var port = new serialport (portName, {
   baudRate: 115200, //9600,
@@ -32,7 +36,8 @@ port.on('data', function (data) {
 	//console.log('Data: ' + data);
 	inputStr = inputStr + data;
 	if( inputStr.indexOf("\n") >= 0 ){
-		console.log("serial port input= " + inputStr);
+		//console.log("serial port input= " + inputStr);
+		echannel.emit("sonarEvent", inputStr);
 		inputStr = "";
 	}
 });	 

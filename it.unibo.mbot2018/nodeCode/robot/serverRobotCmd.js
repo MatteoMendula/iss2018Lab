@@ -4,23 +4,13 @@
 * =====================================
 */
 const http    = require("http"),
-      join    = require('path').join ;
+	  cors    = require("cors"),
+	  path    = require("path"),
+      join    = path.join ;
 
 const robotModel     = require('./models/robot');
 const robotControl   = require('./controllers/robotControl');
 const modelutils     = require('./utils/modelUtils');
-
-var serialPort ;
-var toVirtualRobot;
-var myPort;
-
-const realRobot = true;
-
-if( realRobot ){    
-	serialPort = require('./utils/serial');
-	console.log("serialPort= " + serialPort.path  );
-}
-else toVirtualRobot = require("./utils/clientRobotVirtual");
 
 /*
 * --------------------------------------------------------------
@@ -29,7 +19,9 @@ else toVirtualRobot = require("./utils/clientRobotVirtual");
 */
 const express  = require('express'); 	//npm install --save express
 const app      = express();
-const path     = require('path');
+
+app.use( cors() );
+
 app.set('views', path.join(__dirname, '.', 'viewRobot'));	 
 app.set("view engine", "ejs");			//npm install --save ejs
 
@@ -38,12 +30,24 @@ app.set("view engine", "ejs");			//npm install --save ejs
 * 1) DEFINE THE SERVER (based on express) that enables socket.io
 * --------------------------------------------------------------
 */
-    const server  = http.createServer( app );   
-	const io      = require('socket.io').listen(server); 	//npm install --save socket.io
-	
-	robotControl.setRealRobot( false );
- 
-	app.use(express.static(__dirname + '/public'));
+const server  = http.createServer( app );   
+const io      = require('socket.io').listen(server); //npm install --save socket.io
+
+/*
+* --------------------------------------------------------------
+* CRETATE A  NODE EVENT HANDLER and give the iosocket to it
+* --------------------------------------------------------------
+*/
+var echannel    =  require("./utils/channel");
+echannel.setIoSocket(io);
+
+/*
+* --------------------------------------------------------------
+* Static files with middleware
+* --------------------------------------------------------------
+*/
+var publicpath = path.resolve(__dirname + '/public');  //cross-platform
+app.use(express.static(publicpath));
 /*
 * --------------------------------------------------------------
 * 3a) HANDLE A GET REQUEST
@@ -57,32 +61,36 @@ app.get('/', function(req, res) {
 		'robotstate': state, 'refToEnv': req.headers.host+"/robotenv"} 
 	); 
 });	
-
+app.get('/model', function (req, res) {
+	res.send(robotModel);
+});
+app.get('/model/robotdevices', function (req, res) {
+	res.send(robotModel.robot.devices.resources);
+});
 app.get('/robotenv', function (req, res) {
 	console.log( req.headers.host ); 
-	var state     = robotModel.robot.state;
+	var state     =  robotModel.robot.properties.resources.state;
  	var envToShow = JSON.stringify( 
-			modelutils.modelToResources(robotModel.robotenv, false)
-			);
+			modelutils.modelToResources(robotModel.robotenv.devices, false)
+		);
  	res.render('robotenv', 
  		{'title': 'Robot Environment', 'res': envToShow , 
- 		'model': robotModel.robotenv, 'host': req.headers.host } 
+ 		'model': robotModel.robotenv, 'host': req.headers.host, 'refToEnv': req.headers.host+"/robotenv" } 
  	); 
 });
 app.get('/robotstate', function (req, res) {
-	var state  = robotModel.robot.state;
+	var state  = robotModel.robot.properties.resources.state;
 	res.render('access', 
-			{'title': 'Robot Control', 'res': robotModel.robotenv , 'robotstate': state} 
+			{'title': 'Robot Control', 'res': "answer to /robotstate" , 
+		     'model': robotModel.robot, 'robotstate': state, 'refToEnv': req.headers.host+"/robotenv"} 
 		); 
 });
-
+ 
 /*
 * --------------------------------------------------------------
 * 3b) HANDLE A POST REQUEST
 * --------------------------------------------------------------
 */
-
- 
 app.post("/robot/actions/commands/w", function(req, res, next) { 
 	robotControl.actuate("w", req, res ); next();});
 app.post("/robot/actions/commands/s", function(req, res, next) { 
@@ -95,8 +103,6 @@ app.post("/robot/actions/commands/a", function(req, res, next) {
 	robotControl.actuate("a", req, res ); next(); });
 		
  
-
-
 app.use( function(req,res){ 
 	console.log("last " + req.myresult );
 	//console.log(  req  );
@@ -137,12 +143,18 @@ const initMsg=
 	"serverRobotCmd bound to port 8080\n"+
 	"uses socket.io\n"+
 	"------------------------------------------------------\n";
+ 
+process.argv.forEach(function (val, index, array) {
+	  console.log("input args[" + index + ']: ' + (val=='true') + " " + array.length);
+	  //robotControl.setRealRobot( false );
+	  if( index == 2 ) //the user has specified if we must work with a real robot or not
+		  	 robotControl.setRealRobot( val=='true' );
+	  if( index == (array.length-1) ) server.listen(8080, function(){console.log(initMsg)}); 
+});
 
-server.listen(8080, function(){console.log(initMsg)}); 
-
-
-
-/*
+/* 
+node serverRobotCmd.js false/true
+ 
 curl -X POST -d "true" http://localhost:8080/robot/actions/commands/w
 curl -X GET  http://localhost:8080/robot/state
 
