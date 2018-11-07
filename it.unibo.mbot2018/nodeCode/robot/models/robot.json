@@ -42,7 +42,7 @@
         } 
     },
     "robotenv": {
-	"link": "/robotenv",
+	"link": "robotenv/",
     "name": "RobotEnv",
     "description": "The robot environment.",
     "devices":{

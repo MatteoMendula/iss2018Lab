@@ -20,14 +20,22 @@ const modelutils     = require('./utils/modelUtils');
 const express  = require('express'); 	//npm install --save express
 const app      = express();
 
+/*
+ * Cross-origin resource sharing (CORS) is a mechanism that allows 
+ * restricted resources on a web page to be requested from another 
+ * domain outside the domain from which the first resource was served
+ */
 app.use( cors() );
 
+/*
+ * SET UP THE RENDERING ENGINE
+ */
 app.set('views', path.join(__dirname, '.', 'viewRobot'));	 
 app.set("view engine", "ejs");			//npm install --save ejs
 
 /*
 * --------------------------------------------------------------
-* 1) DEFINE THE SERVER (based on express) that enables socket.io
+* 1) DEFINE THE SERVER (using express) that enables socket.io
 * --------------------------------------------------------------
 */
 const server  = http.createServer( app );   
@@ -35,10 +43,10 @@ const io      = require('socket.io').listen(server); //npm install --save socket
 
 /*
 * --------------------------------------------------------------
-* CRETATE A  NODE EVENT HANDLER and give the iosocket to it
+* CREATE A  EVENT HANDLER and give the iosocket to it
 * --------------------------------------------------------------
 */
-var echannel    =  require("./utils/channel");
+var echannel  =  require("./utils/channel");
 echannel.setIoSocket(io);
 
 /*
@@ -61,20 +69,25 @@ app.get('/', function(req, res) {
 		'robotstate': state, 'refToEnv': req.headers.host+"/robotenv"} 
 	); 
 });	
+
+//USED in ajaxAcess.html
 app.get('/model', function (req, res) {
 	res.send(robotModel);
 });
+//USED in ajaxAcess.html
 app.get('/model/robotdevices', function (req, res) {
 	res.send(robotModel.robot.devices.resources);
 });
+//USED from the page bult by access.ejs
 app.get('/robotenv', function (req, res) {
-	console.log( req.headers.host ); 
+	//console.log( req.headers.host ); 
 	var state     =  robotModel.robot.properties.resources.state;
- 	var envToShow = JSON.stringify( 
-			modelutils.modelToResources(robotModel.robotenv.devices, false)
+	var withValue = false;
+	var envToShow = JSON.stringify( 
+			modelutils.modelToResources(robotModel.robotenv.devices.resources, withValue)
 		);
  	res.render('robotenv', 
- 		{'title': 'Robot Environment', 'res': envToShow , 
+ 		{'title': 'Robot Environment', 'res': envToShow, 
  		'model': robotModel.robotenv, 'host': req.headers.host, 'refToEnv': req.headers.host+"/robotenv" } 
  	); 
 });
@@ -104,9 +117,8 @@ app.post("/robot/actions/commands/a", function(req, res, next) {
 		
  
 app.use( function(req,res){ 
-	console.log("last " + req.myresult );
-	//console.log(  req  );
-	res.render('access', 
+	//console.log("last " + req.myresult );
+ 	res.render('access', 
 		{'title': 'Robot Control', 'res': req.myresult, 'model': robotModel.robot,
 		 'robotstate':robotModel.robot.state, 'refToEnv': req.headers.host+"/robotenv"} 
 	); 

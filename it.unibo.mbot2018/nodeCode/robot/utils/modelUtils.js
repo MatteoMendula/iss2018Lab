@@ -41,13 +41,8 @@ exports.modelToResources = function(subModel, withValue) {
     var resource  = {};
     resource.id   = key;
     resource.name = val['name'];
-      //console.log("utils modelToResources val=" + val );
-    console.log( "modelToResources" );console.log( val );
-    if(withValue) resource.values = val.data[val.data.length-1];
-    
-//    console.log("utils modelToResources name=" + resource.name + 
-//    		" key=" + key + " resource.values=" + resource.values );  
-    
+    //console.log( "modelToResources" );console.log( val );
+    if(withValue) resource.values = val.data[val.data.length-1];    
     resources.push(resource);
   });
   return resources;
