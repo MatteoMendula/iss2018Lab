@@ -21,7 +21,7 @@ channel.on('sonarEvent', function(data) {	//emitted by serial
 channel.on('robotState', function(data) { //emitted by 
 	console.log("channel robotState=" + data + 
 		" updates " + model.robot.properties.resources.state );
-	model.robot.robot.properties.resources.state=data;
+	model.robot.properties.resources.state=data;
 });
 
 //channel.emit('sonarEvent', 32.5);

@@ -2,6 +2,7 @@
  * it.unibo.mbot2018\nodeCode/robot/controllers/robotControl
  */
 const robotModel  = require('./../models/robot');
+const echannel    =  require("./../utils/channel");
 
 var realRobot = false;
 var serialPort ;
@@ -53,6 +54,8 @@ function actuateOnVirtual(cmd, newState, req, res ){
 function actuateOnArduino(cmd, newState, req, res ){
 	console.log("actuateOnArduino: " + cmd + " " + serialPort.path);
 	serialPort.write(cmd);	
+  	updateRobotState(newState);
+  	setActuateResult(req,cmd);
 }
 
 function setActuateResult(req, cmd){
@@ -61,6 +64,7 @@ function setActuateResult(req, cmd){
 
 function updateRobotState(newState){
   	robotModel.robot.state = newState;		
+	echannel.emit("robotState", newState);
 }
 
 

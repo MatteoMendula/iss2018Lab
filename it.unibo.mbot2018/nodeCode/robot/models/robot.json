@@ -2,6 +2,7 @@
   "url":"http://localhost:8080/model/",
   "robot": {
 	    "name": "UniboDdrRobot",
+	    "link": "robot/",
 	    "description": "A simple robot model",
 	    "properties":{
 	    	"link": "robotstate/",
@@ -75,11 +76,12 @@
     }    
  
   },
-      "links":{
+  "links":{
+  		"link": "meta/",
+  		"name": "MetaInfo",
     	"meta":{
     		"rel" :"http://http://infolab.ingce.unibo.it/iss2018/it.unibo.issMaterial/issdocs/Material/LectureCesena1819.html",
     		"title": "A description"
     	}
-    }
-  
+  }
 }
