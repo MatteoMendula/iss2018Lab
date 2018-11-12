@@ -33,7 +33,7 @@ const topic  = "unibo/qasys";
 var net = require('net');
 var host = "localhost";
 //var host = "172.20.10.9";
-var port = 8032;
+var port = 1883; //8032;
 console.log('connecting to ' + host + ":" + port);
 var conn = net.connect({ port: port, host: host });
 conn.setEncoding('utf8');

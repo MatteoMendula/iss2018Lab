@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ResourceAccess</title>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script>
+       var socket = io.connect();
+       var socketState = io.connect();
+       var socketLed = io.connect();
+       var socketTemperature = io.connect();
+       var socketTime = io.connect();
+       console.log("CONNECTED VIA 5 SOCKET ");
+       socketState.on('connect', function(){socketState.emit('room', 'state');});
+       socketState.on('message', function(v){ document.getElementById('state').innerHTML=v; });
+       socketLed.on('connect', function(){socketLed.emit('room', 'led');});
+       socketLed.on('message', function(v){ document.getElementById('led').innerHTML=v; });
+       socketTemperature.on('message', function(v){ document.getElementById('temperature').innerHTML=v; });
+       socketTemperature.on('connect', function(){socketTemperature.emit('room', 'temperature');});
+       socketTime.on('message', function(v){ document.getElementById('time').innerHTML=v; });
+       socketTime.on('connect', function(){socketTime.emit('room', 'time');});
+       socket.on('message', function(v){ document.getElementById('display').innerHTML=v; });
+       socket.on('connect', function(){socket.emit('room', 'display');});
+</script>
+<script type="text/javascript" src="QActorWebUI.js"></script>
+</head>
+
+<body>
+<div class="container">
+<h1>Robot Control</h1>
+ 
+   
+<br/><br/>
+<center>
+			<table style="background-color: #d9f7f3">
+					<tr>
+						<td>
+							<br/>
+						</td>
+					</tr>
+					<tr>
+						<td align="center">
+							<form action="/robot/actions/commands/start" method="post">
+							  	<input type="submit" value="Start" class="btn btn-primary btn-block">
+							</form>
+						</td>
+						<td align="center">
+							<form action="/robot/actions/commands/h" method="post">
+							  	<input type="submit" value="Stop" class="btn btn-primary btn-block">
+							</form>
+						</td>
+						<td align="center">
+							<form action="/robot/actions/commands/restart" method="post">
+							  	<input type="submit" value="Restart" class="btn btn-primary btn-block">
+							</form>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<br/>
+						</td>
+					</tr>
+				</table>
+</center>
+<br/><br/>
+</div>
+<center>
+	<div>
+		<span id="state">State area</span><br/>
+		<span id="led">Led area</span><br/>
+		<span id="temperature">Temperature area</span><br/>
+		<span id="time">Time area</span><br/>
+		UPDATE CLIENT: <span id="display">updates</span>
+	</div>
+</center>
+</body>
+</html>

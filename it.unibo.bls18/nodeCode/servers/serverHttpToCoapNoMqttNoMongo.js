@@ -43,7 +43,6 @@ var html      	 = fs.readFileSync('index.html', 'utf8');
 */
 function handler (reqInfo, response) {
 	var method = reqInfo.method;
-//	var url    = parse(request.urlPathname);
 	var path   = reqInfo.urlPathname;
 	if( path === "/" ) path = "/index.html";
 	
@@ -259,6 +258,10 @@ function createHttpServer(port, callback){
 /Led requires MainCoapBasicLed / LedCoapResource or BlsHexagSystem / LedResource
 curl -X PUT -d "true" http://localhost:8080/ledSwitch
 curl -X GET  http://localhost:8080/Led
+
+curl -X PUT -d "true" http://192.168.0.50:8080/ledSwitch
+curl -X GET  http:///192.168.0.50:8080/Led
+
 
 /Button requires BlsHexagSystem / ButtonResource
 curl -X GET  http://localhost:8080/Button  ()

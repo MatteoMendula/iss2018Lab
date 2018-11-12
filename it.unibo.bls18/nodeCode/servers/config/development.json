@@ -2,5 +2,5 @@
   "dbURL": "mongodb://localhost:27017/model-db",  
   "mqttUrl": "tcp://localhost:1883",   
   "mqttWsUrl": "ws://broker.hivemq.com:8000/mqtt", 
-  "mqttTopic": "unibo/bls18"  
+  "mqttTopic": "unibo/qasys"  
 }

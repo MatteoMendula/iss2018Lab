@@ -1,0 +1,26 @@
+\BOOKMARK [0][-]{chapter.1}{A Button-Led systems: from local objects to distributed systems}{}% 1
+\BOOKMARK [0][-]{chapter.1}{DISI-Cesena Antonio Natali}{}% 2
+\BOOKMARK [1][-]{section.1.1}{Requirements}{chapter.1}% 3
+\BOOKMARK [2][-]{subsection.1.1.1}{Goals}{section.1.1}% 4
+\BOOKMARK [2][-]{subsection.1.1.2}{Software life cycle process}{section.1.1}% 5
+\BOOKMARK [2][-]{subsection.1.1.3}{Bottom-up or Top-Down?}{section.1.1}% 6
+\BOOKMARK [1][-]{section.1.2}{Technology-based design}{chapter.1}% 7
+\BOOKMARK [2][-]{subsection.1.2.1}{Function-based software}{section.1.2}% 8
+\BOOKMARK [2][-]{subsection.1.2.2}{Object-based software}{section.1.2}% 9
+\BOOKMARK [2][-]{subsection.1.2.3}{Observable and Observers}{section.1.2}% 10
+\BOOKMARK [2][-]{subsection.1.2.4}{Models }{section.1.2}% 11
+\BOOKMARK [2][-]{subsection.1.2.5}{Modelling a Button }{section.1.2}% 12
+\BOOKMARK [1][-]{section.1.3}{An object-based design}{chapter.1}% 13
+\BOOKMARK [1][-]{section.1.4}{From BLS Mock devices to physical devices}{chapter.1}% 14
+\BOOKMARK [2][-]{subsubsection.1.4.0.1}{Dependency injection and Inversion of Control}{section.1.4}% 15
+\BOOKMARK [2][-]{subsection.1.4.1}{MVC}{section.1.4}% 16
+\BOOKMARK [2][-]{subsection.1.4.2}{Devices on Arduino}{section.1.4}% 17
+\BOOKMARK [2][-]{subsection.1.4.3}{Devices on Raspberry}{section.1.4}% 18
+\BOOKMARK [2][-]{subsection.1.4.4}{IOT}{section.1.4}% 19
+\BOOKMARK [1][-]{section.1.5}{Evolving the BLS into a distributed system}{chapter.1}% 20
+\BOOKMARK [2][-]{subsection.1.5.1}{Led as a remote devices: the proxy pattern }{section.1.5}% 21
+\BOOKMARK [2][-]{subsection.1.5.2}{Led as a remote device. the publish-subscribe pattern }{section.1.5}% 22
+\BOOKMARK [1][-]{section.1.6}{CoAP}{chapter.1}% 23
+\BOOKMARK [2][-]{subsection.1.6.1}{Led as a \(CoAP\) thing }{section.1.6}% 24
+\BOOKMARK [2][-]{subsection.1.6.2}{Hexagonal srchitecture}{section.1.6}% 25
+\BOOKMARK [2][-]{subsection.1.6.3}{BLS front end }{section.1.6}% 26

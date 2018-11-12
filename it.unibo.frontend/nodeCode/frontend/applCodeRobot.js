@@ -8,7 +8,7 @@ var logger       	= require('morgan');	//see 10.1 of nodeExpressWeb.pdf;
 var cookieParser 	= require('cookie-parser');
 var bodyParser   	= require('body-parser');
 var fs           	= require('fs');
-//var toRobot         = require("./jsCode/clientRobotVirtual");
+var toRobot         = require("./jsCode/clientRobotVirtual");
 var serverWithSocket= require('./robotFrontendServer');
 var cors            = require('cors');
 var robotModel      = require('./appServer/models/robot');
@@ -30,7 +30,7 @@ var sensorsRoutes   = require('./appServer/routes/sensors');
 var robotRoutes   = require('./appServer/routes/robot');
 
 
-
+ 
 
 // view engine setup;
 app.set('views', path.join(__dirname, 'appServer', 'viewRobot'));	 
@@ -49,8 +49,8 @@ app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'jsCode')))
 
-var externalActuator = true;	//when true, the application logic is external to the server;
-var withAuth         = true;
+var externalActuator = false;	//when true, the application logic is external to the server;
+var withAuth         = false;
 
 
 //DEFINE THE ROUTES ;
@@ -80,7 +80,7 @@ if( withAuth ){
  		if( withAuth ) res.render("login");
  		else 
  			res.render("access");
- 	});	
+  	});	
 if (passport)
 	app.get("/login", function(req, res) {
 		 res.render("login");
@@ -168,6 +168,7 @@ if (passport)
 /*
  * ====================== COMMANDS ================
  */
+/*
 	app.post("/robot/actions/commands/start", function(req, res) {
 		console.info("START THE APPLICATION "   );
 		if( externalActuator ) delegate( "x(low)", "started", req, res);
@@ -176,8 +177,8 @@ if (passport)
 		console.info("BACK TO THE START!");
 		if( externalActuator ) delegate( "r(low)", "restarted", req, res);
 	});
-
-/*	app.post("/robot/actions/commands/w", function(req, res) {
+*/
+	app.post("/robot/actions/commands/w", function(req, res) {
 		if( externalActuator ) delegate( "w(low)", "moving forward", req, res);
 		else actuate( `{ "type": "moveForward",  "arg": -1 }`, "server moving forward", req, res);
 		
@@ -193,7 +194,7 @@ if (passport)
 	app.post("/robot/actions/commands/d", function(req, res) {
   		if( externalActuator ) delegate( "d(low)", "moving right", req, res );
 		else actuate( `{ "type": "turnRight",  "arg": 1000 }`, "server moving right", req, res);
-	});	*/
+	});	
 	app.post("/robot/actions/commands/h", function(req, res) {
   		if( externalActuator ) delegate( "h(low)", "stopped", req, res );
 		else actuate( `{  "type": "alarm",  "arg": 1000 }`, "server stopped", req, res);
@@ -273,7 +274,7 @@ function delegate( hlcmd, newState, req, res ){
     res.render("access");	
 }
 function actuate(cmd, newState, req, res ){
-//	toRobot.send( cmd );
+ 	toRobot.send( cmd );
 	robotModel.robot.state = newState;
 	res.render("access");
 }

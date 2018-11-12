@@ -109,6 +109,7 @@ function reverseResults(array) {
 	  return array.slice(0).reverse();
 }
 const robotControl  = require('../controllers/robotControl');
+
 function createRobotActionsRoutes (model) {
 	  console.log("createRobotActionsRoutes ( POST /robot/actions/commands/CMD )"  ); 
 	  

@@ -6,10 +6,10 @@ public class CommonCoapNames {
 
 	public static String mqttUrl      = "tcp://localhost:1883"; //"ws://broker.hivemq.com:8000/mqtt"; tcp://m2m.eclipse.org:1883
 	public static String mqttClientId ="LedCoapResourceNat";
-	public static String mqttTopic    ="unibo/bls18";
+	public static String mqttTopic    = "unibo/qasys";//"unibo/bls18"
 
 	
-	public static String hostName     ="localhost"; //"192.168.107.15"; 192.168.0.51//localhost
+	public static String hostName     ="localhost"; //"192.168.107.15"; 192.168.0.50//localhost
 	public static String hostRaspName ="192.168.0.50";  
 	public static String ledResourceName    ="Led";
 	public static String buttonResourceName ="Button";

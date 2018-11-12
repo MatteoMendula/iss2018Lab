@@ -1,0 +1,4 @@
+{
+  "mqttUrl": "ws://broker.hivemq.com:8000/mqtt",	 
+  "mqttTopic": "unibo/qasys"
+}

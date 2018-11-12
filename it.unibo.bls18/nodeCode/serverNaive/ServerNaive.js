@@ -31,14 +31,22 @@ function main(){
 
 /*
  * An example of lexical closure
- */ 
+
 var global = "globalValue";
 console.log("global=" + global);
 var lexClosExample = function(){
 	var global = "localValue";
-	(function(){ console.log("Hello, I am a lexical closure. global= " + global); })();
+	return (function(){ 
+		console.log("Hello, I am a lexical closure. global= " + global); 
+		return 1;
+	});
 }
-lexClosExample();
+var x = lexClosExample()();
+console.log(x);
+
+map filter fold
+ */ 
+
 /*
  * End of example
  */

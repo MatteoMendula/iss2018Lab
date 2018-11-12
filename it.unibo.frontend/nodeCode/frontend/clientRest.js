@@ -9,7 +9,7 @@
 var RestClient = require('node-rest-client').Client;
 var client = new RestClient();
 
-var urlLed1 = 'http://localhost:3000/pi/actuators/leds/1';
+var urlLed1 = 'http://localhost:3000/pi/actuators/leds/L1';
 //var urlLed1 = 'http://192.168.43.229:3000/pi/actuators/leds/1';
 //var urlLed1 = 'http://192.168.43.18:3000/pi/actuators/leds/1';
 

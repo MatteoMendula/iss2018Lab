@@ -60,11 +60,13 @@ BASIC SUPPORT (test, akka)
 UNIBO SUPPORTS
 */		
 	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'uniboInterfaces.jar')
-	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'unibonoawtsupports.jar')
-	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'uniboEnvBaseAwt.jar')
-	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: '2p301.jar')
-	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'qa18Akka.jar')
-	  compile fileTree(dir: '../it.unibo.libs2018/libs/http',  include: 'nanoHTTPD.jar')
+ 	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'unibonoawtsupports.jar')
+//	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'uniboEnvBaseAwt.jar')
+//	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: '2p301.jar')
+//	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'qa18Akka.jar')
+//	  compile fileTree(dir: '../it.unibo.libs2018/libs/http',  include: 'nanoHTTPD.jar')
+	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'labbaseRobotSam.jar')
+	  compile fileTree(dir: '../it.unibo.libs2018/libs/pi4j',  include: 'pi4j-core.jar')
 /*
 ADDED FOR ARDUINO
 */
@@ -95,7 +97,8 @@ TO BE ADDED by the application designer: BLUETOOTH
 TO BE ADDED by the application designer: Raspberry GPIO support
 */	
 // https://mvnrepository.com/artifact/com.pi4j/pi4j-core
-//compile group: 'com.pi4j', name: 'pi4j-core', version: '1.1'
+ 	//compile group: 'com.pi4j', name: 'pi4j-core', version: '1.2-SNAPSHOT'
+ 	 
  
 /*
 TO BE ADDED by the application designer for: RXJAVA
