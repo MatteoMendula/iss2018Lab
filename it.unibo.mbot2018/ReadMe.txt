@@ -58,6 +58,7 @@ Linux raspberrypi 4.14.71-v7+ #1145 SMP Fri Sep 21 15:38:35 BST 2018 armv7l GNU/
 route -n
 sudo route add default gw 192.168.137.1
 sudo route add default gw 192.168.1.1
+sudo route add default gw 192.168.0.1
 
 sudo wget -O - https://raw.githubusercontent.com/audstanley/NodeJs-Raspberry-Pi/master/Install-Node.sh | bash;
 
