@@ -1,0 +1,39 @@
+System dynamic
+
+Dispatch info : info(X)
+Event alarm   : alarm(X)
+ 
+Context  ctxPivot  ip [ host="localhost"  port=8030 ] -standalone 
+Context  ctx2Pivot ip [ host="localhost"  port=8050 ] //-g yellow 
+
+//EventHandler evh1 for alarm -print;
+
+QActor qa2 context ctx2Pivot{    
+ 	State init initial [          
+ 		demo consult("curConfigTheory.pl");
+ 		demo  showSystemConfiguration;	
+	   	println( "qa2 READY" )  ;  
+	   	//forward qa0 -m info : info("hello from qa2 in ctx1Pivot")
+	   	sendto qa0 in ctxPivot -m info : info("hello from qa2 in ctx2Pivot")	   		
+	] 	
+	transition whenTime 2000 -> stopTheWork
+ 		whenEvent alarm -> handleAlarm
+     
+   State handleAlarm [
+   		demo  showSystemConfiguration;	
+   		onEvent alarm : alarm(X) -> println( alarm(X) )
+   ]  
+   State stopTheWork [
+   		println( "BYE form qa2")
+   ]  
+//   transition stopAfter 600000
+// 		whenEvent alarm -> handleAlarm
+ }      
+ 
+ 
+ /*
+  * Dummy declaration
+  */
+//QActor qa0 context ctxPivot{   
+// 	State init initial [ println( "qa0 dummy : never here" ) ] 		
+//}
