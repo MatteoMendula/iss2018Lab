@@ -1,0 +1,55 @@
+/* 
+ * eventTracer.qa
+ */ 
+System eventTracer   
+Event usercmd    : usercmd(X) 
+Event alarm      : alarm(X) 
+
+Context  ctxEventTracer  ip [ host="localhost"  port=8027 ]  
+EventHandler evh for usercmd,alarm -print { 
+	memoCurrentEvent for qaevtracer
+};        
+//WARNING: any change in the model modifies the EventHandlers
+QActor qaevtracer context ctxEventTracer {
+	Plan init normal	  
+	[	println("qaevtracer starts") ;		 
+		[ ?? msg(E,'event',S,none,M,N) ] 
+			println(qaevtracer(E,S,M))  else println("noevent") ;
+		delay 300 
+	] 
+	finally repeatPlan 5
+} 
+QActor qatraceremitter context ctxEventTracer    {  
+	Plan init normal     
+	[   println("qatraceremitter STARTS  ")   ;		
+		delay 500 ;     //(1)
+		println("qatraceremitter emits alarm(fire)")   ; 
+		emit alarm : alarm(fire)  ;
+		delay 500 ;     //(2)  
+		println("qatraceremitter emits usercmd(hello)")   ;
+		emit usercmd : usercmd(hello)  ;
+ 		println( "qaeventemitter ENDS" )
+	]
+}
+/*
+OUTPUT
+----------------------------
+"qatraceremitter STARTS  "
+"qaevtracer starts"
+"noevent"
+"qaevtracer starts"
+"noevent"
+"qatraceremitter emits alarm(fire)"
+>>> evh            (defaultState, TG=01:00:00)              || msg(alarm,event,qatraceremitter_ctrl,none,alarm(fire),5)
+"qaevtracer starts"
+qaevtracer(alarm,qatraceremitter_ctrl,alarm(fire))
+"qaevtracer starts"
+"noevent"
+"qatraceremitter emits usercmd(hello)"
+>>> evh            (defaultState, TG=01:00:00)              || msg(usercmd,event,qatraceremitter_ctrl,none,usercmd(hello),7)
+"qaeventemitter ENDS"
+"qaevtracer starts"
+qaevtracer(usercmd,qatraceremitter_ctrl,usercmd(hello))
+"qaevtracer starts"
+"noevent"
+*/    

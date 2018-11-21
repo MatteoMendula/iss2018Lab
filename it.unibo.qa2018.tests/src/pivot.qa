@@ -1,0 +1,27 @@
+System dynamic
+ 
+Dispatch info : info(X)
+Event alarm   : alarm(X)   
+
+Context  ctxPivot ip [ host="localhost"  port=8030 ] -g cyan    
+
+QActor qa0 context ctxPivot{       
+ 	State init initial [   
+ 		demo consult("curConfigTheory.pl")    
+ 	] 	  
+	switchTo work  
+ 	
+ 	Plan work  [  	
+ 		demo  showSystemConfiguration;	
+  	   	println( "qa0 in ctxPivot READY" )   
+	] 	
+	transition stopAfter 600000  
+		whenMsg info -> handleInfo,
+		whenEvent alarm : alarm(X) do println( alarm(X) )
+	finally repeatPlan 
+	
+	State handleInfo resumeLastPlan [
+		printCurrentMessage;
+		onMsg info : info(X) -> emit alarm : alarm( info(X) )
+	]
+}       

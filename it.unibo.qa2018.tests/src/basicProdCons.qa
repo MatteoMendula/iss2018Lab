@@ -1,0 +1,45 @@
+/* 
+ * basicProdCons.qa
+ */
+System basicProdCons       
+Dispatch info : info(X)
+Context  ctxBasicProdCons ip [ host="localhost"  port=8019 ]         
+QActor producer context ctxBasicProdCons{   
+ 	State init initial [          
+	   		println( "producer sends info(1)" )  ;
+	  		forward consumer -m info : info(1)  ;
+	  		delay 500;
+	  		println( "producer sends info(2)" )  ;
+	  		forward consumer -m info : info(2)  
+	   	] 	
+  }      
+ QActor consumer context ctxBasicProdCons{   
+  	State init normal  [  println( consumer(waiting) ) ] 
+	  	transition whenTime 2000 -> handleTout
+ 	  			   whenMsg info  -> handleMsg 	
+	  	finally repeatPlan
+  	State handleMsg resumeLastPlan [
+  		 printCurrentMessage  ;
+  		 onMsg info : info(X) -> println( msgcontent(X) )
+  		] 
+  	State handleTout 
+  		[ println( consumerTout   ) ]  	  
+ }
+ /*
+ OUTPUT
+ ----------------------------------------
+consumer(waiting)
+"producer sends info(1)"
+--------------------------------------------------------------------------------------------
+consumer_ctrl currentMessage=msg(info,dispatch,producer_ctrl,consumer,info(1),1)
+--------------------------------------------------------------------------------------------
+msgcontent(1)
+consumer(waiting)
+"producer sends info(2)"
+--------------------------------------------------------------------------------------------
+consumer_ctrl currentMessage=msg(info,dispatch,producer_ctrl,consumer,info(2),2)
+--------------------------------------------------------------------------------------------
+msgcontent(2)
+consumer(waiting)
+consumerTout
+*/

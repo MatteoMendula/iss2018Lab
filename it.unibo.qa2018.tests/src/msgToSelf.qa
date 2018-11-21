@@ -1,0 +1,38 @@
+/* 
+ * msgToSelf.qa
+ */
+System msgToSelf  
+Dispatch execute : code( CODE  )   
+Dispatch eval    : code( CODE  )
+
+Context  ctxMsgToSelf  ip [ host="localhost"  port=8019 ]           
+ 
+ QActor sendertoself context ctxMsgToSelf{   
+  	 Plan init initial [         
+	   	   selfMsg eval : code( fibo(10,V)  )
+ 	 ]  
+     transition whenTime 100 -> handleTout 
+ 	  		whenMsg  execute -> execProg ,
+ 	  		whenMsg  eval    : code(P) do selfMsg  execute : code(P)
+ 	  	finally repeatPlan 1	
+   	
+   	State execProg resumeLastPlan [
+  		onMsg execute : code(P) -> demo P;
+  		[ ?? goalResult(V) ]  println(V)  		
+  	]
+  	State handleTout 
+  		[ println( consumerTout   ) ]  	
+ }
+ /*
+ OUTPUT
+----------------------------------------
+fibo(10,55)
+----------------------------------------
+
+1) The actor sends an eval messages to itself.
+2) The eval message is handled by the actor that generates the message execute to itself.
+3) The Plan init is repeated: another eval messages is sent to itself
+4) Now there are two messages 'pending'. The first to be considered is execute
+5) The actor performs a transition to execProg and then temrinates
+ 
+*/

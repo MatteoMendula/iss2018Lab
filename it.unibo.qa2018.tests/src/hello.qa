@@ -1,0 +1,20 @@
+/*
+ * hello.qa
+ */
+System helloSystem   
+Context ctxHello ip [ host="localhost"  port=8010 ]   
+         
+QActor qahello context ctxHello {     
+ 	State init initial [
+	   	println("Hello world"  )   
+	]
+} 
+/* 
+ * Another style: Plan vs of State, normal vs initial
+ */
+QActor qahelloold context ctxHello {     
+ 	Plan init normal          
+	 	actions[
+	   		println("Hello world old style"  )   
+	   	]
+}           

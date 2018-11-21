@@ -1,0 +1,33 @@
+/* 
+ * prodConsDistributed.qa
+ */
+System prodConsDistributed     
+Dispatch info : info(X)
+
+Context  ctxBasicProd ip [ host="localhost"  port=8079 ]     
+Context  ctxBasicCons ip [ host="localhost"  port=8089 ]  -g green
+         
+QActor producer1 context ctxBasicProd{    
+	Rules{
+		item(1).
+		item(2).
+	}
+ 	State init initial           
+	   	[	[ !? item(X) ] println( producer(sends(X))  )  ;
+	  		[ ?? item(X)] forward consumer1 -m info : info(X) else endPlan "producer(ends)" 
+	   	] 	
+	   	finally repeatPlan
+ }   
+ 
+ QActor consumer1 context ctxBasicCons{   
+  	State init initial  [        
+	   	 println( consumer(waiting) ) 
+	]
+	transition whenTime 2000 -> handleTout
+			   whenMsg info : info(X) do println( consumerHandles(X) ) 	
+	  	finally repeatPlan
+   	State handleTout [
+  		 println( consumer(tout)  ) ;
+  		  delay 10000	//to avoid immediate GUI disappearance
+  	]  	
+ }

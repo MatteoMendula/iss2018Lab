@@ -1,0 +1,29 @@
+/*
+ * repeatResume.qa
+ */ 
+System repeatResume  	  
+Context  ctxRepeatResume ip [ host="localhost"  port=8079 ]              
+      
+QActor player context ctxRepeatResume{          
+ 	State init initial  [       
+	 	   println("player STARTS"  ) ;           
+	  		println("player ENDS"   )  
+	  	]  
+	  	switchTo  playMusic   
+//	  	finally	repeatPlan 1	//(1)
+  	
+	Plan playMusic	resumeLastPlan  [
+		   println( playSomeMusic );
+			sound time(2000) file('./audio/tada2.wav')  ;
+ 	 		delay 500
+	 	]  
+	 	finally	repeatPlan 1
+ }
+/*
+OUTPUT
+----------------------------
+"player STARTS"
+"player ENDS"
+playSomeMusic
+playSomeMusic
+*/

@@ -1,0 +1,23 @@
+/*
+ * noinputTansition.qa
+ */
+System noinputTansition  	  
+Context  ctxNoinputTansition ip [ host="localhost"  port=8079 ]              
+       
+QActor qahellonoinputtrans context ctxNoinputTansition{          
+ 	State init initial  [  
+ 		println( playSomeMusic );
+ 		delay 1000  //wait for a second
+ 	]  
+	switchTo  playMusic    	 
+	
+	State playMusic	  [ 
+ 		sound time(2000) file('./audio/tada2.wav')  
+	]  
+ }
+/*
+OUTPUT
+----------------------------
+"Hello world"
+playSomeMusic
+*/

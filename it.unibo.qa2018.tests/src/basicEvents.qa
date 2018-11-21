@@ -1,0 +1,60 @@
+/*
+ * basicEvents.qa  
+ */
+System basicEvents 
+Event usercmd : usercmd(X) 
+Event alarm   : alarm(X) 
+ 
+Context  ctxBasicEvents  ip [ host="localhost"  port=8037 ]   
+      
+QActor qaeventemitter context ctxBasicEvents    {  
+	State init initial     
+	[   println("qaeventemitter STARTS  ")   ;		
+		delay 500 ;     //(1)
+		println("qaeventemitter emits alarm(fire)")   ; 
+		emit alarm : alarm(fire)  ;
+		delay 500 ;     //(2)  
+		println("qaeventemitter emits usercmd(hello)")   ;
+		emit usercmd : usercmd(hello)  ;
+ 		println( "qaeventemitter ENDS" )
+	]
+}                                          
+QActor qaeventperceptor context ctxBasicEvents   {   
+ 	State init initial 
+	 	[	println("qaeventperceptor STARTS  ")   ]
+	 	transition whenTime 1000 -> endOfWork
+	 		whenEvent alarm   -> handleEvent,
+	 		whenEvent usercmd -> handleEvent
+	 	finally repeatPlan 	
+ 	            
+   	State handleEvent  resumeLastPlan
+	 	[	println("ex4_perceptor handleEvent  "   )  ;	 	
+	 		printCurrentEvent ;
+	 		onEvent alarm   : alarm(X)   -> println( handling(alarm(X)) ) ;
+	 		onEvent usercmd : usercmd(X) -> println( handling(usercmd(X)) ) 		
+	 	]
+ 	State endOfWork 
+	 	[	println("qaeventperceptor ENDS (tout) ")   ]
+}   
+/* 
+OUTPUT
+----------------------------
+"qaeventemitter STARTS  "
+"qaeventperceptor STARTS  "
+"qaeventemitter emits alarm(fire)"
+"ex4_perceptor handleEvent  "
+--------------------------------------------------------------------------------------------
+qaeventperceptor_ctrl currentEvent=msg(alarm,event,qaeventemitter_ctrl,none,alarm(fire),3)
+--------------------------------------------------------------------------------------------
+handling(alarm(fire))
+"qaeventperceptor STARTS  "
+"ex4_alarmemitter emits usercmd(hello)"
+"ex4_perceptor handleEvent  "
+--------------------------------------------------------------------------------------------
+qaeventperceptor_ctrl currentEvent=msg(usercmd,event,qaeventemitter_ctrl,none,usercmd(hello),7)
+--------------------------------------------------------------------------------------------
+handling(usercmd(hello))
+"qaeventperceptor STARTS  "
+"qaeventemitter ENDS"
+"qaeventperceptor ENDS (tout) 
+*/  

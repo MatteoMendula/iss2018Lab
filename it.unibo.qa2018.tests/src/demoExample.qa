@@ -1,0 +1,31 @@
+/*
+ * demoExample.qa
+ */
+System demoExample  	  
+Context  ctxDemoExample ip [ host="localhost"  port=8079 ]                     
+QActor qademoexample context ctxDemoExample{          
+ 	Plan init normal         
+	 	[   println("qademoexample STARTS"  ) ; 
+	 		[ !? actorobj(X) ] println( actorobj(X) )  ;
+	 		demo actorobj(X) ;
+	 		[ ?? goalResult(R) ] println( qademoexample( R ) )  ;
+	 		demo fibo(6,X);
+	 		[ ?? goalResult(R) ] println(R) ;
+	 		demo fibo(6,8);
+	 		[ ?? goalResult(R) ] println(R) ; 
+	 		demo fibo(X,8);		//fails since fibo/2 is not invertible
+	 		[ ?? goalResult(R) ] println(R) ; 
+	 		println("qademoexample ENDS"  )   
+	 	]  
+ }
+/*
+OUTPUT
+----------------------------
+"qademoexample STARTS"
+actorobj(qatuqademoexample_ctrl)
+qademoexample(actorobj(qatuqademoexample_ctrl))
+fibo(6,8)
+fibo(6,8)
+failure
+"qademoexample ENDS"
+*/

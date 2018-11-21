@@ -1,0 +1,22 @@
+System naiveGuardedActions   
+Context  ctxNaiveGuardedAction  ip [ host="localhost"  port=8037 ]         
+QActor qanaiveguarded context ctxNaiveGuardedAction {    
+   	State init initial   [
+ 		[ !? true      ] println( alwaysHere ) ;	
+ 		[ !? false     ] println( neverHere ) ;	
+ 		[ !? fib(6,X)  ] println( fib(6,X)  ) ;
+ 		[ ?? fibo(4,X) ] println( fibo(4,X) ) 
+  	]
+  	finally repeatPlan 1
+}
+  	 
+/*
+OUTPUT
+----------------------------
+alwaysHere
+fib(6,8)
+fibo(4,3)
+alwaysHere
+fib(6,8)
+*/
+     

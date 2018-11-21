@@ -1,0 +1,26 @@
+/*
+ * rulesInModel.qa  
+ */  
+System rulesInModel  
+Context  ctxRulesInModel  ip [ host="localhost"  port=8059 ]  
+QActor rulebasedactor context ctxRulesInModel {   
+	Rules{
+ 		music(1, './audio/tada2.wav',2000). 
+ 		music(2,'./audio/any_commander3.wav',3000).
+//		music(3,'./audio/computer_complex3.wav',3000).
+//		music(4,'./audio/illogical_most2.wav',2000).
+//		music(5,'./audio/computer_process_info4.wav',4000).
+//		music(6,'./audio/music_interlude20.wav',3000).
+//		music(7,'./audio/music_dramatic20.wav',3000).
+	}    
+ 	State init initial  
+ 	[    
+ 		[ !? actorobj(X) ] println( myName(X) )
+    	]
+ 	switchTo work 
+ 	State work    
+ 	[    
+     	[ ?? music(N,F,T) ] sound time(T) file(F)  else endPlan "bye" 
+   	]
+ 	finally repeatPlan  
+} 
