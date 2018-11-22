@@ -13,13 +13,11 @@ QActor rulebasedactor context ctxRulesInModel {
 //		music(6,'./audio/music_interlude20.wav',3000).
 //		music(7,'./audio/music_dramatic20.wav',3000).
 	}    
- 	State init initial  
- 	[    
+ 	State init initial[    
  		[ !? actorobj(X) ] println( myName(X) )
-    	]
+    ]
  	switchTo work 
- 	State work    
- 	[    
+ 	State work [    
      	[ ?? music(N,F,T) ] sound time(T) file(F)  else endPlan "bye" 
    	]
  	finally repeatPlan  
