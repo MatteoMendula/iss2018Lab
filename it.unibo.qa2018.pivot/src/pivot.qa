@@ -16,12 +16,13 @@ QActor qa0 context ctxPivot{
   	   	println( "qa0 in ctxPivot READY" )   
 	] 	
 	transition stopAfter 600000  
-		whenMsg info -> handleInfo,
-		whenEvent alarm : alarm(X) do println( alarm(X) )
+		whenEvent alarm : alarm(X) do println( alarm(X) ),
+		whenMsg info -> handleInfo
 	finally repeatPlan 
 	
 	State handleInfo resumeLastPlan [
 		printCurrentMessage;
-		onMsg info : info(X) -> emit alarm : alarm( info(X) )
+		delay 1000;  //give the time to register ...
+		onMsg info : info(X) -> emit alarm : alarm( fire ) 
 	]
 }       

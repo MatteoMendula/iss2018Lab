@@ -2,35 +2,43 @@ System dynamic
 
 Dispatch info : info(X)
 Event alarm   : alarm(X)
+Event xxx   : xxx(X)
  
 Context  ctxPivot  ip [ host="localhost"  port=8030 ] -standalone 
 Context  ctx2Pivot ip [ host="localhost"  port=8050 ] //-g yellow 
 
-//EventHandler evh1 for alarm -print;
+EventHandler evh1 for alarm -print
+//{
+//	emit xxx  fromContent  alarm(X) to xxx(X)
+//}
+;
 
-QActor qa2 context ctx2Pivot{    
- 	State init initial [          
+QActor qa2 context ctx2Pivot{     
+ 	Plan init normal [          
  		demo consult("curConfigTheory.pl");
  		demo  showSystemConfiguration;	
 	   	println( "qa2 READY" )  ;  
 	   	//forward qa0 -m info : info("hello from qa2 in ctx1Pivot")
-	   	sendto qa0 in ctxPivot -m info : info("hello from qa2 in ctx2Pivot")	   		
+	   	sendto qa0 in ctxPivot -m info : info( helloctx2Pivot )	   		
 	] 	
-	transition whenTime 2000 -> stopTheWork
- 		whenEvent alarm -> handleAlarm
+	transition stopAfter 2000 //whenTime 2000 -> stopTheWork
+ 		whenEvent alarm -> handleAlarm,
+ 		whenEvent xxx   -> handleAlarm
      
-   State handleAlarm [
+   Plan handleAlarm [
+   		printCurrentEvent;
    		demo  showSystemConfiguration;	
-   		onEvent alarm : alarm(X) -> println( alarm(X) )
+   		onEvent alarm : alarm(X) -> println( alarm(X) );
+   		onEvent xxx : xxx(X) -> println( xxx(X) )
    ]  
-   State stopTheWork [
+   Plan stopTheWork [
    		println( "BYE form qa2")
    ]  
 //   transition stopAfter 600000
 // 		whenEvent alarm -> handleAlarm
  }      
  
- 
+  
  /*
   * Dummy declaration
   */
