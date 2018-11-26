@@ -43,6 +43,8 @@ public class JSSCSerialComm extends SituatedPlainObject {
 	}
 
 	public SerialPortConnSupport connect(String commPortName) throws Exception{
+		println("CONNECT TO " + commPortName + " " + portNames.length);
+		commPortName = commPortName.replace("'", "");
 		serialPort = null;
 		for (int i = 0; i < portNames.length; i++){
 			if(portNames[i].equals(commPortName)){

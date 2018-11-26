@@ -27,15 +27,13 @@ public class BasicRobotUsageNaive{
 private final IBaseRobotSpeed SPEED_LOW    = new BaseRobotSpeed(BaseRobotSpeedValue.ROBOT_SPEED_LOW);
 private final IBaseRobotSpeed SPEED_MEDIUM = new BaseRobotSpeed(BaseRobotSpeedValue.ROBOT_SPEED_MEDIUM);
 private final IBaseRobotSpeed SPEED_HIGH   = new BaseRobotSpeed(BaseRobotSpeedValue.ROBOT_SPEED_HIGH);
+private IBasicRobot basicRobot;
 private IBaseRobot robot ;
 
 	public BasicRobotUsageNaive() {
-		configue();
-	}
-	protected void configue() {
-		IBasicRobot basicRobot = BasicRobot.getRobot();
-		robot                  = basicRobot.getBaseRobot();
-		addObserverToSensors(basicRobot);  				
+		basicRobot = BasicRobot.getRobot();
+		robot      = basicRobot.getBaseRobot();
+//		addObserverToSensors(basicRobot);  				
 	}
 	public void handleUserCommands() {
 		try {
@@ -62,12 +60,20 @@ private IBaseRobot robot ;
 		}
 		if( command != null ) robot.execute(command);
 	}	
-	protected void addObserverToSensors(IBasicRobot basicRobot){
+	protected void addObserverToSensors( ){
 		ISensorObserver observer = new SensorObserver();
+//		for (ISensor<?> sensor : basicRobot.getSensors()) {  
+//			System.out.println( "doJob sensor= "  + sensor.getDefStringRep() + " class= "  + sensor.getClass().getName() );
+// 			sensor.addObserver(observer);
+//		}		
+		addObserverToSensors(observer);
+	}
+	
+	public void addObserverToSensors( ISensorObserver observer ){
 		for (ISensor<?> sensor : basicRobot.getSensors()) {  
-			System.out.println( "doJob sensor= "  + sensor.getDefStringRep() + " class= "  + sensor.getClass().getName() );
+			System.out.println( "adding observer to sensor: "  + sensor.getDefStringRep()  );
  			sensor.addObserver(observer);
-		}		
+		}				
 	}
  	
  public static void main(String[] args) throws Exception{

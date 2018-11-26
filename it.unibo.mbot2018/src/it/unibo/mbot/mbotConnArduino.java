@@ -1,4 +1,5 @@
 package it.unibo.mbot;
+import it.unibo.iot.sensors.ISensorObserver;
 import it.unibo.mbot.serial.JSSCSerialComm;
 import it.unibo.mbot.serial.SerialPortConnSupport;
  
@@ -46,7 +47,8 @@ private static String curDataFromArduino;
 	public static void mbotLinefollow(  ) {
 		try { if( conn != null ) conn.sendCmd("f"); } catch (Exception e) {e.printStackTrace();}
 	}
- 	
+	
+  	
 	private static  void getDataFromArduino() {
 		new Thread() {
 			public void run() {
@@ -62,7 +64,7 @@ private static String curDataFromArduino;
  							if( delta < 7 && delta > 0.5 ) {
 								dataSonar = v;
 								System.out.println("MbotConnArduino sonar:" + dataSonar);
-//								QActorUtils.raiseEvent(curActor, curActor.getName(), "realSonar", 
+ //								QActorUtils.raiseEvent(curActor, curActor.getName(), "realSonar", 
 //										"sonar( DISTANCE )".replace("DISTANCE", ""+dataSonar ));
  							}
 						} catch (Exception e) {

@@ -76,8 +76,8 @@ COAP
 /*
 DDR ROBOT SAM
 */ 	 
-	 compile fileTree(dir: '../it.unibo.libs2018/libs/pi4j',  include: 'pi4j-core.jar')    //2-12 SNAPHOST non in gradle
-	 compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'labbaseRobotSam.jar')
+	 //compile fileTree(dir: '../it.unibo.libs2018/libs/pi4j',  include: 'pi4j-core.jar')    //2-12 SNAPHOST non in gradle
+	 //compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'labbaseRobotSam.jar')
 	 //compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'uniboQactorRobot.jar') 
 /*
 ARDUINO
