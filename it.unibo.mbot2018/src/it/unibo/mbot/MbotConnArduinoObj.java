@@ -2,17 +2,17 @@ package it.unibo.mbot;
 import it.unibo.mbot.serial.JSSCSerialComm;
 import it.unibo.mbot.serial.SerialPortConnSupport;
  
-public class mbotConnArduinoObj {
+public class MbotConnArduinoObj {
 private  SerialPortConnSupport conn = null;
 private  JSSCSerialComm serialConn;
 private  double dataSonar = 0;
 private  String curDataFromArduino;
 private  ISensorObserverFromArduino observer;
  
-	public   void initRasp()   {
-		init( "/dev/ttyUSB0" );
+	public   void initRasp( String port )   { //"/dev/ttyUSB0"
+		init( port );
 	}
-	public   void initPc(String port)   {
+	public   void initPc(String port)   { //"COM6"
 		init( port );
  	}
  	private   void init(String port)   {
@@ -58,12 +58,11 @@ private  ISensorObserverFromArduino observer;
 	public   void mbotLinefollow(  ) {
 		try { if( conn != null ) conn.sendCmd("f"); } catch (Exception e) {e.printStackTrace();}
 	}
-	
-	
+
 	public void addObserverToSensors( ISensorObserverFromArduino observer ){
 		this.observer = observer;
 	}
- 	
+
 	private void getDataFromArduino() {
 		new Thread() {
 			public void run() {
@@ -93,4 +92,6 @@ private  ISensorObserverFromArduino observer;
 			}
 		}.start();
 	}
+	
+	
 }
