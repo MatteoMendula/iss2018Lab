@@ -7,11 +7,12 @@ import it.unibo.qactors.akka.QActor;
 public class SensorObserver<T extends ISensorData>   implements ISensorObserver<T>{
 	private QActor qa;
 	public SensorObserver(QActor qa ) { 
+		System.out.println("SensorObserver started");
 		this.qa = qa;
  	}
 	@Override
 	public void notify(T data) {
-//		System.out.println("SensorObserver: " + data.getDefStringRep() + " | " + data.getJsonStringRep() + " | " + data.getDefStringRep() );
+		System.out.println("SensorObserver: " + data.getDefStringRep() + " | " + data.getJsonStringRep() );
 		qa.emit("sonarEvent",  data.getDefStringRep());
 	}
 

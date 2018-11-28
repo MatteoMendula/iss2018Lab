@@ -48,30 +48,31 @@ public static void initClientConn(QActor qa ) throws Exception {
 				while( true ) {				 
 					try {
 						String inpuStr = inFromServer.readLine();
-//						System.out.println( "reads: " + inpuStr);
+ 						//System.out.println( "reads: " + inpuStr);
 						String jsonMsgStr = inpuStr.split(";")[1];
 						//System.out.println( "reads: " + jsonMsgStr + " qa=" + qa.getName() );
 						JSONObject jsonObject = new JSONObject(jsonMsgStr);
 						//System.out.println( "type: " + jsonObject.getString("type"));
 						switch (jsonObject.getString("type") ) {
-						case "webpage-ready" : System.out.println( "webpage-ready "   );break;
+						case "webpage-ready" : System.out.println( "wenv ready "   );break;
 						case "sonar-activated" : {
 							//wSystem.out.println( "sonar-activated "   );
 							JSONObject jsonArg = jsonObject.getJSONObject("arg");
 							String sonarName   = jsonArg.getString("sonarName");							
 							int distance       = jsonArg.getInt( "distance" );
-							//System.out.println( "sonarName=" +  sonarName + " distance=" + distance);
+//							System.out.println( "sonarName=" +  sonarName + " distance=" + distance);
 							qa.emit("sonar", 
-								"sonar(NAME, player, DISTANCE)".replace("NAME", sonarName.replace("-", "")).replace("DISTANCE", (""+distance) ));
+								"sonar(NAME, player, DISTANCE)".replace("NAME", sonarName.replace("-", ""))
+																			.replace("DISTANCE", (""+distance) ));
 							break;
 						}
 						case "collision" : {
 							//System.out.println( "collision"   );
 							JSONObject jsonArg  = jsonObject.getJSONObject("arg");
 							String objectName   = jsonArg.getString("objectName");
-							//System.out.println( "collision objectName=" +  objectName  );
+							System.out.println( "collision objectName=" +  objectName  );
 							qa.emit("sonarDetect",
-									"sonarDetect(TARGET)".replace("TARGET", objectName.replace("-", "")));
+									"obstacle(TARGET)".replace("TARGET", objectName ));//objectName.replace("-", "")
 							break;
 						}
 						};

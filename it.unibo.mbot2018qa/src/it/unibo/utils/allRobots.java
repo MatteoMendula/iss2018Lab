@@ -9,9 +9,9 @@ public class allRobots {
 		try {
 			qa.println("allRobots " + robotType + " setUp args="+ args);
 			switch( robotType ){
-				case "robotRealMbot" : it.unibo.robotMBot.basicRobotExecutor.setUp(qa,args);break;
-				case "raspOnly"      : it.unibo.robotOnRaspOnly.basicRobotExecutor.setUp(qa);break;
-				case "robotVirtual"  : it.unibo.robotVirtual.basicRobotExecutor.setUp(qa,args);break;
+				case "robotRealMbot"      : it.unibo.robotMBot.basicRobotExecutor.setUp(qa,args);break;
+				case "robotRealRaspOnly"  : it.unibo.robotOnRaspOnly.basicRobotExecutor.setUp(qa);break;
+				case "robotVirtual"       : it.unibo.robotVirtual.basicRobotExecutor.setUp(qa,args);break;
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

@@ -5,7 +5,7 @@
  */ 
 System demoRobot
  
-Dispatch robotCmd : cmd(X)       			 //X=w|a|s!|d|h
+Dispatch robotCmd : cmd(X)       			 //X=w|a|s|d|h
 Event sonarEvent  : distance(D, DIR, POS) 	//from SensorObserver
  
 Event usercmd     : usercmd(X)    //from robot GUI;  X=robotgui(CMD) CMD=s(low)
@@ -67,7 +67,7 @@ Rules{
   	transition stopAfter 600000
  		whenMsg robotCmd:cmd(M) do javaRun it.unibo.utils.allRobots.doMove(M),
  		whenEvent sonarEvent -> handleSonarEvent,
- 		whenEvent sonar -> handleSonarEvent
+ 		whenEvent sonar      -> handleSonarEvent
  		finally repeatPlan   
     
   	State handleSonarEvent resumeLastPlan [ 

@@ -9,42 +9,20 @@ package it.unibo.robotOnRaspOnly;
 import it.unibo.qactors.akka.QActor;
 import it.unibo.robotRaspOnly.BasicRobotUsageNaive;
  
-
 public class basicRobotExecutor  { 
  
 private static BasicRobotUsageNaive robotSupport ;
- 	
+private static SonarInCObserver sonarInCObserver;
+
 	public static void setUp(QActor qa) {
 		if( robotSupport == null ) {
 			robotSupport = new BasicRobotUsageNaive();
-			robotSupport.addObserverToSensors( new SensorObserver(qa) );
-		}
-		
+// 			robotSupport.addObserverToSensors( new SensorObserver(qa) );
+ 			sonarInCObserver = new  SonarInCObserver(qa);
+		}		
 	}
-	
-	
+ 	
 	public static void doMove( QActor qa, String cmd ) { //Args MUST be String
-//		IBaseRobotCommand command = null;
-//		switch( cmd ) {
-//			case "h" : command = new BaseRobotStop(SPEED_LOW );break;
-//			case "w" : command = new BaseRobotForward(SPEED_HIGH );break;
-//			case "s" : command = new BaseRobotBackward(SPEED_HIGH );break;
-//			case "a" : command = new BaseRobotLeft(SPEED_MEDIUM );break;
-//			case "d" : command = new BaseRobotRight(SPEED_MEDIUM );break;
-//			default: System.out.println( "Sorry, command not found");
-//		}
-//		if( command != null ) robot.execute(command);		
-		
 		robotSupport.executeTheCommand(cmd.charAt(0));
 	}
- 	  
-//	protected static void addObserverToSensors(QActor qa, IBasicRobot basicRobot){
-//		ISensorObserver observer = new SensorObserver(qa);
-//		for (ISensor<?> sensor : basicRobot.getSensors()) {  
-//			System.out.println( "doJob sensor= "  + sensor.getDefStringRep() + " class= "  + sensor.getClass().getName() );
-// 			sensor.addObserver(observer);
-//		}		
-//	}
- 	
-
 }
