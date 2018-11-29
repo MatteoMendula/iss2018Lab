@@ -1,0 +1,55 @@
+/*
+ * builtinPrologExample.qa
+ */
+System builtinPrologExample 	   
+Context  ctxBuiltInExample ip [ host="localhost"  port=8079 ]              
+      
+QActor qabuiltinexample context ctxBuiltInExample{ 
+	Rules{
+		r1 :- assign(x,10),getVal(x,V1),eval(plus,V1,3,RV),actorPrintln(r1(RV)).
+		r2 :- distance(X),actorPrintln(r2(X) ).
+		r3 :- assert( distance(200) ).
+	}         
+ 	Plan init normal         
+	 	[   println("execute built-in rules"  ) ;  
+	 		demo assign(x,30) ;
+	 		demo getVal(x,V) ;
+	 		[ ?? goalResult(getVal(x,V))]  println( valueOfx(V) ) ; 
+	 		println("execute a user-defined rule r1 (in Rules)"  ) ;  
+	 		demo r1 ;    
+	 		println("add a distance/1 fact"  ) ;  
+	 		addRule distance(100);
+	 		println("execute a user-defined rule r2 that refers to distance/1"  ) ;  
+	 		demo r2 ;    
+	 		println("execute a user-defined rule r3 that adds another distance/1"  ) ;  
+	 		demo r3 ;
+	 		println("conditional execution using distance/1 facts as guards"  ) ;  
+	 		[ ?? distance(D)] println( distance(D) ) else println( nodistance );
+	 		[ ?? distance(D)] println( distance(D) ) else println( nodistance );
+	 		[ ?? distance(D)] println( distance(D) ) else println( nodistance );
+	 		println("remove the rule r1"  ) ;  
+	 		removeRule r1 ;
+	 		println("attempt to run the removed rule r1"  ) ;  
+	 		demo r1 ; 
+	  		println("END"   )   
+	  	]  
+}
+/*
+OUTPUT
+----------------------------
+"execute built-in rules"
+valueOfx(30)
+"execute a user-defined rule r1 (in Rules)"
+r1(13)
+"add a distance/1 fact"
+"execute a user-defined rule r2 that refers to distance/1"
+r2(100)
+"execute a user-defined rule r3 that adds another distance/1"
+"conditional execution using distance/1 facts as guards"
+distance(100)
+distance(200)
+nodistance
+"remove the rule r1"
+"attempt to run the removed rule r1"
+"END"
+*/

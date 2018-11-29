@@ -14,7 +14,7 @@ QActor qahello context ctxHello {
  */
 QActor qahelloold context ctxHello {     
  	Plan init normal          
-	 	actions[
+	 	actions[javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': 60000 }");
 	   		println("Hello world old style"  )   
 	   	]
 }           

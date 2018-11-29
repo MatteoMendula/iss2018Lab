@@ -1,0 +1,19 @@
+/*
+ * introspection.qa
+ */
+System introspection
+
+Context ctxInspect  ip [ host="localhost"  port=8040 ]  
+
+QActor inspector context ctxInspect{
+ 	State init initial [   
+ 		demo consult("curConfigTheory.pl")      
+ 	] 	  
+	switchTo work   
+ 	 
+ 	Plan work  [  	
+ 		demo  showSystemConfiguration;	
+  	   	println( "inspector READY" )   
+	] 	
+	   
+}

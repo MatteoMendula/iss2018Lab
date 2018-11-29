@@ -1,0 +1,27 @@
+System asynchFibo
+Dispatch endAction    : endAction(A,R)
+Dispatch data         : data(X)
+
+Context ctxAsynchFibo  ip[ host="localhost" port=8018 ]  //-g cyan
+
+QActor asynchcallerfibo context ctxAsynchFibo{    
+ 	Plan init normal[  
+ 		javaOp "doAsynAction(\"asynchfibo\", 
+                   \"it.unibo.actionAsynch.ActionActorFibonacci\", \"30\")"
+ 	]     
+    switchTo handleActionEnd  
+    
+  	State handleActionEnd [ println("WAIT FOR ASYNCH ACTION TERMINATION") ] 
+  	transition stopAfter 30000   
+  		whenMsg endAction -> callActionResult 
+ 
+   	Plan callActionResult resumeLastPlan[  
+     	//onMsg endAction   : endAction(actionFiboAsych,V) -> println( V ) ;
+       	onMsg endAction   : endAction(A,V) -> println( endAction(A,V) )
+    ]
+ }
+/*
+ * OUTPUT
+"WAIT FOR ASYNCH ACTION TERMINATION"
+endAction(asynchfibo,fibo(30,832040,timemsec(58)))
+ */

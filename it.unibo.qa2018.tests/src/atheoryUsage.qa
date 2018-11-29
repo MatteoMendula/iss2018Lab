@@ -1,0 +1,40 @@
+/*
+ * atheoryUsage.qa  
+  */
+System atheoryUsage    
+Context ctxTheoryUsage ip [ host="localhost"  port=8049 ]  
+        
+QActor qatheoryuser context ctxTheoryUsage{    
+ 	Plan init normal   
+ 	[    println( "qatheoryuser STARTS" ) ;       
+ /*0*/   demo consult("./src/it/unibo/qatheoryuser/aTheory.pl")    
+    ]    
+ 	switchTo accessdata  
+ 	
+   	Plan accessdata resumeLastPlan   
+   	[   println( "-------------------------------------" ) ;   
+/*1*/ 	[ !? data(S,N,V)  ] println( data(S,N,V) ) ;   
+/*2*/ 	[ !? validDistance(N,V)  ] println( validDistance(N,V) ) ;  
+/*3*/ 	demo nearDistance(N,V)   ;
+/*4*/ 	[ !? goalResult(nearDistance(N,V)) ]  println( warning(N,V) ) ;
+/*5*/ 	demo nears(D)   ;
+/*6*/ 	[ !? goalResult(G) ]  println( list(G) ) 	   
+	]
+	finally repeatPlan 1			
+ } 
+/*
+OUTPUT
+----------------------------
+"qatheoryuser STARTS"
+initializing the aTheory ...
+"-------------------------------------"
+data(sonar,1,10)
+validDistance(2,20)
+warning(2,20)
+list(nears([d(2,20),d(3,30)]))
+"-------------------------------------"
+data(sonar,1,10)
+validDistance(2,20)
+warning(2,20)
+list(nears([d(2,20),d(3,30)]))
+*/

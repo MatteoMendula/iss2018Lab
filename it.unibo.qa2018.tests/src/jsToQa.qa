@@ -1,0 +1,32 @@
+System jsToQa
+Event alarm   : alarm(X) 
+Dispatch info : info(X) 
+
+Context ctxJsToQa ip[ host="localhost" port=8031] 
+EventHandler evh for alarm -print;
+/*
+ * Activates a NodeJs process that sends a message info to qareceiver
+ * and emits the event alarm
+ */  
+QActor qanodectivator context ctxJsToQa {
+	Plan init normal [
+		println("qajaactoivator START") ;
+		nodeOp "./nodeCode/TcpClientToQaNode.js localhost 8031" -o ;
+  		println("qajaactoivator END") 
+	]  		  
+}       
+
+QActor qareceiver context ctxJsToQa {
+	Plan init normal [
+  		println("qareceiver WAITS") 
+	] 
+	transition stopAfter 60000	 
+  			whenEvent alarm  ->  endOfwork , 
+ 			whenMsg info : info(X)  do printCurrentMessage
+  	finally repeatPlan  	
+  	
+  	Plan endOfwork [
+  		onEvent alarm : alarm(X) -> println( endOfwork(X) )
+  	]
+  	
+ }        

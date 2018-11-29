@@ -1,0 +1,21 @@
+System guardedTransitions   
+Context  ctxGuardedTransitions  ip [ host="localhost"  port=8037 ]         
+QActor qaguardedtrans context ctxGuardedTransitions {    
+ 	Plan init normal         
+	 	[   println("qaguardedtrans STARTS"  )   ]  
+	  	switchTo  [ !? divisible(10,5) ] on    	
+	Plan on	  
+		[   println( on )  	]  
+		switchTo  [ !? divisible(10,2) ] off
+	Plan off	  
+		[   println( off )	 	]  
+		switchTo  [ !? divisible(10,3) ] init //possible loop!
+}  
+/*
+OUTPUT
+----------------------------
+"qaguardedtrans STARTS"
+on
+off
+*/
+     
