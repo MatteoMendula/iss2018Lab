@@ -1,0 +1,91 @@
+/* 
+ * ==============================================================
+ * radarDevice.qa
+ * ==============================================================
+ */   
+System radarDevice  
+Event obstacle    : p( Distance, Angle  )  
+
+Dispatch pos      : p( Angle  )     
+Dispatch distance : d( Distance  ) 
+Dispatch polar    : p( Distance, Angle  ) 
+ 
+Context  ctxRadarDevice   ip [ host="localhost"  port=8037 ]             
+
+QActor radardevice context ctxRadarDevice  {  	/*( R1 )*/
+ 	 Plan init normal []     
+ 	 	switchTo  scanTheSpace      
+ 	 Plan scanTheSpace	[ 			/*( R3 )*/
+ 	 	println("scanTheSpace")
+ 	 ]
+ 	 //qastepper and qasonar provide   distance and   angle
+  	 transition stopAfter 600000
+  	 	whenMsg pos      -> handlePos,
+  	 	whenMsg distance -> handleDistance
+  	 	
+  	 Plan handlePos[ 
+  	 	onMsg pos  : p(X) -> 
+  	 	  javaRun it.unibo.radar18Utils.radarStepperUtils.storeDirectionData(X)
+  	 ]
+  	 switchTo updateTheData
+  	 
+  	 Plan handleDistance [ 
+  	 	onMsg distance : d(X) -> 
+  	 		javaRun it.unibo.radar18Utils.radarStepperUtils.storeDistanceData(X)
+  	 ]
+ 	 switchTo updateTheData    
+  	 
+ 	Plan updateTheData[
+ 		javaRun it.unibo.radar18Utils.radarStepperUtils.fuseSensorData();
+ 		[ ?? fusedData( p(D,A) )]  emit obstacle : p(D,A) 	/*( R5 )*/	
+   	]
+  	switchTo scanTheSpace
+ }
+   
+      
+QActor qastepper context ctxRadarDevice {  /*( R3 )*/
+  	 Plan init normal   [ 
+  	 	println("STEPPER STARTS "  ) ;
+  	 	javaRun it.unibo.radar18Utils.radarStepperUtils.startStepperPyhton()
+     ]
+   	 switchTo handlePythonMessages
+  	 
+  	 Plan handlePythonMessages [
+ 	 ]
+  	 transition stopAfter 600000
+  	 	whenMsg pos : p(X) do forward radardevice -m pos : p(X) 
+     finally repeatPlan
+}   
+                                            
+QActor qasonar context ctxRadarDevice  { 	/*( R3 , R4 )*/
+  	 Plan init normal   [         
+   	 	println("SONAR STARTS  "  ) ;
+   	 	javaRun it.unibo.radar18Utils.radarStepperUtils.startSonarC()
+  	 ]		 
+ 	 switchTo  handleSonarCOutput 
+ 	 
+ 	 Plan handleSonarCOutput   [   
+   	 	javaRun it.unibo.radar18Utils.radarStepperUtils.getDistanceFromSonar();
+  	 	[ ?? sonarDistance(data( N, distance, d(VALUE) )) ]
+   	 				forward radardevice -m distance : d(VALUE) ;
+ 		delay time(500) 		
+ 	 ]
+     finally repeatPlan
+}                  
+/*
+ * EXPERIMENT
+
+QActor clientbth context ctxRadarDevice  {
+  	 Plan init normal               
+  	 	println("	clientbth STARTS"  ) ; 
+  	 	actorOp startClientBth("radarbth") ; 
+  	 	switchToPlan doSend ;
+  	 	actorOp closeConn ;
+  	 	println("	clientbth ENDS"  )    
+  	 Plan doSend resumeLastPlan
+   	 	println("	clientbth sendBth"  ) ;
+  	 	actorOp sendBth("hello via bth 1") ;
+   	 	println("	clientbth sendBth"  ) ;
+  	 	actorOp sendBth("hello via bth 2")  		
+}
+ */   
