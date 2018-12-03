@@ -1,4 +1,4 @@
-package it.unibo.RxJava2Utils;
+package it.unibo.rxJava2Utils;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;

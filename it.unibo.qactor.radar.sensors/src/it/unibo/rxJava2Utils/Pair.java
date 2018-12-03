@@ -1,4 +1,4 @@
-package it.unibo.RxJava2Utils;
+package it.unibo.rxJava2Utils;
 
 public class Pair<T> { 
 	private T v1, v2;

@@ -1,10 +1,8 @@
-package it.unibo.RxJava2Utils;
+package it.unibo.rxJava2Utils;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
  
-
 public class StepperStream extends AbstractSensorStream{
-
 
 	public StepperStream(String name) {
 		super( name );
@@ -32,9 +30,7 @@ public class StepperStream extends AbstractSensorStream{
  	
 // MAIN	
     public static void main( String[] args){
-    	int maxNum = 50;
-		int rate   = 100;
-		String name = "StepperrRxStream";
+ 		String name = "StepperrRxStream";
   		StepperStream stepperSrc = new StepperStream(name );
 		 Observable<String> stepperrObsSrc = Observable.create( stepperSrc );
 		 stepperrObsSrc

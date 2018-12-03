@@ -1,4 +1,4 @@
-package it.unibo.RxJava2Utils;
+package it.unibo.rxJava2Utils;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

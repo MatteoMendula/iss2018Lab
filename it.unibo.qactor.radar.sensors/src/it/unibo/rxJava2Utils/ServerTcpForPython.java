@@ -1,4 +1,4 @@
-package it.unibo.RxJava2Utils;
+package it.unibo.rxJava2Utils;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
@@ -33,7 +33,7 @@ protected StepperStream stream;
 		}
   	}
  	 
-	protected void doJob( BufferedReader reader ) throws Exception {
+	protected void doJob( BufferedReader reader )  {
 		while( true ){
  		try{
  		 		String receivedMsg = reader.readLine( );
@@ -43,7 +43,9 @@ protected StepperStream stream;
  	 	 		IActorMessage msg = new QActorMessage( receivedMsg ) ;
    		 		stream.setItem(msg.msgContent());
   		}catch( Exception e ){
-  			System.out.println("	Exception "  + e.getMessage());
+  			System.out.println("ServerTcpForPython	Exception "  + e.getMessage());
+  			stream.setItem("0");
+  			break;
 		}
  		}//while 
 	}

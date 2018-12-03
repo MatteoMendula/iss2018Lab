@@ -1,5 +1,7 @@
-package it.unibo.RxJava2Utils;
+package it.unibo.rxJava2Utils;
 import java.io.BufferedReader;
+import java.io.IOException;
+
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -7,7 +9,7 @@ public class SonarStream extends AbstractSensorStream{
 private int maxNumItems = 0;
 private int interval    = 0;
 private int counter     = 0;
-protected   String distance = null; // data( Counter, distance, d(V) )
+protected   String distance = null; // 
 protected   BufferedReader readerC;
 	 
 
@@ -24,9 +26,16 @@ protected   BufferedReader readerC;
 	public void startGenItems() {
 		startSonarC( );
 		Runnable r = () -> {
-			for( int i=0; i< maxNumItems; i ++) {	
-  				getDistanceFromSonar(   );
-				RxUtils.delay(interval);
+//			for( int i=0; i< maxNumItems; i ++) {	
+			while(true) {
+  				try {
+					getDistanceFromSonar(   );
+					RxUtils.delay(interval);
+				} catch (Exception e) {
+					System.out.println("SonarStream startGenItems ERROR" +  e.getMessage());
+// 					e.printStackTrace();
+					break;
+				}
 	 		}
 		};
 		final Thread t = new Thread(r);
@@ -40,24 +49,26 @@ protected   BufferedReader readerC;
 	  	  		//Execute a C program that generates the sonar values
 				Process p = Runtime.getRuntime().exec("sudo ./SonarAlone");
 				readerC   = new BufferedReader(new java.io.InputStreamReader(p.getInputStream()));
-				for( int i=0; i<maxNumItems; i++) {	
-					getDistanceFromSonar(   );
-				}
-			} catch (Exception e) {
-	 			e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("startSonarC ERROR:" +  e.getMessage());
+//	 			e.printStackTrace();
 			}		
 		}
 		
-		public   void getDistanceFromSonar(   ){
-			try {
+		public   void getDistanceFromSonar(   ) throws Exception {
+//			try {
 				String inpS = readerC.readLine();
 				int data    = Integer.parseInt(inpS);
-				distance    = "data( "+ counter++ + ", distance, d("+data+") )";  
+				//distance    = "data( "+ counter++ + ", distance, d("+data+") )";  
+				distance = "d("+ data + ")";
 				setItem( distance );
-			} catch (Exception e) {
-	  			distance = "data( "+ counter++ + ", distance, d(0) )";  
-				e.printStackTrace();
-			}
+//			} catch (Exception e) {
+//	  			//distance = "data( "+ counter++ + ", distance, d(0) )";  
+//				System.out.println("getDistanceFromSonar ERROR" +  e.getMessage());
+//				distance = "d(0)";
+//				setItem( distance );
+// //				e.printStackTrace();
+//			}
 		}	
 	
 		// MAIN	
