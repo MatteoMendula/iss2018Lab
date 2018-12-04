@@ -38,7 +38,7 @@ protected StepperStream stream;
  		try{
  		 		String receivedMsg = reader.readLine( );
  	   	 		//System.out.println("	ServerTcpForPython RECEIVED " + receivedMsg);
- 	 	 		if( receivedMsg.equals("null" )) break;
+ 	 	 		if( receivedMsg.equals("null" )) continue;
  	 	 		//receivedMsg = msg/5
  	 	 		IActorMessage msg = new QActorMessage( receivedMsg ) ;
    		 		stream.setItem(msg.msgContent());

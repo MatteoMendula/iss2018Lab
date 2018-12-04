@@ -8,9 +8,10 @@ Event obstacle    : p( Distance, Angle  )
 
 Dispatch pos      : p( Angle  )     
 Dispatch distance : d( Distance  ) 
-Dispatch polar    : p( Distance, Angle  ) 
+Dispatch polarMsg : p( Distance, Angle  ) 
  
-Context  ctxRadarDevice   ip [ host="localhost"  port=8037 ]             
+Context  ctxRadarDevice   ip [ host="192.168.1.46"  port=8037 ]             
+Context ctxRadarBase   ip [ host="192.168.1.47"   port=8033 ]  -standalone 
 
 QActor radardevice context ctxRadarDevice  {  	/*( R1 )*/
  	 Plan init normal []     
@@ -37,7 +38,9 @@ QActor radardevice context ctxRadarDevice  {  	/*( R1 )*/
   	 
  	Plan updateTheData[
  		javaRun it.unibo.radar18Utils.radarStepperUtils.fuseSensorData();
- 		[ ?? fusedData( p(D,A) )]  emit obstacle : p(D,A) 	/*( R5 )*/	
+ 		[ ?? fusedData( p(D,A) )]  
+ 			sendto radarguibase in ctxRadarBase -m polarMsg : p( D,A  ) 
+ 		//emit obstacle : p(D,A) 	/*( R5 )*/	
    	]
   	switchTo scanTheSpace
  }

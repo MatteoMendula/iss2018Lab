@@ -7,19 +7,23 @@ System radarStreams
 Event polar       : p( Distance, Angle  ) 
 Dispatch polarMsg : p( Distance, Angle  ) 
 
-Context ctxRadarStreams   ip [ host="localhost"  port=8037 ]             
+Context ctxRadarStreams   ip [ host="192.168.1.46"  port=8037 ]             
 Context ctxRadarBase   ip [ host="192.168.1.47"   port=8033 ]  -standalone 
 
 QActor radarstreams context ctxRadarStreams  {  	/*( R1 )*/
  	 Plan init normal [
-  	 	javaRun it.unibo.rxJava2Utils.sonarStepperZipStreams.createTheStreams()
+ 	  demo consult("./sysConfig.pl");
+ 	  [!? sampleInterval(T)]
+  	 	javaRun it.unibo.rxJava2Utils.sonarStepperZipStreams.createTheStreams(T)
+  	  else 
+  	 	javaRun it.unibo.rxJava2Utils.sonarStepperZipStreams.createTheStreams("200")
  	 ]     
  	 switchTo  scanTheSpace      
  	 Plan scanTheSpace	[ ]			/*( R3 )*/
-     transition stopAfter 600000
+     transition stopAfter 600000 
   	 	whenEvent polar  -> handlePos
     finally repeatPlan
-    	 	
+    	 	   
   	Plan handlePos resumeLastPlan[ 
   	 	onEvent polar : p( D, A  )  -> println( p( D,A ) );  	
   	 	onEvent polar : p( D, A  )  ->

@@ -3,6 +3,7 @@ import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
  
 public class StepperStream extends AbstractSensorStream{
+private static boolean pythonStarted= false;
 
 	public StepperStream(String name) {
 		super( name );
@@ -13,17 +14,22 @@ public class StepperStream extends AbstractSensorStream{
 	 */
 	@Override
 	public void startGenItems() {
-		startStepperPyhton( );
- 		new ServerTcpForPython( this ).start();
+		if( ! pythonStarted ) {
+	 		new ServerTcpForPython( this ).start(); //calls inherited setItem
+			startStepperPyhton( );
+  			pythonStarted = true;
+		}else {
+			System.out.println("StepperStream startGenItems already done");
+		}
  	}
  	
  	//STEPPER
 	protected void startStepperPyhton(){
 		try {
-  			System.out.println("startStepperPyhton");
-//			Process pPython =  
-			Runtime.getRuntime().exec("sudo python stepper.py");			
- 		} catch (Exception e) {
+ 	  		System.out.println("startStepperPyhton");
+	//		Process pPython =  
+			Runtime.getRuntime().exec("sudo python stepper.py");
+  		} catch (Exception e) {
  			e.printStackTrace();
 		}		
 	}
