@@ -1,4 +1,4 @@
 #!/bin/bash
-cd server
-cd src
-/usr/local/bin/node main 8999
+cd server/src
+#/usr/local/bin/node main 8999
+node main 8999
