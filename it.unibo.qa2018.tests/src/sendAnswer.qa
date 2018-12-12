@@ -19,7 +19,7 @@ QActor caller context ctxSendAnswer{
     	whenMsg  answer -> handleAnswer
     
   	State handleAnswer [ 
-  		onMsg answer : answer(R,D) -> println(answer(R,D))
+  		onMsg answer : answer(R,D) -> println(answer1_at_caller(R,D))
   	] 
   	switchTo secondRequest
   	
@@ -28,7 +28,7 @@ QActor caller context ctxSendAnswer{
   		forward called1 -m arequest : arequest( r2,d(2) )
   	]
     transition stopAfter 30000
-    	whenMsg answer : answer(R,D) do println(answer(R,D))
+    	whenMsg answer : answer(R,D) do println(answer2_at_caller(R,D))
   
   }
 /*
@@ -49,26 +49,28 @@ QActor called1 context ctxSendAnswer{
  	
  	Plan handleRequest[     
  		printCurrentMessage;
+ 		javaOp "storeCurrentMessageForReply()";
  		onMsg  arequest : arequest( r1,DD ) -> 
  					replyToCaller -m answer : answer( called1(r1),D );
  		onMsg  arequest : arequest( r2,D ) -> 
- 					selfMsg autoMsg : autoMsg(switch)		
+ 					selfMsg autoMsg : autoMsg( arequest( r2,D ) )		
  	]
   	transition  whenTime 500 -> waitRequest
   		whenMsg autoMsg -> handleSecondRequest
   	
  	Plan handleSecondRequest[
  		println("called1 handleSecondRequest ");
- 		onMsg  arequest : arequest( r1,D ) -> 
- 				forward called2 -m arequest : arequest( r1,D )
+ 		onMsg  autoMsg : autoMsg( M ) -> 
+ 				forward called2 -m arequest : M
  	]
     transition stopAfter 30000
     	whenMsg answer -> sendAnswerToCaller
     	
     Plan sendAnswerToCaller[
-  		println("called1 sendAnswerToCaller ");
- 		onMsg  arequest : arequest( R,D ) -> 
- 					replyToCaller -m answer : answer( called1(R1), D )    	
+  		println("called1 send the answer from called2 to its original caller ");
+  		printCurrentMessage;
+ 		onMsg  answer : answer( R,D ) -> 
+ 					replyToCaller -m answer : answer( called1(R), D )    	
     ]
 }
 
@@ -77,16 +79,17 @@ QActor called1 context ctxSendAnswer{
  */ 
 QActor called2 context ctxSendAnswer{    
  	Plan init normal[  
- 		println("called2 STARTS")
+ 		println("called2 waiting ...")
  	] 
-    transition stopAfter 30000
+    transition stopAfter 30000 
     	whenMsg arequest  -> handleRequest
  	
  	Plan handleRequest[
  		printCurrentMessage;
  		onMsg arequest : arequest( R,D )-> 
     		replyToCaller -m answer : answer( called2(R),D )
- 	]    
+ 	] 
+ 	switchTo init
 
 } 
  
