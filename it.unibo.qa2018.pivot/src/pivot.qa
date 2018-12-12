@@ -1,4 +1,7 @@
-System dynamic
+/*
+ * pivot.qa
+ */
+ System dynamic
  
 Dispatch info : info(X)
 Event alarm   : alarm(X)   
@@ -22,7 +25,7 @@ QActor qa0 context ctxPivot{
 	
 	State handleInfo resumeLastPlan [
 		printCurrentMessage;
-		delay 1000;  //give the time to register ...
+		delay 1000;   
 		onMsg info : info(X) -> emit alarm : alarm( fire ) 
 	]
 }       

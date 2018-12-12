@@ -1,32 +1,40 @@
+/*
+ * ctx1Pivot.qa
+ */
 System dynamic
 
 Dispatch info : info(X)
 Event alarm   : alarm(X)
 
 Context  ctxPivot  ip [ host="localhost"  port=8030 ] -standalone 
-Context  ctx1Pivot ip [ host="localhost"  port=8040 ]  //-g green 
+Context  ctx1Pivot ip [ host="localhost"  port=8040 ]   
 
 EventHandler evh1 for alarm -print;
 
-QActor qa1 context ctx1Pivot{    
+QActor qa1 context ctx1Pivot{      
  	Plan init initial [             
 	   	println( "qa1 READY" )  ;
 	   	forward qa0 -m info : info("hello form qa1 in ctx1Pivot")
-	] 	
-    switchTo observe
+	] 	 
+    switchTo observe 
    
    Plan observe[
    		println( "qa1 observing ..." )  
    ]
    transition stopAfter 600000
  		whenEvent alarm -> handleAlarm
+    
    Plan handleAlarm [
    		onEvent alarm : alarm(X) -> println( alarm(X) )
    ]  
-   transition stopAfter 600000
+   transition whenTime 3000 -> endOfJob
  		whenEvent alarm -> handleAlarm
    
-   
+   Plan endOfJob[
+   		println( "qa1 endOfJob ..." )  ; 
+   		disconnectFromStandalone ctxPivot;
+   		delay 3000
+   ]
   } 
  /*
   * Dummy declaration
