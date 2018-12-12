@@ -3,27 +3,61 @@
  */
 System prodConsDistributed     
 Dispatch info : info(X)
-Context  ctxBasicProdDistr ip [ host="localhost"  port=8079 ]     
-Context  ctxBasicConsDistr ip [ host="localhost"  port=8089 ]  -g green  
-QActor producerdistr context ctxBasicConsDistr{    
-		Rules{
-			item(1).
-			item(2).
-		}
- 	State init initial           
-	   	[	[ !? item(X) ] println( producer(sends(X))  )  ;
-	  		[ ?? item(X)] forward consumerdistr -m info : info(X) 
-	  									else endPlan "producer(ends)" 
-	   	] 	
-	   	finally repeatPlan
- }   
- QActor consumerdistr context ctxBasicConsDistr{   
-  	State init initial  [  println( consumer(waiting) ) ]
-	transition whenTime 2000 -> handleTout
+Dispatch autoMsg : autoMsg(X)
+
+Event infoev    : infoev(X)
+
+//pubSubServer  "tcp://m2m.eclipse.org:1883"    
+pubSubServer  "tcp://test.mosquitto.org:1883"    
+
+
+Context  ctxProdDistrMqtt  ip [ host="localhost"  port=8079 ]     
+Context  ctxConsDistrMqtt  ip [ host="localhost"  port=8089 ]   -g green
+Context  ctxCons2DistrMqtt ip [ host="localhost"  port=8099 ]   -g yellow
+
+QActor producerdistrmqtt context ctxProdDistrMqtt -pubsub{    
+Rules{
+	item(1). 
+	item(2).
+} 
+ 	State init initial [  println( producerdistrmqtt( starts) ) ] 	
+  	switchTo doWork
+ 	
+ 	State doWork  [           
+	   		[ !? item(X) ] println( producer(sends(X))  )  ;
+	  		[ ?? item(X)] selfMsg autoMsg : autoMsg( item(X) ) 
+ 	] 	
+ 	transition stopAfter 10000
+ 		whenMsg autoMsg -> handleAutoMsg
+ 	finally repeatPlan    
+
+ 	Plan handleAutoMsg  [
+ 		printCurrentMessage;
+ 		delay 1000;
+ 		onMsg autoMsg : autoMsg(M) -> forward consumerdistrmqtt -m info : info( M ) ;
+ 		onMsg autoMsg : autoMsg(M) ->  emit infoev : infoev( M )  		 
+ 	]
+ 	transition whenTime 20 -> doWork    
+ 		whenMsg autoMsg -> handleAutoMsg 
+   }      
+ 	
+    
+ QActor consumerdistrmqtt context ctxConsDistrMqtt -pubsub{   
+  	State init initial  [  println( consumerdistrmqtt(waiting) ) ]
+  	switchTo doWork
+  	
+  	State doWork   [  println( consumerdistrmqtt(waiting) ) ]
+	transition stopAfter 60000  
 		whenMsg info : info(X) do println( consumerHandles(X) ) 	
 	  	finally repeatPlan
-   	State handleTout [
-  		 println( consumer(tout)  ) ;
-  		  delay 10000	//to avoid immediate GUI disappearance
-  	]  	
- }
+  }
+ 
+  QActor consumer2distrmqtt context ctxCons2DistrMqtt -pubsub{   
+  	State init initial  [  println( consumer2distrmqtt(waiting) ) ]
+  	switchTo doWork
+  	
+  	State doWork   [  println( consumer2distrmqtt(waiting) ) ]
+	transition stopAfter 60000  
+		whenEvent  infoev : infoev(X) do println( ccccccccconsumer2mqtt(info(X)))
+	  	finally repeatPlan
+  }
