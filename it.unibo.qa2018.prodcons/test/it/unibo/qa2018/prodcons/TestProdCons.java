@@ -45,6 +45,7 @@ private Consumer consumer;
 		System.out.println("&&&&&&&&&&&&&&& test &&&&&&&&&&&&&&&&&&&&&&&");
 		try {
 			while( producer == null || consumer == null ) { System.out.print(".");Thread.sleep(400);}
+			Thread.sleep(1000); //give time to produce/consume 
 			Prolog engineProd = producer.getPrologEngine();  
 			Prolog engineCons = consumer.getPrologEngine();
 			SolveInfo solProd = engineProd.solve("produced(ITEM).");
