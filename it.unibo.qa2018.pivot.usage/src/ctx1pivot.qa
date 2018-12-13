@@ -11,7 +11,7 @@ Context  ctx1Pivot ip [ host="localhost"  port=8040 ]
 
 EventHandler evh1 for alarm -print;
 
-QActor qa1 context ctx1Pivot{      
+QActor qa1 context ctx1Pivot{       
  	Plan init initial [             
 	   	println( "qa1 READY" )  ;
 	   	forward qa0 -m info : info("hello form qa1 in ctx1Pivot")

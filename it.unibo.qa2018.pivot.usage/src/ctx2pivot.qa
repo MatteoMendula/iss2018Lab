@@ -5,7 +5,7 @@
 
 Dispatch info : info(X)
 Event alarm   : alarm(X)
- 
+  
 Context  ctxPivot  ip [ host="localhost"  port=8030 ] -standalone 
 Context  ctx2Pivot ip [ host="localhost"  port=8050 ]  
 

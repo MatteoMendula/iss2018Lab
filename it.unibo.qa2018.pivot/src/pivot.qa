@@ -10,8 +10,7 @@ Context  ctxPivot ip [ host="localhost"  port=8030 ] -g cyan
 
 QActor qa0 context ctxPivot{        
  	State init initial [   
- 		demo consult("curConfigTheory.pl")      
- 	] 	  
+  	] 	  
 	switchTo work   
  	 
  	Plan work  [  	
