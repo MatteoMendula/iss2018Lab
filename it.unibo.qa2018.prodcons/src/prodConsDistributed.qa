@@ -18,6 +18,7 @@ Rules{
  	
  	State doWork  [           
 	   		[ !? item(X) ] println( producer(sends(X))  )  ;
+		    [ !? item(X) ] addRule produced( item(X) );
 	  		[ ?? item(X) ] selfMsg autoMsg : autoMsg( item(X) ) 
  	] 	
  	transition stopAfter 3000
@@ -36,7 +37,13 @@ Rules{
  QActor consumerdistr context ctxBasicConsDistr{   
   	State init initial  [  println( consumerdistr(waiting) ) ]
 	transition whenTime 3000 -> handleTout	//consumer ends before producer
-		whenMsg info : info(X) do println( consumerHandles(X) ) 	
+		whenMsg  info  -> handleMsg 	
 	  	finally repeatPlan
-   	State handleTout [ println( consumerdistr(tout)  )  ]  	
+  	
+  	State handleMsg resumeLastPlan [
+  		 printCurrentMessage  ;
+  		 onMsg info : info(X) -> addRule consumed( X );
+  		 onMsg info : info(X) -> println( consumerReceiving(X) )
+  	] 
+    State handleTout [ println( consumerdistr(tout)  )  ]  	
  }
