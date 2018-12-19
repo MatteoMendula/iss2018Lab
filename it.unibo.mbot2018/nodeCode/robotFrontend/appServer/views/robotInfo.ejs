@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title><%= title %></title>
+<link rel="stylesheet" href="/stylesheets/style.css">
+ 
+ 
+</head>
+
+<body>
+<div class="container">
+<h1><%= title %></h1>
+ 
+<h3></h3>  
+<p><%= model %></p> 
+
+<h3>Devices in the environment</h3>
+<ul>
+<% Object.keys(model.devices.resources).forEach( function( dev )  { %>
+   <li><b><%= dev  %></b> <br/> 
+       name=<%= model.devices.resources[dev].name %>, 
+       descr=<%= model.devices.resources[dev].description %></li>
+   
+ <% } );%>
+</ul>
+
+</body>
+</html>
