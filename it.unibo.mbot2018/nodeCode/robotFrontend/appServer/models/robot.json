@@ -1,17 +1,29 @@
 {
-  "url":"http://localhost:8080/model/",
-  "robot": {
+  "id": "http://localhost:8080",
+  "name": "Unibo Robot front-end",
+  "description": "A front-end for controlling a drr robot.",
+  "customFields": {
+    "hostname":"localhost",
+    "port": 8080,
+    "secure": false,
+    "dataArraySize" : 40
+   }, 
+  "help": {
+    "link": "http://infolab.ingce.unibo.it/iss2018/it.unibo.issMaterial/issdocs/Material/LectureCesena1819.html",
+    "title": "Documentation"
+  },
+  "links": {
+	"robot": {
 	    "name": "UniboDdrRobot",
-	    "link": "robot/",
+	    "link": "/robot",
 	    "description": "A simple robot model",
-	    "properties":{
-	    	"link": "robotstate/",
-	    	"resources":{
-	    		"state": "stopped"
-	    	}
+		"resources":{
+	    "robotstate":{
+	    	"link": "/robotstate",
+	    	"state": "stopped"
 	    },
-	    "devices":{
-	    	"link": "robotdevices/",
+	    "robotdevices":{
+	    	"link": "/robotdevices",
 	    	"resources":{
 			    "sonarRobot": {
 			    	"name"  : "sonarRobot",
@@ -26,49 +38,45 @@
 		        }
 		    }
         },
-        "actions":{
-        	"link": "cmd/",
+        "commands":{
+        	"link": "/commands",
         	"description": "The set of robot moves",
         	"resources":{
-		        "move": {
-			          "name": "RobotMove",
-			          "description": "Move the robot",
-			          "values": {
-				            "moveId": {
-				              "type": "enum",
-				              "enum": {"w":"forward","h":"stop","a":"left"} ,
-				              "required": true
-				            }
-	         	 	   }
-	         	}
+        		"moves": {       			
+        			"w":{ "description": "Move the robot ahead" },
+        			"s":{ "description": "Move the robot backward" },
+        			"h":{ "description": "Stop the robot " },
+        			"a":{ "description": "Move the robot left" },
+         			"d":{ "description": "Move the robot right" }
+  	         	}
         	}
         } 
+		}
     },
-    "robotenv": {
-	"link": "robotenv/",
-    "name": "RobotEnv",
+	"robotenv": {
+	"link": "/robotenv",
     "description": "The robot environment.",
-    "devices":{
-	    "link": "robotenv/devices/",
+    "envdevices":{
+	    "link": "/envdevices",
 	    "resources":{       	
-	 	    "sensor-sonar1": {
+	 	    "sonar1": {
 		    	"name" : "sonar1",
 	         	"description": "The upper sonar.",
 		    	"value": 0
 		    },
-		    "sensor-sonar2": {
+		    "sonar2": {
 		    	"name" : "sonar2",
 	         	"description": "The lower sonar.",
 		    	"value": 0
 		    },
-		    "sensor-temperature":{
+		    "temperature":{
 	       		"name" : "temperature",
 	          	"description": "An ambient temperature sensor.",
 	        	"unit": "celsius",
 	        	"value": 0,
 	        	"gpio": 12
 	      	},
-	       "actuator-led": {
+	       "led": {
 	          "name": "Hue Lamp",
 	          "description": "A REST lamp.",
 	          "value": false,
@@ -76,14 +84,6 @@
 	        }
         }
     }    
- 
-  },
-  "links":{
-  		"link": "meta/",
-  		"name": "MetaInfo",
-    	"meta":{
-    		"rel" :"http://http://infolab.ingce.unibo.it/iss2018/it.unibo.issMaterial/issdocs/Material/LectureCesena1819.html",
-    		"title": "A description"
-    	}
+  }
   }
 }

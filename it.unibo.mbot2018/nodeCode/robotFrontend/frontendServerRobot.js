@@ -6,11 +6,11 @@
 /**
  * Module dependencies.
  */
-var app   = require('./appFrontEndRobot');
+var app   = require('./appFrontEndRobot');	//the new application;
 var debug = require('debug')('robotfrontend:server');
 var http  = require('http');
 
-require('dotenv').config();  //added by AN
+require('dotenv').config();  
 
 /**
  * Get port from environment and store in Express.
@@ -23,40 +23,49 @@ app.set('port', port);
  */
 var server = http.createServer(app);
 
+server.on('error', onError);
+server.on('listening', onListening);
+
 /*
 * --------------------------------------------------------------
 * EXTENSION 1): CREATE A  EVENT HANDLER and give the iosocket to it
 * --------------------------------------------------------------
 */
-const io      = require('socket.io').listen(server); //npm install --save socket.io
-var echannel  = require("./appServer/utils/channel");
+const io             = require('socket.io').listen(server);  
+var echannel         = require("./appServer/utils/channel");
 echannel.setIoSocket(io);
+const robotControl   = require('./appServer/controllers/robotControl');
 
 /*
 * --------------------------------------------------------------
 * EXTENSION 2): START THE SERVER
 * --------------------------------------------------------------
 */
-const robotControl   = require('./appServer/controllers/robotControl');
+const robotConfig = require("./robotConfig");
+
 const initMsg=
 	"\n"+
 	"------------------------------------------------------\n"+
 	"serverRobotCmd bound to port: "+ port + "\n" +
 	"uses socket.io\n"+
+	"USING THE ROBOT: " + robotConfig.getRobotType() + "\n"+
 	"------------------------------------------------------\n";
- 
-process.argv.forEach(function (val, index, array) {
-	  console.log("input args[" + index + ']: ' + val ); //(val=='true') + " " + array.length);
-	  if( index == 2 ) //the user has specified if we must work with a real robot or not
-		  	 robotControl.setRealRobot( val=='true' );
-	  if( index == (array.length-1) ) 
-	  	server.listen(port, function(){console.log(initMsg)}); 
-});
+if( process.argv[2] ) robotConfig.setRobotType( process.argv[2] );
+else robotConfig.setRobotType( "virtual" );
+server.listen(port, function(){console.log(initMsg)});
 
 
 
-server.on('error', onError);
-server.on('listening', onListening);
+//process.argv.forEach(function (val, index, array) {
+//	  console.log("input args[" + index + ']: ' + val ); //(val=='true') + " " + array.length);
+//	  if( index == 2 ) //the user has specified if we must work with a real robot or not
+//		  	 robotControl.setRealRobot( val=='true' );
+//	  if( index == (array.length-1) ) 
+//	  	server.listen(port, function(){console.log(initMsg)}); 
+//});
+
+
+
 
 /**
  * Normalize a port into a number, string, or false.
@@ -86,7 +95,7 @@ function onError(error) {
   var bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;
-  // handle specific listen errors with friendly messages
+  // handle specific listen errors with friendly messages;
   switch (error.code) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges');
@@ -124,7 +133,7 @@ process.on('exit', function(code){
 	console.log("Exiting code= " + code );
 });
 process.on('uncaughtException', function (err) {
- 	console.error('serverRobot got uncaught exception:', err.message);
+ 	console.error('ERROR: serverRobot got uncaught exception:', err.message);
   	process.exit(1);		//MANDATORY!!!;
 });
 

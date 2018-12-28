@@ -1,9 +1,7 @@
 /*
- * it.unibo.mbot2018/nodeCode/robot/controllers/applRobotControl.js
+ * it.unibo.mbot2018/nodeCode/robotFrontEnd/controllers/applRobotControl.js
  */
-//const robotModel  = require('./../models/robot');
 const echannel    = require("./../utils/channel");
-var mqttUtils     = require('./../utils/mqttUtils'); 
 
 exports.actuate = function( cmd, req, res ){
 	console.log("\t applRobotControl actuate " + cmd  );
@@ -12,11 +10,9 @@ exports.actuate = function( cmd, req, res ){
 	else if( cmd === "h" ){  delegate("h(low)", "stopped", req,res); }
 	else if( cmd === "a" ){  delegate("w(low)", "moving left", req,res); }
 	else if( cmd === "d" ){  delegate("w(low)", "moving right", req,res); }
-
 	//Application
-	else if( cmd === "start" ){   delegate("start", "robot working at application level", req,res);  }
+	else if( cmd === "explore" ){   delegate("explore", "robot working at application level", req,res);  }
 	else if( cmd === "halt" ){    delegate("halt", "robot halting the application level", req,res);  }
-
 }
 
 /*
@@ -24,12 +20,7 @@ exports.actuate = function( cmd, req, res ){
  */
 var delegate = function ( hlcmd, newState, req, res ){
  	echannel.emit("robotState", newState);
-	emitRobotCmd(hlcmd);
+ 	var eventstr = "msg(usercmd,event,js,none,usercmd( " + hlcmd + "),1)"
+    //console.log("\t robotControl emits: "+ eventstr);
+ 	echannel.emit("publishcmd", eventstr);
 }
-var emitRobotCmd = function( cmd ){ //no more gui coomands
- 	var eventstr = "msg(usercmd,event,js,none,usercmd( " +cmd + "),1)"
-  		console.log("\t robotControl emits: "+ eventstr);
-  		mqttUtils.publish( eventstr );	//topic  = "unibo/qasys";
-}
-
-

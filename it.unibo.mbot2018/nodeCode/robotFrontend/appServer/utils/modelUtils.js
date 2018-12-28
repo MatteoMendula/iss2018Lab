@@ -2,7 +2,7 @@
  *  robot/utils/modelUtils.js
  */
 
-var model = require('./../models/robot');
+var model = require('./../models/robot').getResourceModel();
  
 exports.randomInt = function(low, high) {
   return Math.floor(Math.random() * (high - low + 1) + low);

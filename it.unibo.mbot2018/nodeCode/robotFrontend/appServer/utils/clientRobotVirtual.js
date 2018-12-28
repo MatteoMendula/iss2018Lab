@@ -3,13 +3,14 @@
  */
 const net       = require('net')
 const SEPARATOR = ";"
+const echannel  = require("./channel");
 const client    = new Client({ip: "localhost", port: 8999})
-const echannel  =  require("./channel");
 
 function Client({ port, ip }) {
     const self = this
     let clientSocket
     const outQueue = []
+   
     connectTo(port, ip)  
     
     function flushOutQueue() {
@@ -35,9 +36,9 @@ function Client({ port, ip }) {
                     .forEach( message => 
                     	{ //console.log(message); 
                     	  if(  message.type == 'collision')
-                    		  echannel.emit("sonarEvent", message.type + ":"+ message.arg.objectName); 
+                    		  echannel.emit("sonarDetect", message.type + ":"+ message.arg.objectName); 
                     	  else{
-                    		  echannel.emit("sonarEvent",  message.arg.sonarName + " : "+ message.arg.distance); 
+                    		  echannel.emit("sonar",  message.arg.sonarName + " : "+ message.arg.distance); 
                     		  //console.log("\t sonar(clientRobotVirtual):"+ message.arg.sonarName + " distance:" + message.arg.distance ); 
                     	  }
                     	} )
@@ -49,7 +50,7 @@ function Client({ port, ip }) {
         if(!clientSocket.connecting)
             clientSocket.write(SEPARATOR +message +SEPARATOR)
         else {
-            console.log(`\tSocket not created, message added to queue`)
+            console.log(`\t clientRobotVirtual: Socket not created, message added to queue`)
             outQueue.push(message)
         }
     }

@@ -21,7 +21,7 @@ Rules{
 	move(d).	move(w).	move(a).    move(s).	move(h).	
  }
  	State init normal [  
- 		println("robotdemoinwenv STARTS"); 		
+  		println("robotdemoinwenv STARTS"); 		
   		javaRun it.unibo.robotVirtual.basicRobotExecutor.setUp("localhost")
   	]      
  	switchTo  someMove
@@ -58,13 +58,14 @@ Rules{
  /*
  * Actor that activates the virtual enevironment W-Env
  */
-/*  
-QActor startscene context ctxRobot {
+/*   
+QActor startscene context ctxRobotInWenv {
 Plan init normal[ 
  println("startscene starts...");
  nodeOp 
  "C:/Didattica2018Work/iss2018Lab/it.unibo.mbot2018/Soffritti/server/src/main.js 8999" -o
 ] 	
 }
-* //localhost:8090
-*/  
+*/
+//localhost:8090
+ 

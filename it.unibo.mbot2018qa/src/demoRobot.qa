@@ -3,7 +3,7 @@
  * it\unibo\mbot2018.qa\src\demoRobot.qa
  * ==============================================================
  */ 
-System demoRobot
+System demoRobot      
  
 Dispatch robotCmd : cmd(X)       			 //X=w|a|s|d|h
 Event sonarEvent  : distance(D, DIR, POS) 	//from SensorObserver
@@ -16,14 +16,14 @@ Event sonarDetect : sonarDetect(X)					//From (virtual robot) sonar
 Event sonar  	  : sonar(SONAR, TARGET, DISTANCE)	//From (virtual) sonar
     
 //Context ctxConsole   ip [ host="localhost"   port=8078 ] -g cyan -httpserver     
-Context ctxRobot     ip [ host="localhost"   port=8098 ] -httpserver
+Context ctxRobot  ip [ host="localhost"   port=8098 ] -httpserver 
  
-QActor cmdrobotconverter context ctxRobot{
+QActor cmdrobotconverter context ctxRobot{ 
  	State init normal [  ]
 	transition stopAfter 600000
 	whenEvent usercmd -> handleUserCmd
 	finally repeatPlan   
-	
+	   
 	State handleUserCmd resumeLastPlan[//MAPPING AFTER EXPERIMENTATION
 		onEvent usercmd : usercmd( robotgui(h(X)) ) -> 
 			 	forward robotdemo -m robotCmd : cmd("h");
@@ -40,12 +40,13 @@ QActor cmdrobotconverter context ctxRobot{
 
 QActor robotdemo context ctxRobot   { 
 Rules{
-	//robotType( "robotVirtual", setuparg("localhost") ).
-	robotType( "robotRealMbot", setuparg("COM6") ).
+	robotType( "robotVirtual", setuparg("localhost") ).
+	//robotType( "robotRealMbot", setuparg("COM6") ).
 	//robotType( "robotRealRaspOnly", setuparg("") ).
 }
  	State init normal [  
- 		println("robotdemo STARTS"); 		
+  		delay	5000; 
+ 		println("robotdemo STARTS"); 	
  		[ !? robotType(T,setuparg(A))] 
  				javaRun it.unibo.utils.allRobots.setUp(T,A)
   	]      
@@ -79,15 +80,15 @@ Rules{
  /*
  * Activate the virtual enevironment W-Env
  */
-/*  
+/* 
 QActor startscene context ctxRobot {
 Rules{
 	wenv("C:/Didattica2018Work/iss2018Lab/it.unibo.mbot2018/Soffritti/server/src/main.js 8999").
 }
 	Plan init normal[ 
  		println("startscene starts...");
-		//nodeOp "C:/Didattica/STUDENTI/Cardace-Mearini-Sorrentino/ConfigurableThreejsApp-master/server/src/main.js 8999 " -o
- 	    [ !? wenv(P)] nodeOp "C:/Didattica2018Work/iss2018Lab/it.unibo.mbot2018/Soffritti/server/src/main.js 8999" -o
+		nodeOp "C:/Didattica/STUDENTI/Cardace-Mearini-Sorrentino/ConfigurableThreejsApp-master/server/src/main.js 8999 " -o
+ 	    //[ !? wenv(P)] nodeOp "C:/Didattica2018Work/iss2018Lab/it.unibo.mbot2018/Soffritti/server/src/main.js 8999" -o
  	] 	
 }
-*/  
+ */  

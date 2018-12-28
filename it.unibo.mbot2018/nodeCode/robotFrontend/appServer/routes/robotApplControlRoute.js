@@ -6,8 +6,8 @@ var express     = require('express'),
 
 const robotControl   = require('../controllers/applRobotControl');
 
-router.post("/start", function(req, res, next) { 
-	robotControl.actuate("start", req, res ); 
+router.post("/explore", function(req, res, next) { 
+	robotControl.actuate("explore", req, res ); 
 	next();
 });
 router.post("/halt", function(req, res, next) { 

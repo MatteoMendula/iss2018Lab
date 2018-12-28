@@ -3,7 +3,7 @@
  */
 var express     = require('express'),
   router        = express.Router(),
-  resourceModel = require('../models/robot');
+  resourceModel = require('../models/robot').getResourceModel();
 
 	//console.log(" +++++++++  routes/robotInfoRoute.js 0 "  ); 
   
