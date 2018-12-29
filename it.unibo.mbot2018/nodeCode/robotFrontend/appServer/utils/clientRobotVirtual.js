@@ -2,9 +2,10 @@
  * it.unibo.mbot2018/nodecode/robot/clientRobotVirtual.js
  */
 const net       = require('net')
+const systemConfig = require("./../../systemConfig")
 const SEPARATOR = ";"
 const echannel  = require("./channel");
-const client    = new Client({ip: "localhost", port: 8999})
+const client    = new Client( systemConfig.robotAddr );   //{ip: "localhost", port: 8999}
 
 function Client({ port, ip }) {
     const self = this

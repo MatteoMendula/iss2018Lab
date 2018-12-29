@@ -41,30 +41,18 @@ const robotControl   = require('./appServer/controllers/robotControl');
 * EXTENSION 2): START THE SERVER
 * --------------------------------------------------------------
 */
-const robotConfig = require("./robotConfig");
+const systemConfig = require("./systemConfig");
 
 const initMsg=
 	"\n"+
 	"------------------------------------------------------\n"+
 	"serverRobotCmd bound to port: "+ port + "\n" +
 	"uses socket.io\n"+
-	"USING THE ROBOT: " + robotConfig.getRobotType() + "\n"+
+	"USING THE ROBOT: " + systemConfig.getRobotType() + "\n"+
 	"------------------------------------------------------\n";
-if( process.argv[2] ) robotConfig.setRobotType( process.argv[2] );
-else robotConfig.setRobotType( "virtual" );
+if( process.argv[2] ) systemConfig.setRobotType( process.argv[2] );
+else systemConfig.setRobotType( "virtual" );
 server.listen(port, function(){console.log(initMsg)});
-
-
-
-//process.argv.forEach(function (val, index, array) {
-//	  console.log("input args[" + index + ']: ' + val ); //(val=='true') + " " + array.length);
-//	  if( index == 2 ) //the user has specified if we must work with a real robot or not
-//		  	 robotControl.setRealRobot( val=='true' );
-//	  if( index == (array.length-1) ) 
-//	  	server.listen(port, function(){console.log(initMsg)}); 
-//});
-
-
 
 
 /**
@@ -88,10 +76,7 @@ function normalizePort(val) {
  * Event listener for HTTP server "error" event.
  */
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-
+  if (error.syscall !== 'listen') { throw error; }
   var bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;
@@ -105,8 +90,7 @@ function onError(error) {
       console.error(bind + ' is already in use');
       process.exit(1);
       break;
-    default:
-      throw error;
+    default: throw error;
   }
 }
 

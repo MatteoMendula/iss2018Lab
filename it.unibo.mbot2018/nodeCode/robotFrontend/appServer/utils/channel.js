@@ -13,18 +13,17 @@ channel.setIoSocket = function( iosock ){
 }
 channel.on('sonar', function(data) {	//emitted by clientRobotVirtual or mqtt support; 
  	console.log("\t CHANNEL sonar updates the model and the page with:" + data ); 
-	//model.robot.devices.resources.sonarRobot.value=data;
 	model.links.robotenv.envdevices.resources.sonar2.value=data;
 	this.io.sockets.send( data );
 });
 channel.on('sonarDetect', function(data) {	//emitted by clientRobotVirtual or mqtt support; 
  	console.log("\t CHANNEL sonarDetect updates the model and the page with:" + data ); 
-	model.links.robot.devices.resources.sonarRobot.value=data;
+	model.links.robot.resources.robotdevices.resources.sonarRobot.value=data;
 	this.io.sockets.send( data );
 });
 channel.on('robotState', function(data) {  //emitted by robotControl or applRobotControl;
 	//console.log("\t CHANNEL receives: " + data  );
- 	model.links.robot.resources.state=data;  //shown in the page by app renderMainPage
+ 	model.links.robot.resources.robotstate=data;  //shown in the page by app renderMainPage
  	//not propagated via io.sockets since a robot state can change only after a user command (??)
  	//CLEAR THE sonar
 	model.links.robotenv.envdevices.resources.sonar2.value="";
@@ -45,12 +44,10 @@ module.exports=channel;
  * MQTT support
  * ------------------------------------------------
  */
-const mqtt      = require ('mqtt');	 
-const topic     = "unibo/qasys";
-
-//var client   = mqtt.connect('mqtt://iot.eclipse.org');
-//var client   = mqtt.connect('mqtt://192.168.1.100');
- var client    = mqtt.connect('mqtt://localhost');
+const systemConfig = require("./../../systemConfig");
+const mqtt    = require ('mqtt');	 
+const topic   = "unibo/qasys";
+var client    = mqtt.connect(systemConfig.mqttbroker);
 
 client.on('connect', function () {
 	  client.subscribe( topic );
