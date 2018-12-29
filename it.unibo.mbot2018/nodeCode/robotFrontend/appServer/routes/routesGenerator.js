@@ -57,7 +57,6 @@ function createModelRoutes(model) {
 	    req.model     = model;
 	    req.modelStr  = "\""+JSON.stringify(model, null, 2)+"\"";
 	    req.type   = 'showmodel';
-		console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa createModelRoutes working " + req.modelStr);	    
 	    type = 'http://model.webofthings.io/';
 	    res.links({
 	      type: type
