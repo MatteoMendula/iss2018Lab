@@ -12,23 +12,27 @@ channel.setIoSocket = function( iosock ){
 	this.io = iosock;
 }
 channel.on('sonar', function(data) {	//emitted by clientRobotVirtual or mqtt support; 
+	if( data.indexOf('undefined') >= 0 ) return;
+	if( data.indexOf('msg') >= 0 ) return;
  	console.log("\t CHANNEL sonar updates the model and the page with:" + data ); 
 	model.links.robotenv.envdevices.resources.sonar2.value=data;
+	//model.links.robotenv.envdevices.resources.sonar2.data.push(data);	//history (quite long...)
 	this.io.sockets.send( data );
 });
 channel.on('sonarDetect', function(data) {	//emitted by clientRobotVirtual or mqtt support; 
  	console.log("\t CHANNEL sonarDetect updates the model and the page with:" + data ); 
 	model.links.robot.resources.robotdevices.resources.sonarRobot.value=data;
+	model.links.robot.resources.robotdevices.resources.sonarRobot.data.push(data);	//history
 	this.io.sockets.send( data );
 });
 channel.on('robotState', function(data) {  //emitted by robotControl or applRobotControl;
-	//console.log("\t CHANNEL receives: " + data  );
- 	model.links.robot.resources.robotstate=data;  //shown in the page by app renderMainPage
+	console.log("\t CHANNEL receives: " + data  );
+ 	model.links.robot.resources.robotstate.state=data;  //shown in the page by app renderMainPage
  	//not propagated via io.sockets since a robot state can change only after a user command (??)
  	//CLEAR THE sonar
 	model.links.robotenv.envdevices.resources.sonar2.value="";
 	this.io.sockets.send( data );
-	model.links.robot.envdevices.resources.sonarRobot.value="";
+	model.links.robot.resources.robotdevices.resources.sonarRobot.value="";
 	this.io.sockets.send( data );
 });
 channel.on('publishcmd', function(data) {  //emitted by robotControl;

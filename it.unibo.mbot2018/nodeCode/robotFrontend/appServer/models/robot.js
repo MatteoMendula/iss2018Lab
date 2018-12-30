@@ -22,6 +22,25 @@ exports.extractFields = function(fields, object, target) {
 	  return target;
 }
 
+exports.envmodelToResources = function( subModel ) {
+	  var resources = [];
+	  Object.keys(subModel).forEach(function(key) {
+		//console.log("utils modelToResources key=" +key );
+	    var val       = subModel[key];
+	    var resource  = {};
+	    resource.id   = key;
+	    resource.name = val['name'];
+	    resource.value= val['value'];
+	    //console.log( val.data );
+	    if( val.data != undefined) {
+	    	resource.values = val.data;
+//	    	if( val.data.length > 0 ) resource.values = val.data[val.data.length-1]; 
+//	    	else resource.values = [] ;
+	    }
+	    resources.push(resource);
+	  });
+	  return resources;
+};
 
 //module.exports = resources;
 

@@ -17,19 +17,19 @@
 <div class="container">
 <h1><%= title %></h1>
 
- 
+<h3>The model of the devices</h3>
+<%= res %>
 
-<h3>Devices in the environment</h3>
+<h3>Devices <%=where%></h3>
 <ul>
-<% Object.keys(model.devices.resources).forEach( function( dev )  { %>
+<% Object.keys(model.resources).forEach( function( dev )  { %>
    <li><b><%= dev  %></b> <br/> 
-       name=<%= model.devices.resources[dev].name %>, 
-       descr=<%= model.devices.resources[dev].description %></li>
-   
+       name=<%= model.resources[dev].name %>, 
+       descr=<%= model.resources[dev].description %></li>
+       value=<%= model.resources[dev].value %></li>
  <% } );%>
 </ul>
 
-<%= res %>
 
 <script>console.log( "Devices" )</script>
  

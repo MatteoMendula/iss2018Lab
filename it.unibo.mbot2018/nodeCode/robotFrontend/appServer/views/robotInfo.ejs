@@ -12,18 +12,20 @@
 <div class="container">
 <h1><%= title %></h1>
  
-<h3></h3>  
-<p><%= model %></p> 
 
-<h3>Devices in the environment</h3>
+<h3>Metadata</h3>
+
+<%= res %>
+
 <ul>
-<% Object.keys(model.devices.resources).forEach( function( dev )  { %>
-   <li><b><%= dev  %></b> <br/> 
-       name=<%= model.devices.resources[dev].name %>, 
-       descr=<%= model.devices.resources[dev].description %></li>
-   
- <% } );%>
+<% Object.keys(model).forEach( function( item )  { %>
+   <li><%= item  %>  <br/> 
+    <% } );%>
 </ul>
 
+
+<p>
+Back to main page: <a href="http://<%=host%>">main page</a>  
+</p>
 </body>
 </html>

@@ -39,7 +39,7 @@ function Client({ port, ip }) {
                     	  if(  message.type == 'collision')
                     		  echannel.emit("sonarDetect", message.type + ":"+ message.arg.objectName); 
                     	  else{
-                    		  echannel.emit("sonar",  message.arg.sonarName + " : "+ message.arg.distance); 
+                    		  echannel.emit("sonar",  message.arg.sonarName + "("+ message.arg.distance +")"); 
                     		  //console.log("\t sonar(clientRobotVirtual):"+ message.arg.sonarName + " distance:" + message.arg.distance ); 
                     	  }
                     	} )

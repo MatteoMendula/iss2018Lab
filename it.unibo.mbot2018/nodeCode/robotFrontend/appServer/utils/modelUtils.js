@@ -32,8 +32,7 @@ exports.extractFields = function(fields, object, target) {
   return target;
 };
 
- 
-exports.modelToResources = function(subModel, withValue) {
+ exports.envmodelToResources = function(subModel, withValue) {
   var resources = [];
   Object.keys(subModel).forEach(function(key) {
 	//console.log("utils modelToResources key=" +key );
@@ -41,6 +40,7 @@ exports.modelToResources = function(subModel, withValue) {
     var resource  = {};
     resource.id   = key;
     resource.name = val['name'];
+    resource.value= val['value'];
     //console.log( "modelToResources" );console.log( val );
     if(withValue) resource.values = val.data[val.data.length-1];    
     resources.push(resource);

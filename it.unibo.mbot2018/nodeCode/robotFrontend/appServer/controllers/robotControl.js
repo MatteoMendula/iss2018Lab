@@ -2,10 +2,10 @@
  * it.unibo.mbot2018/nodeCode/robotFrontend/appServer/controllers/robotControl
  */
 const systemConfig = require("./../../systemConfig");
-const echannel    = require("./../utils/channel");
+const echannel     = require("./../utils/channel");
 
 exports.actuate = function( cmd, req, res ){
-	//console.log("\t robotControl actuate " + cmd  );
+	console.log("\t robotControl actuate " + cmd  );
 	var newState     = "";
 	if(      cmd === "w" ){ newState="robot moving forward"; }
 	else if( cmd === "s" ){ newState="robot moving backward"; }
