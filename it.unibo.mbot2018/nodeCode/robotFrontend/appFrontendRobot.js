@@ -61,17 +61,26 @@ app.use('/', routesGen.create(robotModel) );
 * 3a) HANDLE GET REQUESTS
 * --------------------------------------------------------------
 */
-app.get('/robotenv', function (req, res) {
-	//console.log( req.headers.host ); 
-	var state     =  robotModel.links.robot.resources.robotstate.state;
-	var withValue = false;
-	var envToShow = JSON.stringify( 
-			modelutils.modelToResources(robotModel.links.robotenv.devices.resources, withValue)
+app.get('/envdevices', function (req, res) {
+  	req.myresult  = JSON.stringify( 
+	 modelInterface.envmodelToResources(robotModel.links.robotenv.envdevices.resources )
 	);
- 	res.render('robotenv', 
- 		{'title': 'Robot Environment', 'res': envToShow, 
- 		'model': robotModel.robotenv, 'host': req.headers.host, 'refToEnv': req.headers.host+"/robotenv" } 
- 	); 
+ 	if (req.accepts('html')){ res.render('showdevs', 
+ 		{'title': 'Environment Devices', 'res': req.myresult, "where":"in the environment",
+ 		'model':robotModel.links.robotenv.envdevices, 'host': req.headers.host  } 
+ 	)} else if (req.accepts('application/json')) { res.send(req.myresult);} 
+ 	 else res.send("please specify better"); 
+});
+
+app.get('/robotdevices', function (req, res) {
+  	req.myresult  = JSON.stringify( 
+	 modelInterface.envmodelToResources(robotModel.links.robot.resources.robotdevices.resources)
+	);
+ 	if (req.accepts('html')){ res.render('showdevs', 
+ 		{'title': 'Robot Devices', 'res': req.myresult, "where":"on the robot",
+ 		'model': robotModel.links.robot.resources.robotdevices, 'host': req.headers.host  } 
+ 	)} else if (req.accepts('application/json')) { res.send(req.myresult);}
+ 	 else res.send("please specify better"); 
 });
 
 //to promote M2M interaction
@@ -98,8 +107,8 @@ app.post("/commands/a", function(req, res, next) {
 /*
  * LAST ACTION
  */ 
-app.use( function(req,res){ 
-    //console.log("last use - req.myresult=" + req.myresult );
+app.use( function(req,res,next){ 
+    console.log("last use - req.myresult=" + req.myresult );
     renderResponse( req, robotModel.links.robot.resources.robotstate.state, res );
 } );
 
@@ -108,30 +117,21 @@ var renderResponse = function(req, state, res){
 		console.info('\t appFrontEndRobot renderResponse req.type=' + req.type );
 		 // Check if there's a custom renderer for this media type and resource;
         if (req.type) res.render(req.type, {'title': 'Resource Model', 'req': req});
-        else //res.render('default', {req: req, helpers: helpers});
-		res.render('access', 
-				{'title': 'Robot Control Page', 'res': "Welcome", 'model': robotModel.links.robot,
-				'robotstate': state, 'refToEnv': req.headers.host+"/robotenv"}); 	
+        else{  
+        	var state = robotModel.links.robot.resources.robotstate.state;
+        	console.info('\t appFrontEndRobot renderResponse state=' + state );
+        	res.render('access',  
+				{'title': 'Robot Control Page', 'res': "", 'model': robotModel.links.robot,
+				'robotstate': state, 'refToEnv': req.headers.host+"/envdevices"}); 	
+        }
 	}else if (req.accepts('application/json')) {
-		//CREATE the Link header containing links to the other resources (HATEOAS);
-	    type = 'http://model.webofthings.io/';
-	    res.links({
-	        model: '/model/',
-	        properties: '/properties/',
-	        actions: '/actions/',
-	        help: '/help/',
-	        type: type
-	      });
-		var fields = ['id', 'name', 'description', 'customFields', 'help'];
-		req.myresult = modelInterface.extractFields(fields, robotModel);
-		console.info('\t appFrontEndRobot: Defaulting to JSON representation!  '  );
-		//console.info( req.myresult );
+		//console.log('\t renderResponse: JSON representation!  '  );
 	    res.send(req.myresult);		
 	}else if (req.accepts('application/x-msgpack')) {
 		 res.send("Sorry, application/x-msgpack todo ... ");	
 	}else{
-		 console.info('Defaulting to JSON representation! req.result='  );
-		 console.info( req.result );		
+		 console.info('Defaulting to JSON representation! req.myresult='  );
+		 console.info( req.myresult );		
 	}
 }
 
@@ -151,9 +151,8 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   var state  = robotModel.links.robot.resources.robotstate.state;
-	res.render('access', 
-		{'title': 'Robot Control Page', 'res': "Welcome", 'model': robotModel.links.robot,
-		'robotstate': state, 'refToEnv': req.headers.host+"/robotenv"} 
+	res.render('error', 
+		{'title': 'Error', 'res': err, 'host': req.headers.host  } 
 	); 
 });
 
