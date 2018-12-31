@@ -7,6 +7,7 @@ var resources  = require('./robot.json');
 
 exports.actionsLinkUrlStr = resources.links.robot.resources.commands.link;		 //	"/commands";
 exports.stateLinkUrlStr   = resources.links.robot.resources.robotstate.link; 		 // "/robotState";
+exports.robotMoves   = resources.links.robot.resources.commands.resources; 		  
  
 exports.getResourceModel = function(){ return resources; }
 

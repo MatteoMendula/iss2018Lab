@@ -63,11 +63,12 @@ app.use(express.static(publicpath));
 */
 app.get('/', function(req, res) {
  	//console.log( req.headers.host ); 
-	var state  = robotModel.robot.state;
-	res.render('access', 
-		{'title': 'Robot Control', 'res': "Welcome", 'model': robotModel.robot,
-		'robotstate': state, 'refToEnv': req.headers.host+"/robotenv"} 
-	); 
+//	var state  = robotModel.robot.state;
+//	res.render('access', 
+//		{'title': 'Robot Control', 'res': "Welcome", 'model': robotModel.robot,
+//		'robotstate': state, 'refToEnv': req.headers.host+"/robotenv"} 
+//	); 
+	res.send("Welcome");
 });	
 
 //USED in ajaxAcess.html
@@ -78,7 +79,7 @@ app.get('/model', function (req, res) {
 app.get('/model/robotdevices', function (req, res) {
 	res.send(robotModel.robot.devices.resources);
 });
-//USED from the page bult by access.ejs
+//USED from the page built by access.ejs
 app.get('/robotenv', function (req, res) {
 	//console.log( req.headers.host ); 
 	var state     =  robotModel.robot.properties.resources.state;

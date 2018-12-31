@@ -85,7 +85,7 @@ app.get('/robotdevices', function (req, res) {
 
 //to promote M2M interaction
 app.get( modelInterface.actionsLinkUrlStr, function( req, res ) { 	   
-  	res.send( modelInterface.actionsLinkUrlStr );
+  	res.send( modelInterface.robotMoves );
 });
  
 /*
@@ -112,27 +112,32 @@ app.use( function(req,res,next){
     renderResponse( req, robotModel.links.robot.resources.robotstate.state, res );
 } );
 
-var renderResponse = function(req, state, res){
-	if (req.accepts('html')) {
-		console.info('\t appFrontEndRobot renderResponse req.type=' + req.type );
+var renderResponse = function(req, robotstate, res){
+	if (req.accepts('html') && 
+		checkContentType(req, 'application/x-www-form-urlencoded') ) { //from a web page button
 		 // Check if there's a custom renderer for this media type and resource;
         if (req.type) res.render(req.type, {'title': 'Resource Model', 'req': req});
         else{  
-        	var state = robotModel.links.robot.resources.robotstate.state;
-        	console.info('\t appFrontEndRobot renderResponse state=' + state );
+        	console.info('\t appFrontEndRobot renderResponse state=' + robotstate );
         	res.render('access',  
 				{'title': 'Robot Control Page', 'res': "", 'model': robotModel.links.robot,
-				'robotstate': state, 'refToEnv': req.headers.host+"/envdevices"}); 	
+				'robotstate': robotstate, 'refToEnv': req.headers.host+"/envdevices"}); 	
         }
-	}else if (req.accepts('application/json')) {
+	}else if ( req.accepts('application/json') && checkContentType(req, 'application/json') ) {
 		//console.log('\t renderResponse: JSON representation!  '  );
 	    res.send(req.myresult);		
-	}else if (req.accepts('application/x-msgpack')) {
+	}else if (req.accepts('application/x-msgpack') && checkContentType(req,'application/x-msgpack')){
 		 res.send("Sorry, application/x-msgpack todo ... ");	
 	}else{
-		 console.info('Defaulting to JSON representation! req.myresult='  );
-		 console.info( req.myresult );		
-	}
+		 console.info("Defaulting to Html representation! " );
+ 	}
+}
+
+checkContentType = function ( req, ctype ){
+	var contype = req.headers['content-type'];
+	//console.info('\t appFrontEndRobot checkContentType req.type=' + req.type + " content=" + contype);
+	if (contype == undefined ) return true ;	//html is first
+	return ( contype.indexOf(ctype) >= 0)
 }
 
 //---------------------------------------------------------------------
@@ -155,6 +160,7 @@ app.use(function(err, req, res, next) {
 		{'title': 'Error', 'res': err, 'host': req.headers.host  } 
 	); 
 });
+
 
 //IMPORTANT POINT %%%%%%%%%%%%%%%%%%%%%
 module.exports = app;

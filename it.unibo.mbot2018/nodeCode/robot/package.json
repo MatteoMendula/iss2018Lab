@@ -1,12 +1,12 @@
 {
-  "name": "wot-pi",
+  "name": "unibowot",
   "version": "1.0.0",
-  "description": "A Web of Things server for the Pi",
+  "description": "A Web of Things server for unibo robots",
   "main": "wot-pi.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Vlad Trifa",
+  "author": "AN from Vlad Trifa",
   "license": "Apache-2.0",
   "keywords": [
     "web of things",
