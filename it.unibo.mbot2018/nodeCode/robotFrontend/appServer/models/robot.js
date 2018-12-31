@@ -35,8 +35,6 @@ exports.envmodelToResources = function( subModel ) {
 	    //console.log( val.data );
 	    if( val.data != undefined) {
 	    	resource.values = val.data;
-//	    	if( val.data.length > 0 ) resource.values = val.data[val.data.length-1]; 
-//	    	else resource.values = [] ;
 	    }
 	    resources.push(resource);
 	  });
