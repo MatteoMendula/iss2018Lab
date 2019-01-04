@@ -6,7 +6,7 @@
 System robotWenvPR
 Dispatch robotCmd    : cmd(X)    //X=w|a|s|d|h
 Dispatch userControl : cmd(X)    //from console
-Dispatch autoMsg    : autoMsg(X)
+Dispatch autoMsg     : autoMsg(X)
 
   
 Event usercmd     : usercmd(X)    //from robot GUI;  X=robotgui(CMD) CMD=s(low)
@@ -29,8 +29,8 @@ QActor console context ctxRobotWenvPR{
 	
 	State handleUserCmd resumeLastPlan[//MAPPING AFTER EXPERIMENTATION
 		onEvent usercmd : usercmd( robotgui(h(X)) ) -> {
- 			 	//forward robotmind -m userControl : cmd("h");
-			 	forward robotmind -m obstacle : obstacle("stop")
+ 			 	forward robotmind -m userControl : cmd("h")
+			 	//forward robotmind -m obstacle : obstacle("stop")
 		};
 		onEvent usercmd : usercmd( robotgui(w(X)) ) ->
 				forward robotmind -m userControl : cmd("w");
@@ -45,10 +45,10 @@ QActor console context ctxRobotWenvPR{
 
 QActor robotmind context ctxRobotWenvPR   { 
 Rules{
- 	move(w).	move(d).	move(w). 	move(s).    move(a).	
-	move(d).	move(w).	move(a).    move(s).	move(h).	
-	move(w).	move(d).	move(w). 	move(s).    move(a).	
-	move(d).	move(w).	move(a).    move(s).	move(h).
+// 	move(w).	move(d).	move(w). 	move(s).    move(a).	
+//	move(d).	move(w).	move(a).    move(s).	move(h).	
+//	move(w).	move(d).	move(w). 	move(s).    move(a).	
+//	move(d).	move(w).	move(a).    move(s).	move(h).
  }
  	State init normal [  
  		delay 1000; //give the time to open localhost:8080
@@ -73,29 +73,30 @@ Rules{
      	whenMsg obstacle -> handleObstacle,
     	whenEvent sonar  -> handleSonarEvent	    
     
-    State  userControlled[
-    ]
+    State  userControlled[	println(userControlled)
+    ] 
  	transition  stopAfter 600000  
-     	whenMsg obstacle     -> handleObstacle,
-    	whenMsg userControl  -> handleUserCmd
+   		whenEvent sonarDetect -> handleObstacle,
+     	whenMsg obstacle      -> handleObstacle, 
+    	whenMsg userControl   -> handleUserCmd
     finally repeatPlan
     
     State handleUserCmd resumeLastPlan[
     	onMsg userControl : cmd(X) -> forward robotplayer -m robotCmd : cmd(X)
     ]
-    
+       
   	State handleObstacle   [ 
   		printCurrentMessage;
   		println("robotmind: Now I'm handling the presence of an obstacle (could be a wall)")
   	]
    	transition whenTime 10 -> userControlled
-   		whenEvent sonar  -> handleSonarEvent	 
- 
-   	State handleSonarEvent resumeLastPlan [ 
+   		whenEvent sonar  -> handleSonarEvent
+   
+   	State handleSonarEvent  [ 
    		printCurrentEvent;
    		println("robotmind: Now the robot has been detected by the sonar in the WEnv")
    	]
-// 	switchTo someMove
+
  }    
  
  

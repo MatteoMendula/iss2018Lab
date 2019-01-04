@@ -11,6 +11,21 @@ public class basicRobotExecutor {
  				e.printStackTrace();
 			}
 		}		
+		public static void doMove( QActor qa, String cmd, String duration ) { //Args MUST be String			 
+			  //System.out.println("	basicRobotExecutor doMoveeeeeeeeeeeeeeeeeeeeeeee cmd=" + cmd + " T="+ duration);
+	 		  switch( cmd ) {
+				case "h" : clientTcpForVirtualRobot.sendMsg(qa,"{'type': 'alarm', 'arg': " + duration + " }");break;
+				case "w" : clientTcpForVirtualRobot.sendMsg(qa,"{'type': 'moveForward', 'arg': " + duration + " }");break;
+				case "a" : clientTcpForVirtualRobot.sendMsg(qa,"{'type': 'turnLeft', 'arg': " + duration + " }");break;
+				case "d" : clientTcpForVirtualRobot.sendMsg(qa,"{'type': 'turnRight', 'arg': " + duration + " }");break;
+				case "s" : clientTcpForVirtualRobot.sendMsg(qa,"{'type': 'moveBackward', 'arg': " + duration + " }");break;
+			  }		
+ 	 		  try {
+ 	 			  Thread.sleep(Integer.parseInt(duration));
+  	 		  } catch (InterruptedException e) {
+	 			  e.printStackTrace();
+	 		  }
+		}
 		public static void doMove( QActor qa, String cmd ) { //Args MUST be String
 //			qa.println("robotVirtual doMove  " + cmd );
  		  switch( cmd ) {

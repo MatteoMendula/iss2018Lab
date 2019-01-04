@@ -1,13 +1,13 @@
 /*
 ================================================================================
-build_ctxDemoRobot.gradle
+build_ctxRobotExplore.gradle
 GENERATED ONLY ONCE
 USAGE:	 
-	gradle  -b build_ctxDemoRobot.gradle qawrapper
-	gradlew  -b build_ctxDemoRobot.gradle eclipse		//to set the dependency on the library
-	gradlew -b build_ctxDemoRobot.gradle build
-	gradlew -b build_ctxDemoRobot.gradle -q tasks --all
-	gradlew -b build_ctxDemoRobot.gradle cleanDistDir	//to clean the src directory
+	gradle  -b build_ctxRobotExplore.gradle qawrapper
+	gradlew  -b build_ctxRobotExplore.gradle eclipse		//to set the dependency on the library
+	gradlew -b build_ctxRobotExplore.gradle build
+	gradlew -b build_ctxRobotExplore.gradle -q tasks --all
+	gradlew -b build_ctxRobotExplore.gradle cleanDistDir	//to clean the src directory
 ================================================================================
 */
 apply plugin: 'java'
@@ -23,7 +23,7 @@ PROPERTIES
 version = "1.0"
 sourceCompatibility = "1.8"
 ext{
-	mainClassName = "it.unibo.ctxDemoRobot.MainCtxDemoRobot"
+	mainClassName = "it.unibo.ctxRobotExplore.MainCtxRobotExplore"
 }
 /*
 --------------------------------------------------------------
@@ -69,6 +69,13 @@ UNIBO SUPPORTS
 	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: '2p301.jar')
 	  compile fileTree(dir: '../it.unibo.libs2018/libs/unibo', include: 'qa18Akka.jar')
 	  compile fileTree(dir: '../it.unibo.libs2018/libs/http',  include: 'nanoHTTPD.jar')
+
+/*
+ADDED by the application designer for mindAI (planner)
+*/
+	// https://mvnrepository.com/artifact/com.googlecode.aima-java/aima-core
+	compile group: 'com.googlecode.aima-java', name: 'aima-core', version: '3.0.0'
+
 /*
 COAP
 */
@@ -85,7 +92,7 @@ DDR ROBOT SAM
 ARDUINO
 */
 	// https://mvnrepository.com/artifact/org.scream3r/jssc
-	//compile group: 'org.scream3r', name: 'jssc', version: '2.8.0'
+	compile group: 'org.scream3r', name: 'jssc', version: '2.8.0'
 /*
 JSON
 */

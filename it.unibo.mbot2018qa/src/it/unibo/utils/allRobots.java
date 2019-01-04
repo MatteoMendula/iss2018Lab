@@ -10,7 +10,7 @@ public class allRobots {
 			qa.println("allRobots " + robotType + " setUp args="+ args);
 			switch( robotType ){
 				case "robotRealMbot"      : it.unibo.robotMBot.basicRobotExecutor.setUp(qa,args);break;
-				case "robotRealRaspOnly"  : it.unibo.robotOnRaspOnly.basicRobotExecutor.setUp(qa);break;
+//				case "robotRealRaspOnly"  : it.unibo.robotOnRaspOnly.basicRobotExecutor.setUp(qa);break;
 				case "robotVirtual"       : it.unibo.robotVirtual.basicRobotExecutor.setUp(qa,args);break;
 			}
 		}catch(Exception e) {
@@ -25,7 +25,7 @@ public class allRobots {
 			qa.println("allRobots " + robotType + " doMove cmd="+ cmd);
 			switch( robotType ){
 				case "robotRealMbot"     : it.unibo.robotMBot.basicRobotExecutor.doMove(qa, cmd);break;
-				case "robotRealRaspOnly" : it.unibo.robotOnRaspOnly.basicRobotExecutor.doMove(qa, cmd);break;
+//				case "robotRealRaspOnly" : it.unibo.robotOnRaspOnly.basicRobotExecutor.doMove(qa, cmd);break;
 				case "robotVirtual"      : it.unibo.robotVirtual.basicRobotExecutor.doMove(qa,cmd);break;
 				default: qa.println("Sorry, robot type unknown");
 			}

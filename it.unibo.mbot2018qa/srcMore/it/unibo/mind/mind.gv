@@ -1,0 +1,37 @@
+/*
+*
+* A GraphViz DOT FSM description 
+* Please use a GraphViz visualizer (like http://www.webgraphviz.com)
+*  
+*/
+
+digraph finite_state_machine {
+	rankdir=LR
+	size="8,5"
+	
+	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	startAppl [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	doBranch [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	handleSonar [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	doExploration [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	goForward [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	doMoveAround [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	haltAppl [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	
+	init -> startAppl [ label = "startAppl" ][ color = black ][ fontcolor = black ]
+	init -> handleToutBuiltIn [ label = "timeout(600000)" ][ color = green ][ fontcolor = green ]
+	doExploration -> handleToutBuiltIn [ label = "timeout(600000)" ][ color = green ][ fontcolor = green ]
+	doBranch -> doMoveAround [ label = "timeout(100)" ][ color = green ][ fontcolor = green ]
+	doBranch -> goForward [ label = "moveAhead" ][ color = black ][ fontcolor = black ]
+	doMoveAround -> handleToutBuiltIn [ label = "timeout(1000)" ][ color = green ][ fontcolor = green ]
+	goForward -> goForward [ label = "moveAhead" ][ color = black ][ fontcolor = black ]
+	goForward -> doBranch [ label = "timeout(100)" ][ color = green ][ fontcolor = green ]
+	doExploration -> haltAppl [ label = "haltAppl" ][ color = red ][ fontcolor = red ][ dir = both ]
+	doExploration -> handleSonar [ label = "sonarDetect" ][ color = red ][ fontcolor = red ][ dir = both ]
+	haltAppl -> init [ label = "switch" ][ color = black ][ fontcolor = black ]
+	startAppl -> doExploration [ label = "switch" ][ color = black ][ fontcolor = black ]
+	doExploration -> doMoveAround [ label = "doExplore" ][ color = black ][ fontcolor = black ]
+	doMoveAround -> goForward [ label = "moveAhead" ][ color = black ][ fontcolor = black ]
+	doExploration -> doExploration [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
+	doExploration -> handleSonar [ label = "sonar" ][ color = red ][ fontcolor = red ][ dir = both ]
+}

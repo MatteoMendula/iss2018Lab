@@ -1,0 +1,308 @@
+/*
+ * ==============================================================
+ * it\unibo\mbot2018.qa\src\robotWenvPR.qa  (proactive/reactive)
+ * ==============================================================
+ */ 
+ 
+ /*
+  * A first prototype for the robot explorer
+  * Please 
+  * 1)  ADD the dependency
+  * // https://mvnrepository.com/artifact/com.googlecode.aima-java/aima-core
+  * compile group: 'com.googlecode.aima-java', name: 'aima-core', version: '3.0.0'
+  * 
+  * 2) activate it.unibo.mbot2018\nodeCode\robotFrontend\frontendServerRobot.js
+  * 3) PRESS EXPLORE (See FrontEnd2018 3.65. An external component)
+  * 
+  *  
+  */
+System robotWenvExplore
+Dispatch obstacle : obstacle(TARGET) 
+Dispatch robotCmd : robotCmd(M,T)   //M=w|a|s|d|h  T:(int) duration
+Dispatch startAppl : startAppl(X)
+Dispatch haltAppl  : haltAppl(X)
+
+/*
+ * EXPLORATION
+ */
+Dispatch doExplore    : doExplore
+//Robot control messages
+Dispatch moveRobot     : moveRobot(V,T)   //V= w | s | a | d | h
+Dispatch moveAhead     : moveAhead(T) 
+Dispatch endAction     : endAction 
+Dispatch moveAction    : moveAction(D,REPLAN) //D=a|d|up|down|s, REPLAN=true|false
+Dispatch doNextActions : doNextActions
+
+Event sonarDetect : obstacle(X)		//From wenv-robotsonar-by clientTcpForVirtualRobot
+Event sonar  	  : sonar(SONAR, TARGET, DISTANCE)	//From wenv sonar
+Event usercmd     : usercmd(X)    //from robot GUI;  X=robotgui(CMD) CMD=s(low)
+Dispatch userControl : cmd(X)    //from console
+
+//pubSubServer  "tcp://m2m.eclipse.org:1883"    
+//pubSubServer  "tcp://test.mosquitto.org:1883"  
+pubSubServer  "tcp://localhost:1883"    
+ 
+Context ctxRobotExplore     ip [ host="localhost"   port=8028 ]  
+ 
+QActor cmdrobotconverter context ctxRobotExplore -pubsub{  
+ 	State init normal [  ]
+	transition stopAfter 600000
+	whenEvent usercmd -> handleUserCmd
+	finally repeatPlan      
+	   
+	State handleUserCmd resumeLastPlan[//MAPPING AFTER EXPERIMENTATION
+		printCurrentEvent;
+   	    onEvent usercmd : usercmd(robotgui(w(SPEED))) -> forward player  -m robotCmd : robotCmd(w) ;
+    	onEvent usercmd : usercmd(robotgui(s(SPEED))) -> forward player  -m robotCmd : robotCmd(s) ;
+    	onEvent usercmd : usercmd(robotgui(a(SPEED))) -> forward player  -m robotCmd : robotCmd(a) ;
+    	onEvent usercmd : usercmd(robotgui(d(SPEED))) -> forward player  -m robotCmd : robotCmd(d) ;
+    	onEvent usercmd : usercmd(robotgui(h(SPEED))) -> forward player  -m robotCmd : robotCmd(h) ; 
+
+//Application		(see applRobotControl)		
+		onEvent usercmd : usercmd(  explore ) -> forward mind -m startAppl : startAppl(ok);
+		onEvent usercmd : usercmd(  halt )    -> forward mind -m haltAppl  : haltAppl(ok)
+	]
+}
+
+QActor player context ctxRobotExplore { 
+	Plan init normal[ 	
+ 	  javaRun it.unibo.robotVirtual.basicRobotExecutor.setUp("localhost");
+  	  println("player STARTS")
+ 	]  
+	switchTo  cmdIntepreter
+	 
+	Plan cmdIntepreter[	] 
+	transition stopAfter 600000
+ 		 whenMsg robotCmd -> execMove  
+	finally repeatPlan
+	
+ 	Plan execMove resumeLastPlan [  
+ 		//onMsg moveRobot : moveRobot(M,T) -> ReplaceRule  moveTime(_,_) with moveTime(M,T);
+		onMsg robotCmd : robotCmd(M,T) -> 
+			javaRun it.unibo.robotVirtual.basicRobotExecutor.doMove( M,T )
+	]
+}//player
+/*
+ * APPLICATION level
+ */
+QActor mind context ctxRobotExplore  {  //sensible to sonar events emitted by it.unibo.robotVirtual.basicRobotExecutor
+Rules{
+	timeForward(255). 
+	timeTurn(500).
+	eval( le, X, Y ) :- eval( lt, X, Y ),!.
+	eval( le, X, X ).
+	//init :- assign(nstep, 0), assign( curNumExplore, 0 ), assign( nbranch, 1 ).
+	
+//	goForward( N,T ):- getVal( nstep,N ), timeForward(T), assign( repeatForward,0 ),output(goForward( N,T )) . 
+	
+	continueForward(T) :-  timeForward(T),  inc(repeatForward,1,R), getVal( nstep,N ),
+					output(continueForward( R,N,T )), eval( lt, R, N ).						 
+	 
+ 	continueExplore(MAX) :- inc(curNumExplore,1,V), 
+ 			output(continueExplore( V,MAX )),eval( le, V, MAX ),inc(nstep,1,_).
+ 					
+	continueBranch(T) :- timeForward(T),inc(nbranch,1,N),output(continueBranch(N,T)),eval(lt,N,5).
+	 
+//----------------------------------
+	eval( eq, X, X ).		//since we have syntax limitations
+	doTheMove(M) :-  moveDone(_),!,fail. 
+	doTheMove(M) :-  //moveDone does not exist: we can goon
+		move(M1), !, //M1 is the first move to do
+		eval(eq,M,M1), !,  
+		//output(doTheFirstMove(M)),
+		doTheFirstMove(M). 
+	    
+	doTheFirstMove(w) :- timeForward(T), 
+	         replaceRule( moveDone(_), moveDone(T) ), retract( move(w) ).   			
+	doTheFirstMove(a) :- timeTurn(T),  
+	         replaceRule( moveDone(_),moveDone(T) ), retract( move(a) ).
+	doTheFirstMove(d) :- timeTurn(T),  
+	        replaceRule( moveDone(_),moveDone(T) ), retract( move(d) ).
+	 
+	 
+	 
+} 
+  	State init normal [  
+  		javaRun it.unibo.exploremap.program.aiutil.initAI();
+  		println("mind WAITS") 		   
+    ]      
+    transition stopAfter 600000
+     	whenMsg startAppl -> startAppl
+    	
+	State startAppl [  
+		println("mind START APPLICATION ") ;
+ 		demo assign( curNumExplore, 0 ); 
+		forward player -m robotCmd : robotCmd(a,500);
+		//delay 500 ; 
+ 		forward player -m robotCmd : robotCmd(d,500);
+ 		//delay 500 ; 
+		javaRun it.unibo.exploremap.program.aiutil.cleanQa()
+	]
+	switchTo doExploration
+	
+	State doExploration[		
+		demo assign( nstep,   0) ;	
+		selfMsg doExplore : doExplore
+	]
+   	transition stopAfter 600000
+     	whenMsg haltAppl       -> haltAppl,
+     	whenMsg doExplore      -> doMoveAround,
+     	whenEvent sonar    	   -> handleSonar,
+     	whenEvent sonarDetect  -> handleSonar 
+	finally repeatPlan
+     
+	  
+	Plan doMoveAround  [  
+		demo assign( nbranch, 1 );   
+		demo assign( repeatForward,0 );
+		javaRun it.unibo.exploremap.program.aiutil.showMap() ;
+	    [ !? curPos(X,Y,D)  ]      println( doMoveAround(curPos(X,Y,D)) );
+ 		[ !? continueExplore(3) ]  selfMsg moveAhead : moveAhead( 0 )
+	]
+ 	transition stopAfter 1000
+		whenMsg moveAhead -> goForward
+	 
+	//goForward for nstep 
+	Plan goForward  [
+ 		[!? timeForward(T) ] forward player -m robotCmd : robotCmd(w,T);
+		javaRun it.unibo.exploremap.program.aiutil.doMove("w");
+		[ not !? continueForward(T) ] //println("goForward continue")	//selfMsg moveAhead : moveAhead( T )	
+		selfMsg endAction : endAction  ;
+	    [ !? curPos(X,Y,D)  ]  println( goForward(curPos(X,Y,D)) );
+		delay 500
+	]
+	transition whenTime 50 -> goForward
+		whenMsg endAction  -> goLeft //doBranch
+ 
+ 
+  	Plan goLeft  [
+ 		[ !? timeTurn(T) ] forward player -m robotCmd : robotCmd(a,T);
+		javaRun it.unibo.exploremap.program.aiutil.doMove("a");
+		demo assign( repeatForward,0 )
+  	]
+  	switchTo goForwardLeft
+  
+ 	Plan goForwardLeft  [
+ 		[!? timeForward(T) ] forward player -m robotCmd : robotCmd(w,T);
+		javaRun it.unibo.exploremap.program.aiutil.doMove("w");
+		[ not !? continueForward(T) ]  selfMsg endAction : endAction  ;
+	    [ !? curPos(X,Y,D)  ]  println( goForwardLeft(curPos(X,Y,D)) );
+		delay 500
+	]
+	transition whenTime 50 -> goForwardLeft
+		whenMsg endAction  -> goHome
+ 
+ 	Plan goHome  [
+ 		println("goHome");
+ 		javaRun it.unibo.exploremap.program.aiutil.cell0DirtyForHome();
+ 		javaRun it.unibo.exploremap.program.aiutil.showMap() ;
+ 		javaRun it.unibo.exploremap.program.aiutil.doPlan()
+//   		javaOp "debugStep()"
+ 	]
+ 	switchTo doActions
+ 	
+	Plan doActions[ //javaOp "debugStep()";
+//		[ !? move(M) ] println( robotmind_doActions_doingTheMove(M) ); 
+		[ not !? move(M) ] selfMsg endAction : endAction ;
+   		removeRule moveDone(_);   
+   		ReplaceRule moveDuration(_) with  moveDuration(moveWDuration(0));
+ /*
+  * Do a rotation
+  */
+    	[ !? doTheMove(a) ]    
+//    		println( robotmind_doActions_doingTheMove( a ) );
+ 			selfMsg moveAction : moveAction(a, false) //moveLeft and continue
+   		  ;  
+     	[ !? doTheMove(d) ]   
+//     		println( robotmind_doActions_doingTheMove( d ) );
+			selfMsg moveAction : moveAction(d, false) //moveRight and continue
+   		 ;	
+/*
+ * Do a w (forward)
+ * A cell has the size R of the robot (logically a circle of radius=R).
+ * The robot performs (via the actor 'onecellforward') a move w   
+ * with speed v and time t, so that R=vt.
+*/	 
+    	[ !? doTheMove(w) ]{   
+      		println( robotmind_doActions_doingTheMove( w ) ) ;
+//		    [ ?? moveDone(T) ] 
+//		           forward onecellforward -m moveMsgCmd : moveMsgCmd(T); 
+//		    selfMsg  waitMoveWAnswer : waitMoveWAnswer   
+			[!? timeForward(T) ] forward player -m robotCmd : robotCmd(w,T)
+		} 	 		 
+	]
+//	switchTo cleanAndNextStep   
+  	transition stopAfter 60000  
+//		whenMsg stopWork           -> handleStop ,   //first to be checked
+//     	whenMsg collisionDispatch  -> cleanAndNextStep,
+     	whenMsg moveAction         -> nextMove,
+//  	    whenMsg waitMoveWAnswer    -> waitForwardMoveAnswer,
+ 	    whenMsg endAction          -> doMoveAround  //all actions done 
+ 
+ 
+ 	Plan nextMove[ 	
+//	  printCurrentMessage;	
+ 	  onMsg moveAction : moveAction(M,V) -> println(nextMove_moveAction(M,V));
+ 	  onMsg moveAction : moveAction( w, _ ) -> {  //move to compensate
+  			[ !? moveDuration(moveWDuration(T)) ] println( compensate(T));
+ 			//demo logMove(w);  //compensate must not be done in replay
+ 			[ !? moveDuration(moveWDuration(T)) ]  
+ 					forward player -m moveRobot : moveRobot(w,T);
+ 			[ !? moveDuration(moveWDuration(T)) ] delay T
+	  };
+	  onMsg moveAction : moveAction( a, _ ) -> { //moveLeft
+ 			 demo logMove(a);
+ 			[ !? timeForTurn(T) ] forward player -m moveRobot : moveRobot(a,T);
+ 			[ !? timeForTurn(T) ] delay T;
+   			javaRun it.unibo.exploremap.program.aiutil.doMove("a")
+ 	  };
+ 	  onMsg moveAction : moveAction( d, _ ) -> { //moveRight	 
+ 			demo logMove(d);
+			[ !? timeForTurn(T) ] forward player -m moveRobot : moveRobot(d,T);
+			[ !? timeForTurn(T) ] delay T;
+   			javaRun it.unibo.exploremap.program.aiutil.doMove("d")  			
+	  };
+//	  onMsg moveAction : moveAction( _, true ) -> {
+//	     	demo retractall(  move(_) );
+//			selfMsg replan : replan			
+//	  } else  
+			selfMsg doNextActions : doNextActions
+	   		
+	]
+	transition stopAfter 60000
+// 		whenMsg stopWork       -> handleStop ,//first to be checked
+	    whenMsg doNextActions  ->  doActions
+//		whenMsg replan         ->  doPlan 
+		 	
+ 	Plan doBranch  [
+ 		[ !? timeTurn(T) ] forward player -m robotCmd : robotCmd(a,T);
+		javaRun it.unibo.exploremap.program.aiutil.doMove("a");
+		[ !? continueBranch(T) ] {
+			demo assign( repeatForward,0 );
+			selfMsg moveAhead : moveAhead( 0 )
+		} 	
+ 	]
+	transition whenTime 50 -> doMoveAround
+		whenMsg moveAhead  -> goForward
+	 
+	 
+	State handleSonar resumeLastPlan [ 
+		printCurrentEvent;
+      	onEvent sonarDetect : obstacle(X) ->  
+      		publishEvent "unibo/qasys" -e sonarDetect : obstacle(X);
+
+     	onEvent sonar : sonar(SONAR, TARGET, DISTANCE) ->  
+     		publishEvent "unibo/qasys" -e sonar : sonar(SONAR, TARGET, DISTANCE)	
+	]
+	
+	State haltAppl resumeLastPlan[
+		println("mind HALT APPLICATION") 		
+	]
+	switchTo init
+	
+}
+  
+ /*
+  "C:/Didattica2018Work/iss2018Lab/it.unibo.mbot2018/Soffritti/server/src/main.js 8999" -o
+  localhost:8090
+*/
