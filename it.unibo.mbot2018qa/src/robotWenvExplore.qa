@@ -261,7 +261,7 @@ Rules{
  * EXECUTE THE MOVES PROPOSED BY THE PLANNER (for returning to home)
  */ 	
 	Plan doActions[ //javaOp "debugStep()";
-		[ !? move(M) ] println( robotmind_doActions_doingTheMove(M) ); 
+		//[ !? move(M) ] println( robotmind_doActions_doingTheMove(M) ); 
 		[ not !? move(M) ] selfMsg endAction : endAction ;
    		removeRule moveDone(_);     
    		ReplaceRule moveDuration(_) with  moveDuration(moveWDuration(0));
