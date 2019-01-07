@@ -173,15 +173,13 @@ Rules{
 	timeTurn(300).
 	numOfExplorations(3). 
 	
-	curGoal(0,0).
-	
 	eval( le, X, Y ) :- eval( lt, X, Y ),!.
 	eval( le, X, X ).
  	
 	continueForward(T) :-  timew(T),  inc(repeatForward,1,R), getVal( nstep,N ),
 					output(continueForward( R,N,T )), eval( lt, R, N ).						 	 
- 	continueExplore(V)  :- numOfExplorations(MAX), inc(curNumExplore,1,V), 
- 			output(continueExplore( V,MAX )),eval( le, V, MAX ),replaceRule( curGoal(_,_), curGoal(V,V) ).					
+ 	continueExplore  :- numOfExplorations(MAX), inc(curNumExplore,1,V), 
+ 			output(continueExplore( V,MAX )),eval( le, V, MAX ),inc(nstep,1,_).					
  	 
 //----------------------------------
 	eval( eq, X, X ).		//since we have syntax limitations
@@ -212,50 +210,81 @@ Rules{
  		demo assign( curNumExplore, 0 ); 
   		javaRun it.unibo.utils.aiutil.cleanQa();
 		demo assign( nstep,   0) ;	
- 		selfMsg doExplore : doExplore
+		selfMsg doExplore : doExplore
 	]
    	transition stopAfter 600000
      	whenMsg haltAppl       -> haltAppl,
-     	whenMsg doExplore      -> exploreStep,
+     	whenMsg doExplore      -> doMoveAround,
      	whenEvent sonar    	   -> handleSonar,
      	whenEvent sonarDetect  -> handleSonar 
 	finally repeatPlan
- 	        
- 	Plan exploreStep[
- 		[ !? curPos(X,Y,D)  ]  println( exploreStep(X,Y,D) );
-   		[ !? continueExplore(N)] {
-			javaRun it.unibo.utils.aiutil.extendSpaceToexplore( );
- 			[ !? getVal(curNumExplore,E) ] javaRun it.unibo.utils.aiutil.setGoalHome(E,E); //change name setGoalHome
-			javaRun it.unibo.utils.aiutil.doPlan()
-		} else selfMsg endAction : endAction
+ 	  
+	Plan doMoveAround  [  
+		javaRun it.unibo.utils.aiutil.setRobotInDownDir();
+ 		demo assign( repeatForward,0 );
+		[ !? lastPos(X,Y)   ]   println( doMoveAround_lastPos(X,Y) ); //set by  backToHome
+ 	    [ !? curPos(X,Y,D)  ]   println( doMoveAround_curPos(X,Y,D) );
+ 		[ !? continueExplore ]  selfMsg moveAhead : moveAhead 
+	]
+ 	transition stopAfter 1000
+ 		whenMsg moveAhead -> goForward
+	
+  	Plan goForward  [
+ 		[!? timew(T) ] forward onecellforward -m moveMsgCmd : moveMsgCmd(T)
  	]
- 	transition whenTime 1000 -> doActions
- 		whenMsg endAction -> exploreUncovered //: endAction do println("bye")
-    
-    Plan exploreUncovered[
-    	[ !? curPos(X,Y,D)  ]  println( exploreUncovered(X,Y,D) );
-    	javaRun it.unibo.utils.aiutil.showMap() ;
-    	javaRun it.unibo.utils.aiutil.findNextCellUncovered( );
-    	[ !? uncovered(X,Y )] println( uncovered(X,Y ) );
-    	[ ?? uncovered(X,Y )] javaRun it.unibo.utils.aiutil.doPlan()   
-    	else endPlan "bye" ; javaOp "debugStep()"   
-    ]
-    switchTo doActions
-     
+	transition stopAfter 60000    
+		whenMsg haltAppl           -> handleStop ,   //first to be checked
+  		whenMsg moveMsgCmdDone     -> checkendofsteps,  
+  		whenMsg moveMsgCmdObstacle -> handleFixedObstacleCases
+   
+  	Plan checkendofsteps[
+  		println( checkendofstepscheckendofstepscheckendofstepscheckendofsteps );
+  		javaRun it.unibo.utils.aiutil.doMove("w"); //update the map after onecellforward
+  		javaRun it.unibo.utils.aiutil.showMap() ;
+  		[ !? curPos(X,Y,D)  ]   println( curPos(X,Y,D) );
+		[ not !? continueForward(T) ] selfMsg endAction : endAction  ;		
+	    //[ !? curPos(X,Y,D)  ]  println( goForward(curPos(X,Y,D)) );
+		delay 500
+	]
+	transition whenTime 50 -> goForward  //continue the steps
+		whenMsg endAction  -> prepareGoLeft  
+  
+/*
+ * END OF ahead steps: now go on the left
+ */    
+  	Plan prepareGoLeft  [
+		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("a",T); //move and update map
+		demo assign( repeatForward,0 )
+  	]
+  	switchTo goForwardLeft
+  
+ 	Plan goForwardLeft  [
+   		[!? timew(T) ] 
+  		forward onecellforward -m moveMsgCmd : moveMsgCmd(T) //attempt to move
+ 	]
+	transition stopAfter 60000     
+		whenMsg haltAppl           -> handleStop ,   //first to be checked
+  		whenMsg moveMsgCmdDone     -> checkleftendsteps,  
+  		whenMsg moveMsgCmdObstacle -> handleFixedObstacleCases
+  	
+  	Plan checkleftendsteps[
+  		javaRun it.unibo.utils.aiutil.doMove("w"); //update the map after onecellforward
+		[ not !? continueForward(T) ] selfMsg endAction : endAction  ;		
+	    [ !? curPos(X,Y,D)  ]  println( checkleftendsteps(curPos(X,Y,D)) )
+	]
+	transition whenTime 50 -> goForwardLeft
+		whenMsg endAction  -> backToHome  
+ 
  	Plan backToHome  [
- 		[ !? curPos(0,0,D)  ]{
- 			 println(  "AT HOME "	 );	
- 			 javaRun it.unibo.utils.aiutil.showMap() ;	
- 			 selfMsg endAction : endAction
- 		 }
- 		else{
- 	  		javaRun it.unibo.utils.aiutil.setGoalHome("0","0");
-	  		[ !? curPos(X,Y,D)  ]  println( backToHome(X,Y,D) );
-	  		javaRun it.unibo.utils.aiutil.doPlan()
-  		}
+ 		[ !? curPos(X,Y,D)  ] ReplaceRule lastPos(_,_) with lastPos(X,Y);
+// 		[ not !? continueForward(T) ] 
+ 			javaRun it.unibo.utils.aiutil.limitRightFound();	//reached the end of known world
+ 		javaRun it.unibo.utils.aiutil.setGoalHome("0","0");
+  		[ !? curPos(X,Y,D)  ]  println( backToHome_curPossssssssssssssssssssssssssss(X,Y,D) );
+ 		javaRun it.unibo.utils.aiutil.showMap() ;
+ 		javaRun it.unibo.utils.aiutil.doPlan()
  	]
- 	transition whenTime 100 -> doActions
- 		whenMsg endAction -> exploreStep
+ 	switchTo doActions
 
 /*
  * EXECUTE THE MOVES PROPOSED BY THE PLANNER (for returning to home)
@@ -277,14 +306,14 @@ Rules{
       		//[ !? moveDone(T) ] println( robotmind_doActions_doing( w , T) ) ;
       		[ ?? moveDone(T) ] forward onecellforward -m moveMsgCmd : moveMsgCmd(T); //attempt to move
       		selfMsg waitMoveWAnswer : waitMoveWAnswer
- 		}
-// 		delay 500 	 		 
+ 		};
+ 		delay 500 	 		 
 	]
    	transition stopAfter 60000  
 		whenMsg haltAppl           -> handleStop ,   //first to be checked
      	whenMsg moveAction         -> nextMove,
   	    whenMsg waitMoveWAnswer    -> waitForwardHomeMoveAnswer,
- 	    whenMsg endAction          -> backToHome  //all actions done 
+ 	    whenMsg endAction          -> homeAgain  //all actions done 
    
     Plan waitForwardHomeMoveAnswer[    ]
 	transition stopAfter 60000    
@@ -300,7 +329,11 @@ Rules{
  	Plan nextMove[ 	
  	  //printCurrentMessage;	
  	  //onMsg moveAction : moveAction(M,V) -> println(nextMove_moveAction(M,V));
- 	  onMsg moveAction : moveAction( a, _ ) -> { //moveLeft
+ 	  onMsg moveAction : moveAction( w, _ ) -> {  //move to compensate
+ 	     println( "move to compensate ")
+ 		//[!? timew(T) ] javaRun it.unibo.utils.movePlanUtil.move("w", T)
+	  };
+	  onMsg moveAction : moveAction( a, _ ) -> { //moveLeft
 		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("a",T)  //move and update map
  	  };
  	  onMsg moveAction : moveAction( d, _ ) -> { //moveRight	 
@@ -308,27 +341,61 @@ Rules{
 	  }
 	]
 	switchTo doActions 
- 		
+	
+	Plan homeAgain[ //from right
+		javaRun it.unibo.utils.aiutil.setRobotInDownDir();
+		[ !? curPos(X,Y,D)  ]  println( homeAgain(X,Y,D) );
+  		javaRun it.unibo.utils.aiutil.showMap() ;  
+		//javaOp "debugStep()" ;
+		delay 2000 //the robot takes a break
+	] 
+	switchTo doMoveAround
+		
 	Plan handleStop[ println("The robot was STOPPED: no reply to the caller") ]
 	Plan handleError[ println("mind ERROR") ]
 		 
- 
+   Plan handleObstacleFearful[  
+     	[ !? curPos(X,Y,D)  ]  println( handleObstacleFearful(X,Y,D) );
+     	javaRun it.unibo.utils.aiutil.markCellAsObstacle(); 
+     	//BACK to COMPENSATE and ROTATE 
+     	//onMsg moveMsgCmdObstacle : moveMsgCmdObstacle(moveWDuration(T)) -> println(  moveMsgCmdObstacle(T) );
+		onMsg moveMsgCmdObstacle : moveMsgCmdObstacle(moveWDuration(T)) -> 
+								javaRun it.unibo.utils.movePlanUtil.moveNoMap("s",T) ;
+ 		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("a",T);		
+		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("a",T);		
+      	//javaOp "debugStep()" ;
+      	javaRun it.unibo.utils.aiutil.showMap()  
+    ] 
+   switchTo refugeToHome
+
   Plan handleFixedObstacleCases[  
      	[ !? curPos(X,Y,D)  ]  println( handleFixedObstacleCases_1(X,Y,D) );
      	javaRun it.unibo.utils.aiutil.markCellAsObstacle(); 
-     	//BACK to COMPENSATE and ROTATE   
+     	//BACK to COMPENSATE and ROTATE 
      	//onMsg moveMsgCmdObstacle : moveMsgCmdObstacle(moveWDuration(T)) -> println(  moveMsgCmdObstacle(T) );
 		onMsg moveMsgCmdObstacle : moveMsgCmdObstacle(moveWDuration(T)) -> 
 									javaRun it.unibo.utils.movePlanUtil.moveNoMap("s",T) ;
-      	javaRun it.unibo.utils.aiutil.showMap() ;
-   	    [ !? curGoal(N,N)  ]  javaRun it.unibo.utils.aiutil.setGoalHome(N,N) ;
-   	    javaRun it.unibo.utils.aiutil.doPlan()  // ;javaOp "debugStep()"   
+ 		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("a",T);		
+		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("w",T);		//cell free
+ 		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("d",T);		 
+		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("w",T);		//cell unknown
+ 		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("a",T);		 
+      	javaOp "debugStep()" ;
+      	javaRun it.unibo.utils.aiutil.showMap()  
+   	    //[  !? continueForward(T) ] println("WARNING: obstacle in a previous free cell")  	
    ] 
-   switchTo doActions 
-       
+   switchTo goForward
    
-  
- 	 
+   
+
+ 	Plan refugeToHome  [
+ 		javaRun it.unibo.utils.aiutil.setGoalHome("0","0");
+  		[ !? curPos(X,Y,D)  ]  println( refugeToHome_curPossssssssssssssssssssssssssss(X,Y,D) );
+  		//javaOp "debugStep()" ;
+  		javaRun it.unibo.utils.aiutil.doPlan()
+ 	]
+ 	switchTo doActions
+	 
 	State handleSonar resumeLastPlan [ 
 		println("handleSonarrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
 		printCurrentEvent;
