@@ -12,7 +12,8 @@
   * compile group: 'com.googlecode.aima-java', name: 'aima-core', version: '3.0.0'
   * 
   * 2) activate it.unibo.mbot2018\nodeCode\robotFrontend\frontendServerRobot.js
-  * 3) PRESS EXPLORE (See FrontEnd2018 3.65. An external component)
+  * 3) PRESS EXPLORE (See FrontEnd2018 3.65. An external component) 
+  * or uncomment (TO BE REMOVED)
   * 
   *  
   */
@@ -79,7 +80,7 @@ QActor player context ctxRobotExplore {
 	Plan init normal[ 	
  	  javaRun it.unibo.robotVirtual.basicRobotExecutor.setUp("localhost");
  	  delay 1000;
- 	  forward mind -m startAppl : startAppl(ok);  //TO AVOID CONSOLE TO BE REMOVED
+ 	  forward mind -m startAppl : startAppl(ok);  //TO AVOID CONSOLE (TO BE REMOVED)
   	  println("player STARTS")
  	]  
 	switchTo  cmdIntepreter
@@ -96,14 +97,14 @@ QActor player context ctxRobotExplore {
 }//player
 
 /*
- * =======================================================
- * onecellforward
- * =======================================================
+ * ----------------------------------------------------------
+ * onecellforward : moves the robot ahead of one cell
+ * ----------------------------------------------------------
  */
 QActor onecellforward context ctxRobotExplore { 
 Rules{
 	//timew(255).  //set by moveMsgCmd
-	timeTurn(500).		
+	timeTurn(300).		
 	moveTimeInfo(timew(TF),moveWDuration(TD)) :- timew(TF),moveWDuration(TD).
 }	
 	
@@ -114,30 +115,29 @@ Rules{
 		whenMsg moveMsgCmd -> startWork
 
     Plan startWork[
-    	//printCurrentMessage;
  		onMsg  moveMsgCmd : moveMsgCmd( TF ) -> 
 		          ReplaceRule timew(_) with timew(TF); 
 		//SAVE THE CURRENT MESSAGE. the currentMessage is lost when the state changes
  	 	javaOp "storeCurrentMessageForReply()" ;  //used by replyToCaller
  		//[!? timew( T )] println(doMoveForward_timeForForward(T));
-	 	javaRun it.unibo.utils.aiutil.startTimer();
+	 	javaRun it.unibo.utils.movePlanUtil.startTimer();
 	 	[ !? timew( T ) ] forward player -m robotCmd : robotCmd(w,T)
     ]  
-	//transition  [ !? timew( T ) ] whenTime T -> endMoveForward	 //asynch
+	//transition  [ !? timew( T ) ] whenTime T -> endMoveForward	    
 	transition  whenTime 255 -> endMoveForward	 //asynch
 	     whenMsg haltAppl          -> handleStop ,   //first to be checked
-   	     whenMsg collisionDispatch -> probableFixedObstacle     //NO MOBILE   
+   	     whenMsg collisionDispatch -> probableFixedObstacle     //NO MOBILE OBSTACLES ... 
 
-	Plan probableFixedObstacle[
+	Plan probableFixedObstacle[ 
  		forward player -m robotCmd : robotCmd(h,0);
- 		javaRun it.unibo.utils.aiutil.getDuration();  
+ 		javaRun it.unibo.utils.movePlanUtil.getDuration();  
 		[!? moveWDuration(T)] println(onecellforward_probableFixedObstacle(T));
 		selfMsg obstacleNear : obstacleNear 
 	] 
 	switchTo consumePendingCollisions
 
     Plan consumePendingCollisions  [
-    	println("onecellforward_consumePendingCollisions: (a physica sonar should ...) ")
+    	println("onecellforward_consumePendingCollisions: (a physical sonar should ...) ")
     ] 
  	transition whenTime 3000      -> handleError
  		whenMsg haltAppl          -> handleStop ,   //first to be checked
@@ -154,7 +154,7 @@ Rules{
 	
 	Plan endMoveForward[ 
  		forward player -m robotCmd : robotCmd(h,0);
-		javaRun it.unibo.utils.aiutil.getDuration();
+		javaRun it.unibo.utils.movePlanUtil.getDuration();
 		//[ !? moveTimeInfo(TF,TD)] println(endMoveForward_info(TF,TD));
  		[ !? moveTimeInfo(TF,TD)] replyToCaller -m moveMsgCmdDone : moveMsgCmdDone( TD )
 	]
@@ -165,23 +165,23 @@ Rules{
 }//
 
 /*
- * APPLICATION level
+ * =======================================================
+ * mind
+* =======================================================
  */
-QActor mind context ctxRobotExplore  {  //sensible to sonar events emitted by it.unibo.robotVirtual.basicRobotExecutor
+QActor mind context ctxRobotExplore  {  
 Rules{
 	timew(255).  
 	timeTurn(300).
-	numOfExplorations(3). 
-	
-	curGoal(0,0).
-	
-	eval( le, X, Y ) :- eval( lt, X, Y ),!.
-	eval( le, X, X ).
+	numOfExplorations(3). 	
+	curGoal(0,0).   
  	
 	continueForward(T) :-  timew(T),  inc(repeatForward,1,R), getVal( nstep,N ),
 					output(continueForward( R,N,T )), eval( lt, R, N ).						 	 
  	continueExplore(V)  :- numOfExplorations(MAX), inc(curNumExplore,1,V), 
- 			output(continueExplore( V,MAX )),eval( le, V, MAX ),replaceRule( curGoal(_,_), curGoal(V,V) ).					
+ 			output(continueExplore( V,MAX )),eval( le, V, MAX ),
+ 			replaceRule( curGoal(_,_), curGoal(V,V) ).	
+ 	continueExplore(V) :- removeeRule( curGoal(_,_) ).			
  	 
 //----------------------------------
 	eval( eq, X, X ).		//since we have syntax limitations
@@ -197,9 +197,9 @@ Rules{
 	         replaceRule( moveDone(_),moveDone(T) ), retract( move(a) ),!.
 	doTheFirstMove(d) :- timeTurn(T),  
 	        replaceRule( moveDone(_),moveDone(T) ), retract( move(d) ),!.	 
-} 
+}  
   	State init normal [  
-  		javaRun it.unibo.utils.aiutil.initAI();
+  		javaRun it.unibo.planning.planUtil.initAI();
   		println("mind WAITS") 		   
     ]      
     transition stopAfter 600000
@@ -209,8 +209,9 @@ Rules{
 		println("mind START APPLICATION ") ;
 		[ !? timeTurn(T) ] forward player -m robotCmd : robotCmd(a,T);
   		[ !? timeTurn(T) ] forward player -m robotCmd : robotCmd(d,T);
+  		delay 500;
  		demo assign( curNumExplore, 0 ); 
-  		javaRun it.unibo.utils.aiutil.cleanQa();
+  		javaRun it.unibo.planning.planUtil.cleanQa();
 		demo assign( nstep,   0) ;	
  		selfMsg doExplore : doExplore
 	]
@@ -218,73 +219,88 @@ Rules{
      	whenMsg haltAppl       -> haltAppl,
      	whenMsg doExplore      -> exploreStep,
      	whenEvent sonar    	   -> handleSonar,
-     	whenEvent sonarDetect  -> handleSonar 
+     	whenEvent sonarDetect  -> handleSonar   
 	finally repeatPlan
  	        
  	Plan exploreStep[
  		[ !? curPos(X,Y,D)  ]  println( exploreStep(X,Y,D) );
    		[ !? continueExplore(N)] {
-			javaRun it.unibo.utils.aiutil.extendSpaceToexplore( );
- 			[ !? getVal(curNumExplore,E) ] javaRun it.unibo.utils.aiutil.setGoalHome(E,E); //change name setGoalHome
-			javaRun it.unibo.utils.aiutil.doPlan()
-		} else selfMsg endAction : endAction
- 	]
+			javaRun it.unibo.planning.planUtil.extendSpaceToexplore( );
+ 			[!? getVal(curNumExplore,E)] javaRun it.unibo.planning.planUtil.setGoal(E,E); 
+			javaRun it.unibo.planning.planUtil.doPlan() //;javaOp "debugStep()"
+		} else selfMsg endAction : endAction  
+ 	]    
  	transition whenTime 1000 -> doActions
  		whenMsg endAction -> exploreUncovered //: endAction do println("bye")
-    
+          
     Plan exploreUncovered[
     	[ !? curPos(X,Y,D)  ]  println( exploreUncovered(X,Y,D) );
-    	javaRun it.unibo.utils.aiutil.showMap() ;
-    	javaRun it.unibo.utils.aiutil.findNextCellUncovered( );
+    	javaRun it.unibo.planning.planUtil.showMap() ;
+    	javaRun it.unibo.planning.planUtil.findNextCellUncovered( );
     	[ !? uncovered(X,Y )] println( uncovered(X,Y ) );
-    	[ ?? uncovered(X,Y )] javaRun it.unibo.utils.aiutil.doPlan()   
-    	else endPlan "bye" ; javaOp "debugStep()"   
+    	[ !? uncovered(X,Y )] javaRun it.unibo.planning.planUtil.setGoal(X,Y); 
+    	[ ?? uncovered(X,Y )] javaRun it.unibo.planning.planUtil.doPlan()  
+    	else selfMsg endAction : endAction  
+    	;javaOp "debugStep()"
     ]
-    switchTo doActions
+ 	transition whenTime 100 -> doActions
+ 		whenMsg endAction : endAction do println("bye")
      
  	Plan backToHome  [
  		[ !? curPos(0,0,D)  ]{
  			 println(  "AT HOME "	 );	
- 			 javaRun it.unibo.utils.aiutil.showMap() ;	
+ 			 javaRun it.unibo.planning.planUtil.showMap() ;	
  			 selfMsg endAction : endAction
  		 }
  		else{
- 	  		javaRun it.unibo.utils.aiutil.setGoalHome("0","0");
+ 	  		javaRun it.unibo.planning.planUtil.setGoal("0","0");
 	  		[ !? curPos(X,Y,D)  ]  println( backToHome(X,Y,D) );
-	  		javaRun it.unibo.utils.aiutil.doPlan()
+	  		javaRun it.unibo.planning.planUtil.doPlan()
   		}
  	]
  	transition whenTime 100 -> doActions
  		whenMsg endAction -> exploreStep
 
 /*
- * EXECUTE THE MOVES PROPOSED BY THE PLANNER (for returning to home)
+ * -----------------------------------------------------------------
+ * EXECUTE THE MOVES PROPOSED BY THE PLANNER  
+ * -----------------------------------------------------------------
  */ 	
 	Plan doActions[ //javaOp "debugStep()";
-		//[ !? move(M) ] println( robotmind_doActions_doingTheMove(M) ); 
+		[ !? move(M) ] println( doActions_doingTheMove(M) );   
 		[ not !? move(M) ] selfMsg endAction : endAction ;
    		removeRule moveDone(_);     
    		ReplaceRule moveDuration(_) with  moveDuration(moveWDuration(0));
      	[ !? doTheMove(a) ]  {  
-     		//println( robotmind_doActions_doing( a ) );
- 			selfMsg moveAction : moveAction(a, false) //moveLeft and continue
+ 			selfMsg moveAction : moveAction(a, false)  
    		 } ;  
      	[ !? doTheMove(d) ] {  
-     		//println( robotmind_doActions_doing( d ) );
-			selfMsg moveAction : moveAction(d, false) //moveRight and continue
+			selfMsg moveAction : moveAction(d, false)  
    		} ;	
-     	[ !? doTheMove(w) ]{   
-      		//[ !? moveDone(T) ] println( robotmind_doActions_doing( w , T) ) ;
-      		[ ?? moveDone(T) ] forward onecellforward -m moveMsgCmd : moveMsgCmd(T); //attempt to move
+     	[ !? doTheMove(w) ]{   //attempt to move
+      		[ ?? moveDone(T) ] forward onecellforward -m moveMsgCmd : moveMsgCmd(T); 
       		selfMsg waitMoveWAnswer : waitMoveWAnswer
  		}
-// 		delay 500 	 		 
+//  		;delay 500 	 		   
 	]
    	transition stopAfter 60000  
 		whenMsg haltAppl           -> handleStop ,   //first to be checked
      	whenMsg moveAction         -> nextMove,
   	    whenMsg waitMoveWAnswer    -> waitForwardHomeMoveAnswer,
  	    whenMsg endAction          -> backToHome  //all actions done 
+   
+ 	Plan nextMove[ 	
+ 	  //onMsg moveAction : moveAction(M,V) -> println(nextMove_moveAction(M,V));
+ 	  onMsg moveAction : moveAction( a, _ ) -> { //moveLeft
+		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("a",T)  //move and update map
+ 	  };
+ 	  onMsg moveAction : moveAction( d, _ ) -> { //moveRight	 
+		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("d",T)	//move and update map	
+	  }
+	  ;[ !? curPos(X,Y,D)  ]  println( curPos(X,Y,D) )
+	]
+	switchTo doActions  
+   
    
     Plan waitForwardHomeMoveAnswer[    ]
 	transition stopAfter 60000    
@@ -293,42 +309,34 @@ Rules{
   		whenMsg moveMsgCmdObstacle -> handleFixedObstacleCases
  
  	Plan handleCmdDone[
- 		javaRun it.unibo.utils.aiutil.doMove("w") //update the map after onecellforward
+ 		javaRun it.unibo.planning.planUtil.doMove("w") //update the map after onecellforward
+	    ;javaRun it.unibo.planning.planUtil.showMap()  
  	]
  	switchTo doActions
  	
- 	Plan nextMove[ 	
- 	  //printCurrentMessage;	
- 	  //onMsg moveAction : moveAction(M,V) -> println(nextMove_moveAction(M,V));
- 	  onMsg moveAction : moveAction( a, _ ) -> { //moveLeft
-		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("a",T)  //move and update map
- 	  };
- 	  onMsg moveAction : moveAction( d, _ ) -> { //moveRight	 
-		[ !? timeTurn(T) ] javaRun it.unibo.utils.movePlanUtil.move("d",T)	//move and update map	
-	  }
-	]
-	switchTo doActions 
  		
 	Plan handleStop[ println("The robot was STOPPED: no reply to the caller") ]
 	Plan handleError[ println("mind ERROR") ]
 		 
+/*
+ * -----------------------------------------------------------------
+ * HANDLING OBSTACLES  
+ * -----------------------------------------------------------------
+ */ 	
  
   Plan handleFixedObstacleCases[  
-     	[ !? curPos(X,Y,D)  ]  println( handleFixedObstacleCases_1(X,Y,D) );
-     	javaRun it.unibo.utils.aiutil.markCellAsObstacle(); 
-     	//BACK to COMPENSATE and ROTATE   
+     	[ !? curPos(X,Y,D)  ] println( handleFixedObstacleCases_1(X,Y,D) );
+     	javaRun it.unibo.planning.planUtil.markCellAsObstacle(); 
+     	//BACK (to COMPENSATE)    
      	//onMsg moveMsgCmdObstacle : moveMsgCmdObstacle(moveWDuration(T)) -> println(  moveMsgCmdObstacle(T) );
 		onMsg moveMsgCmdObstacle : moveMsgCmdObstacle(moveWDuration(T)) -> 
 									javaRun it.unibo.utils.movePlanUtil.moveNoMap("s",T) ;
-      	javaRun it.unibo.utils.aiutil.showMap() ;
-   	    [ !? curGoal(N,N)  ]  javaRun it.unibo.utils.aiutil.setGoalHome(N,N) ;
-   	    javaRun it.unibo.utils.aiutil.doPlan()  // ;javaOp "debugStep()"   
+      	javaRun it.unibo.planning.planUtil.showMap() ;
+   	    [ !? curGoal(N,N)  ]  javaRun it.unibo.planning.planUtil.setGoal(N,N) ;
+   	    [ !? curGoal(N,N)  ]  javaRun it.unibo.planning.planUtil.doPlan()  // ;javaOp "debugStep()"   
    ] 
    switchTo doActions 
-       
-   
-  
- 	 
+  	 
 	State handleSonar resumeLastPlan [ 
 		println("handleSonarrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
 		printCurrentEvent;
