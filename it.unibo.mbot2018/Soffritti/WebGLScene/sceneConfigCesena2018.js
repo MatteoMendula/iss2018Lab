@@ -9,11 +9,13 @@ const config = {
         speed: 0.2
     },
     sonars: [
+ /*
         {
             name: "sonar1",
             position: { x: 0.064, y: 0.05 },
             senseAxis: { x: false, y: true }
         },
+ */
         {
             name: "sonar2",
             position: { x: 0.94, y: 0.88},
@@ -62,11 +64,18 @@ const config = {
             centerPosition: { x: 1, y: 0.5},
             size: { x: 0.01, y: 1}
         },
+       
         {
-            name: "obstacle",
-            centerPosition: {x: 0.45, y: 0.49},
-            size: { x: 0.01, y: 0.57}
+            name: "bag1",
+            centerPosition: {x: 0.10, y: 0.59},
+            size: { x: 0.05, y: 0.05}
+        },
+        {
+            name: "bag2",
+            centerPosition: {x: 0.35, y: 0.69},
+            size: { x: 0.07, y: 0.07}
         }
+        
         // {
         //     name: "obstacle2",
         //     centerPosition: {x: 0.0, y: 0.44},
