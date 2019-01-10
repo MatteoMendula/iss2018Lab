@@ -1,4 +1,4 @@
-package it.unibo.exploremap.model;
+package it.unibo.planning;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +10,6 @@ public class RoomMap {
 			singletonRoomMap = new RoomMap();
 		return singletonRoomMap;
 	}
-	
-	
 	
 	private List<ArrayList<Box>> roomMap = new ArrayList<ArrayList<Box>>();
 	

@@ -1,4 +1,4 @@
-package it.unibo.exploremap.model;
+package it.unibo.planning;
 
 import java.util.HashSet;
 import java.util.Set;

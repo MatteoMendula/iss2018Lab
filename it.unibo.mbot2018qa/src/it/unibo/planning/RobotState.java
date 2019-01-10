@@ -1,4 +1,4 @@
-package it.unibo.exploremap.model;
+package it.unibo.planning;
 
 public class RobotState {
 	private int x;
