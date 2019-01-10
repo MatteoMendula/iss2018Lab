@@ -8,8 +8,8 @@ exports.actuate = function( cmd, req, res ){
 	if( cmd === "w" ){ delegate("w(low)", "moving forward", req,res); }
 	else if( cmd === "s" ){  delegate("s(low)", "moving backward", req,res); }
 	else if( cmd === "h" ){  delegate("h(low)", "stopped", req,res); }
-	else if( cmd === "a" ){  delegate("w(low)", "moving left", req,res); }
-	else if( cmd === "d" ){  delegate("w(low)", "moving right", req,res); }
+	else if( cmd === "a" ){  delegate("a(low)", "moving left", req,res); }
+	else if( cmd === "d" ){  delegate("d(low)", "moving right", req,res); }
 	//Application
 	else if( cmd === "explore" ){   delegate("explore", "robot working at application level", req,res);  }
 	else if( cmd === "halt" ){    delegate("halt", "robot halting the application level", req,res);  }
