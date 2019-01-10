@@ -6,7 +6,7 @@
 /**
  * Module dependencies.
  */
-var app   = require('./appFrontEndRobot');	//the new application;
+var app   = require('./appFrontendRobot');	//the new application;
 var debug = require('debug')('robotfrontend:server');
 var http  = require('http');
 
